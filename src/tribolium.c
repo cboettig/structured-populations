@@ -71,7 +71,7 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 
 	/* Gillespie simulation parameters */
 	double t=0, sampletime = *dt, timestep = 0;					/* overall time, sample timer, random time increment */
-	int event, birthdeath;
+	int event=-1, birthdeath;
 	double tmp;
 	double rates[5], cumrates[5], sumrates = 0;
 	int age_classes[5];
@@ -79,12 +79,6 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 	/* some additional parameters we keep track of */
 	double immature_larva_weights;
 	double next_mature_time;
-	/* We'll use pointers to grab member of the right class to experience mortality.  */
-	LLIST **egg = NULL;
-	LLIST **immature_larva = NULL;
-	LLIST **larva = NULL;
-	LLIST **pupa = NULL;
-	LLIST **adult = NULL;
 	LLIST *p;
 
 
@@ -115,25 +109,32 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 		while(p != NULL) {
 			++popsize;
 			p->data += timestep;
-			if(p->data < a_egg) { 
-				++age_classes[0];												
-				next_mature_time = GSL_MIN_DBL(next_mature_time, a_egg - p->data);
-				egg = &p;															
+			if(p->data < a_egg) {
+				if(birthdeath && event == 0){
+					list_remove(&p);
+					birthdeath = 0;
+				} else {
+					++age_classes[0];												
+					next_mature_time = GSL_MIN_DBL(next_mature_time, a_egg - p->data);
+				}
 			} else if(p->data < a_larva_asym) {
+				if(birthdeath && event == 1){ list_remove(&p); birthdeath = 0; }
+				else
 				++age_classes[1];
 				immature_larva_weights += (p->data - a_egg)/(a_larva_asym-a_egg);
-				immature_larva = &p;
+				next_mature_time = GSL_MIN_DBL(next_mature_time, a_larva_asym - p->data);
 			} else if(p->data < a_larva) {
 				++age_classes[2]; 
 				next_mature_time = GSL_MIN_DBL(next_mature_time, a_larva - p->data);
-				larva = &p;
 			} else if(p->data < a_pupa) { 
+				if(birthdeath && event == 2){  list_remove(&p); birthdeath = 0; }
+				else
 				++age_classes[3]; 
 				next_mature_time = GSL_MIN_DBL(next_mature_time, a_pupa - p->data);
-				pupa = &p;
 			} else if (p->data >= a_pupa) {  
+				if(birthdeath && event == 3){  list_remove(&p); birthdeath = 0; }
+				else
 				++age_classes[4];
-				adult = &p;
 			}
 			p = p->next;
 		}
@@ -163,7 +164,7 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 		}
 		t += timestep;
 		/* Sample the data at regular intervals */
-		while(t > sampletime){
+		while(t > sampletime && sampletime < *T){
 			/* update state, could be done more elegantly with vector views */
 			state[0] = age_classes[0];	state[1] = age_classes[1]; state[2] = age_classes[2]; 
 			state[3] = age_classes[3]; state[4] = age_classes[4];
@@ -181,26 +182,13 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 					break;
 				}
 			}
-			switch(event)
-			{
-				case 0 : list_remove(egg); break;
-				case 1 : 
-					if( gsl_rng_uniform(rng) < age_classes[1]/(age_classes[1]+age_classes[2]) ){
-						list_remove(immature_larva); 
-					} else { 
-						list_remove(larva); 
-					}
-					break; 	
-				case 2 : list_remove(pupa); break;
-				case 3 : list_remove(adult); break;
-				case 4 : list_add(pop, 0.0); break; 
-			}
-		} 
+			if(event == 4) list_add(pop, 0.0); 
+		}
+		 
 
 	} // loop over time
 	list_free(*pop);
-	//printf("%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
-	printf("t = %g\n", t);
+	printf("%lf %d %d %d %d %d %g\n", sampletime, state[0], state[1], state[2], state[3], state[4], t);
 }
 
 
@@ -250,16 +238,16 @@ void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int
 int main(void){
 	const double b = 5;													/* Birth rate (per day) */
 	const double u_egg = 0.00001, 
-				 u_larva = 0.001,
-				 u_pupa = 0.0,
+				 u_larva = .101,
+				 u_pupa = 0.990,
 				 u_adult = 0.003; /* Mortality rate (per day) */
 	const double a_egg = 3.8,
-				 a_larva = 3.8+16.4,
-				 a_pupa = 3.8+16.4+5.0;	/* age at which each stage matures, in days */
+				 a_larva = 20.2,
+				 a_pupa = 25.2;	/* age at which each stage matures, in days */
 	const double cannibal_larva_eggs = 0.01,
 				 cannibal_adults_pupa = 0.004,
 				 cannibal_adults_eggs =  0.01; /* cannibalism of x on y, per day */
-	const double a_larva_asym = 3.8+8.0;	  /* age after which larval size asymptotes */
+	const double a_larva_asym = 11.8;	  /* age after which larval size asymptotes */
 	double pars[12] = {	b, u_egg, u_larva, u_pupa, u_adult, a_egg,
 						a_larva, a_pupa, cannibal_larva_eggs,
 						cannibal_adults_pupa, cannibal_adults_eggs,
@@ -271,7 +259,7 @@ int main(void){
 	double dt = 1;
 	int reps = 20;
 	double probs[5];
-	double T = 4.1;
+	double T = 100;
 
 //	ensemble(state, initial, pars, &dt, &seed, &reps, probs, &nstates);
 //	printf("%g %g %g %g %g\n", probs[0], probs[1], probs[2], probs[3], probs[4]);
