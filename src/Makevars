@@ -1,0 +1,2 @@
+PKG_CPPFLAGS=-Wall 
+PKG_LIBS=-lm -lgsl -lgslcblas 

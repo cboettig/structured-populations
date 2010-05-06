@@ -54,5 +54,5 @@ ensemble <- function(	state = c(450, 0, 0, 0, 30),
 	list(probs=out[[7]], pars = out[[2]], dt = dt)
 }
 
-
+likelihood <- function()
 
