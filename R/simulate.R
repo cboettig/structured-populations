@@ -16,13 +16,13 @@ beetle_sim <- function(	state = c(100, 10, 10, 10, 10),
 						dt = 14,
 						T = 200,
 						seed = 123 ){
-	out <- .C("beetle_sim", as.integer(state), as.double(pars), as.double(dt), as.double(T), as.integer(seed) )
+	out <- .C("_Z10beetle_simPiPdS0_S0_S_", as.integer(state), as.double(pars), as.double(dt), as.double(T), as.integer(seed) )
 	list(state=out[[1]], pars = out[[2]], dt = dt)
 }
 
 
-ensemble <- function(	state = c(100, 10, 10, 10, 10), 
-						initial = c(400, 550, 220, 1, 31),
+ensemble <- function(	state = c(450, 0, 0, 0, 30), 
+						initial = state,
 						pars = c(	5,
 									0,
 									0.001,
@@ -42,7 +42,7 @@ ensemble <- function(	state = c(100, 10, 10, 10, 10),
 						probs = double(5),
 						nstates = 5)
 {
-	out <- .C(	"ensemble", 
+	out <- .C(	"_Z8ensemblePiS_PdS0_S_S_S0_S_", 
 				as.integer(state), 
 				as.integer(initial), 
 				as.double(pars), 
@@ -53,3 +53,6 @@ ensemble <- function(	state = c(100, 10, 10, 10, 10),
 				as.integer(nstates) )
 	list(probs=out[[7]], pars = out[[2]], dt = dt)
 }
+
+
+

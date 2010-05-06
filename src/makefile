@@ -10,9 +10,12 @@ build: $(FILES)
 	$(CC) $(CFLAGS) -o $(EXE) $(FILES)
 
 clean:
-	rm -f *.o
+	rm -f *.o *.so
 
-# run make profile, then execute program, then run gprof -a speciate gmon.out
+# run make profile, then execute program, then run gprof -a $(EXE) gmon.out
 profile:  $(FILES)
+	$(CC) $(CFLAGS) -g -pg -o $(EXE) $(FILES)
+
+debug: $(FILES)
 	$(CC) $(CFLAGS) -g -o $(EXE) $(FILES)
 

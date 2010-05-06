@@ -149,8 +149,7 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 		/* Sample the data at regular intervals */
 		while(t > sampletime && sampletime < *T){
 			/* update state, could be done more elegantly with vector views */
-			state[0] = age_classes[0];	state[1] = age_classes[1]; state[2] = age_classes[2]; 
-			state[3] = age_classes[3]; state[4] = age_classes[4];
+			for(i=0;i<5;i++) state[i] = age_classes[i];
 			printf("%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
 			sampletime += *dt;
 //printf("event %d, %g %g %g %g %g \n", event, rates[0], rates[1], rates[2], rates[3], rates[4]);
@@ -175,8 +174,8 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 			}
 			if(event == 4) pop.push_back(0.0);
 		}
-
 	} // loop over time
+	for(i=0;i<5;i++) state[i] = age_classes[i];
 	pop.clear();
 }
 
@@ -209,6 +208,7 @@ void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int
 	for(i = 0; i < *reps; i++)
 	{
 		simulate(initial, pars, dt, dt, rng);
+		printf("%d\n", initial[0]);
 		for(j = 0; j < *nstates; j++)
 		{
 			replicates[*reps * j + i] = (double) initial[j];
@@ -243,18 +243,18 @@ int main(void){
 						cannibal_adults_pupa, cannibal_adults_eggs,
 						a_larva_asym};
 	int nstates = 5;
-	int initial[] = {50, 0, 0, 0, 0};
-	int state[] = {400, 550, 220, 1, 31};
+	int initial[] = {450, 0, 0, 0, 30};
+	int state[] = {450, 0, 0, 1, 31};
 	int seed = time(NULL);
 	double dt = 14;
 	int reps = 20;
 	double probs[5];
-	double T = 2000;
+	double T = 200;
 
-//	ensemble(state, initial, pars, &dt, &seed, &reps, probs, &nstates);
-//	printf("%g %g %g %g %g\n", probs[0], probs[1], probs[2], probs[3], probs[4]);
+	ensemble(state, initial, pars, &dt, &seed, &reps, probs, &nstates);
+	printf("%g %g %g %g %g\n", probs[0], probs[1], probs[2], probs[3], probs[4]);
 
-	beetle_sim(initial, pars, &dt, &T, &seed); 
+//	beetle_sim(initial, pars, &dt, &T, &seed); 
 
 	return 0;
 }
