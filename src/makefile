@@ -1,10 +1,10 @@
 #-----------------------------------#
 #	Makefile for GNU C++ Compiler	#
 #-----------------------------------#
-CC = gcc
+CC = g++
 CFLAGS = -Wall -lgsl -lgslcblas -lm
 EXE = tribolium 
-FILES = llist.c tribolium.c kde.c 
+FILES = tribolium.cpp kde.c 
 
 build: $(FILES)
 	$(CC) $(CFLAGS) -o $(EXE) $(FILES)
