@@ -31,7 +31,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include "llist.h"
-
+#include "kde.h"
 
 /*
  * Events:
@@ -50,40 +50,9 @@
  * compare time to next event to time to next maturation
  */
 
-void simulate(int * state, double * pars, double * dt, int * seed);
-
-int main(void){
-	const double b = 5;													/* Birth rate (per day) */
-	const double u_egg = 0.0, 
-				 u_larva = 0.001,
-				 u_pupa = 0.0,
-				 u_adult = 0.003; /* Mortality rate (per day) */
-	const double a_egg = 3.8,
-				 a_larva = 3.8+16.4,
-				 a_pupa = 3.8+16.4+5.0;	/* age at which each stage matures, in days */
-	const double cannibal_larva_eggs = 0.01,
-				 cannibal_adults_pupa = 0.004,
-				 cannibal_adults_eggs =  0.01; /* cannibalism of x on y, per day */
-	const double a_larva_asym = 3.8+8.0;	  /* age after which larval size asymptotes */
-	double pars[12] = {	b, u_egg, u_larva, u_pupa, u_adult, a_egg,
-						a_larva, a_pupa, cannibal_larva_eggs,
-						cannibal_adults_pupa, cannibal_adults_eggs,
-						a_larva_asym};
-	int state[5] = {100, 10, 10, 10, 10};
-	int seed = time(NULL);
-	double dt = 9;
-
-	simulate(state, pars,  &dt, &seed);
-
-	//printf("%lf %d %d %d %d %d\n", dt, state[0], state[1], state[2], state[3], state[4]);
-	return 0;
-}
-
 /** Simulate */
-void simulate(int * state, double * pars, double * dt, int * seed){
-	/* Initialize random number generator with random seed */
-	gsl_rng * rng = gsl_rng_alloc( gsl_rng_default);
-	gsl_rng_set(rng, *seed);
+void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
+{
 
 
 	/** The population will live in a linked list named pop.  
@@ -102,9 +71,10 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 
 	/* Gillespie simulation parameters */
 	double t=0, sampletime = *dt, timestep = 0;					/* overall time, sample timer, random time increment */
-	int event;
+	int event, birthdeath;
 	double tmp;
 	double rates[5], cumrates[5], sumrates = 0;
+	int age_classes[5];
 
 	/* some additional parameters we keep track of */
 	double immature_larva_weights;
@@ -118,19 +88,21 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 	LLIST *p;
 
 
-	/* initialize No individuals */ 
-	int i;
+	/* initialize No individuals */
+	int i,j;
 	for(i=0;i<state[0];i++) list_add(pop, 0.0);
 	for(i=0;i<state[1];i++)	list_add(pop, a_egg);
 	for(i=0;i<state[2];i++)	list_add(pop, a_larva_asym);
 	for(i=0;i<state[3];i++) list_add(pop, a_larva);
 	for(i=0;i<state[4];i++)	list_add(pop, a_pupa);
-
-
-	while(t < 20.0){
-		int age_classes[5] = {0,0,0,0,0};
+	
+	/* initialize simulation */
+	t = 0, timestep = 0, sumrates = 0;
+	while(t <= *T){
+		for(j=0;j<5;j++) age_classes[j] = 0;
 		immature_larva_weights = 0;
-		next_mature_time = a_pupa;
+		next_mature_time = a_pupa+100;
+		int	popsize = 0; 
 		p = *pop;
 		/** Tour the population.  Keep track of:
 		 * (a) number falling into each age bracket 
@@ -141,6 +113,7 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 		 *	immature larva have a weight determined by their age, so we'll calculate that too
 		 *     */
 		while(p != NULL) {
+			++popsize;
 			p->data += timestep;
 			if(p->data < a_egg) { 
 				++age_classes[0];												
@@ -158,13 +131,13 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 				++age_classes[3]; 
 				next_mature_time = GSL_MIN_DBL(next_mature_time, a_pupa - p->data);
 				pupa = &p;
-			} else {  
+			} else if (p->data >= a_pupa) {  
 				++age_classes[4];
 				adult = &p;
-				}
+			}
 			p = p->next;
 		}
-
+//printf("%d\n", popsize);
 		/* Create the Gillespie vector of rates, in this order: 
 		 * egg death, larva death, pupa death, adult death, birth 
 		 * Then determine which event happens and when */
@@ -181,20 +154,26 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 		}
 
 		timestep = gsl_ran_exponential(rng, 1/sumrates);
+		birthdeath = 0;
+		/* If no one is maturing before next event, pick a random birth/death */
+		if(timestep < next_mature_time){
+			birthdeath = 1;
+		} else { /* next event is someone maturing */
+			timestep = next_mature_time;
+		}
 		t += timestep;
-		event=0;
-
 		/* Sample the data at regular intervals */
-		if(t > sampletime){
+		while(t > sampletime){
 			/* update state, could be done more elegantly with vector views */
 			state[0] = age_classes[0];	state[1] = age_classes[1]; state[2] = age_classes[2]; 
 			state[3] = age_classes[3]; state[4] = age_classes[4];
 			printf("%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
 			sampletime += *dt;
+//printf("event %d, %g %g %g %g %g \n", event, rates[0], rates[1], rates[2], rates[3], rates[4]);
+//printf("nmt: %g, %g, %g\n", next_mature_time, timestep, t);
 		}
 
-		/* If no one is maturing before next event, pick a random birth/death */
-		if(timestep < next_mature_time){
+		if(birthdeath){
 			tmp = gsl_rng_uniform(rng);
 			for(i=0;i<5;i++){
 				if (tmp < cumrates[i]/sumrates){
@@ -202,7 +181,6 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 					break;
 				}
 			}
-
 			switch(event)
 			{
 				case 0 : list_remove(egg); break;
@@ -217,13 +195,91 @@ void simulate(int * state, double * pars, double * dt, int * seed){
 				case 3 : list_remove(adult); break;
 				case 4 : list_add(pop, 0.0); break; 
 			}
-		}
+		} 
+
 	} // loop over time
 	list_free(*pop);
+	//printf("%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
+	printf("t = %g\n", t);
+}
+
+
+/** R wrapper to simulate */
+void beetle_sim(int *state, double *pars, double *dt, double *T, int *seed){
+	gsl_rng *rng = gsl_rng_alloc( gsl_rng_default);
+	gsl_rng_set(rng, *seed);
+	simulate(state, pars, dt, T, rng);
+}
+
+
+
+void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int *reps, double *probs, int *nstates)
+{
+	/* Initialize random number generator */
+	gsl_rng *rng = gsl_rng_alloc( gsl_rng_default);
+	gsl_rng_set(rng, *seed);
+
+	int i,j;
+	/* preserve the original initial conditions */
+	int *orig = malloc(*nstates*sizeof(int));
+	for(j = 0; j < *nstates; j++)
+	{
+		orig[j] = initial[j];
+	}
+
+	double *replicates = calloc(*nstates * *reps, sizeof(double));
+	for(i = 0; i < *reps; i++)
+	{
+		simulate(initial, pars, dt, dt, rng);
+		for(j = 0; j < *nstates; j++)
+		{
+			replicates[*reps * j + i] = (double) initial[j];
+			initial[j] = orig[j];
+		}
+	}
+	for(j = 0; j < *nstates; j++)
+	{
+		probs[j] = kerneldensity(&replicates[*reps * j], (double) state[j], *reps);
+	}
+	free(orig);
+	free(replicates);
 	gsl_rng_free(rng);
 }
 
 
+int main(void){
+	const double b = 5;													/* Birth rate (per day) */
+	const double u_egg = 0.00001, 
+				 u_larva = 0.001,
+				 u_pupa = 0.0,
+				 u_adult = 0.003; /* Mortality rate (per day) */
+	const double a_egg = 3.8,
+				 a_larva = 3.8+16.4,
+				 a_pupa = 3.8+16.4+5.0;	/* age at which each stage matures, in days */
+	const double cannibal_larva_eggs = 0.01,
+				 cannibal_adults_pupa = 0.004,
+				 cannibal_adults_eggs =  0.01; /* cannibalism of x on y, per day */
+	const double a_larva_asym = 3.8+8.0;	  /* age after which larval size asymptotes */
+	double pars[12] = {	b, u_egg, u_larva, u_pupa, u_adult, a_egg,
+						a_larva, a_pupa, cannibal_larva_eggs,
+						cannibal_adults_pupa, cannibal_adults_eggs,
+						a_larva_asym};
+	int nstates = 5;
+	int initial[] = {50, 0, 0, 0, 0};
+	int state[] = {400, 550, 220, 1, 31};
+	int seed = time(NULL);
+	double dt = 1;
+	int reps = 20;
+	double probs[5];
+	double T = 4.1;
+
+//	ensemble(state, initial, pars, &dt, &seed, &reps, probs, &nstates);
+//	printf("%g %g %g %g %g\n", probs[0], probs[1], probs[2], probs[3], probs[4]);
+
+	beetle_sim(initial, pars, &dt, &T, &seed); 
+
+	return 0;
+}
 
 
 

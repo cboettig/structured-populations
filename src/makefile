@@ -4,7 +4,7 @@
 CC = gcc
 CFLAGS = -Wall -lgsl -lgslcblas -lm
 EXE = tribolium 
-FILES = llist.c tribolium.c 
+FILES = llist.c tribolium.c kde.c 
 
 build: $(FILES)
 	$(CC) $(CFLAGS) -o $(EXE) $(FILES)
