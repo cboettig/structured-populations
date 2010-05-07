@@ -48,7 +48,7 @@ double gauss_kernel(double x)
 double kerneldensity(double *samples, double obs, size_t n)
 {
 	size_t i;
-	double h = GSL_MAX(brd0(samples, n), 1e-6);
+	double h = GSL_MAX(nrd0(samples, n), 1e-6);
 	double prob = 0;
 	for(i=0; i < n; i++)
 	{
