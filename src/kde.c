@@ -1,6 +1,33 @@
+/**
+ * @file kde.c
+ * @author Carl Boettiger, <cboettig@gmail.com>
+ * @section DESCRIPTION
+ * Estimates the kernel density p(x) at a given value x from
+ * an array of sample points.  Uses the default algorithm from
+ * the R langauge's 'density' function.  Requires the GSL statistics
+ * library.  
+ *   
+ * @section LICENCE
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 3 of
+ * the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details at
+ * http://www.gnu.org/copyleft/gpl.html
+ *
+ */
+
+
 #include "kde.h"
 
-double brd0(double x[], const int N)
+/** Estimate bandwidth using Silverman's "rule of thumb" 
+ * (Silverman 1986, pg 48 eq 3.31).  This is the default
+ * bandwith estimator for the R 'density' function.  */
+double nrd0(double x[], const int N)
 {
 	gsl_sort(x, 1, N);
 	double hi = gsl_stats_sd(x, 1, N);
