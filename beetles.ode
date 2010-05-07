@@ -1,0 +1,20 @@
+
+# plotutils solutions to odes (uses GSL ode library)
+# a quick way to numerically integrate/simulate ODEs,
+# mostly for exploratory purposes.  
+#
+# To run, use ode < beetles.ode | graph -T X
+#
+# 
+
+x' = - (-3/(1+s^10) +3) *x
+s' =  .8						
+
+x = 10.0
+s = .001
+print t,x
+step 0, 5
+
+
+
+
