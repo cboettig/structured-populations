@@ -1,2 +1,2 @@
 useDynLib(beetles)
-export(ensemble, beetle_sim)
+export(ensemble, beetle_sim, likelihood)

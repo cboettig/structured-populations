@@ -42,7 +42,7 @@ ensemble <- function(	state = c(450, 0, 0, 0, 30),
 						reps = 10 
 					)
 {
-	probs = double(5),
+	probs = double(5)
 	out <- .C(	"_Z8ensemblePiS_PdS0_S_S_S0_S_", 
 				as.integer(state), 
 				as.integer(initial), 
@@ -55,15 +55,27 @@ ensemble <- function(	state = c(450, 0, 0, 0, 30),
 	list(probs=out[[7]], pars = out[[2]], dt = dt)
 }
 
-likelihood <- function(pars, X, dt){
+likelihood <- function(pars, X, dt, reps=100, cpus=2){
 # compute likelihood
 	n <- length(X[,1])
 	starts <- X[1:n-1, ]
-	ends <- X[2:n]
-	prob <- sapply(	1:(n-1), 
+	ends <- X[2:n, ]
+	seed <- 1e9*runif(n-1)
+
+	require(snowfall)
+	if (cpus > 1){ 
+		sfInit(parallel=TRUE, cpus=cpus) 
+	} else { 
+		sfInit() 
+	}
+	sfLibrary(beetles)
+	sfExportAll()
+
+	prob <- sfSapply(	1:(n-1), 
 			function(i){ 
-				ensemble(starts[i,], initial=ends[i,], pars = pars, dt = dt, seed =seed, reps = reps)$probs[5]
+				ensemble(starts[i,], initial=ends[i,], pars = pars, dt = dt, seed =seed[i], reps = reps)$probs[5]
 			})
-	-sum(log(prob))
+	prob
+#	-sum(log(prob))
 }
 
