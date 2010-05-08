@@ -17,7 +17,8 @@ beetle_sim <- function(	state = c(100, 10, 10, 10, 10),
 						T = 200,
 						seed = 123 ){
 	out <- .C("_Z10beetle_simPiPdS0_S0_S_", as.integer(state), as.double(pars), as.double(dt), as.double(T), as.integer(seed) )
-	list(state=out[[1]], pars = out[[2]], dt = dt)
+	data <- read.table("beetle_sim.txt")
+	list(state = data, pars = out[[2]], dt = dt)
 }
 
 
@@ -38,10 +39,10 @@ ensemble <- function(	state = c(450, 0, 0, 0, 30),
 						), 
 						dt = 14, 
 						seed = 123,
-						reps = 10, 
-						probs = double(5),
-						nstates = 5)
+						reps = 10 
+					)
 {
+	probs = double(5),
 	out <- .C(	"_Z8ensemblePiS_PdS0_S_S_S0_S_", 
 				as.integer(state), 
 				as.integer(initial), 
@@ -50,11 +51,19 @@ ensemble <- function(	state = c(450, 0, 0, 0, 30),
 				as.integer(seed), 
 				as.integer(reps), 
 				as.double(probs), 
-				as.integer(nstates) )
+				as.integer(5) )
 	list(probs=out[[7]], pars = out[[2]], dt = dt)
 }
 
-likelihood <- function(){
+likelihood <- function(pars, X, dt){
 # compute likelihood
+	n <- length(X[,1])
+	starts <- X[1:n-1, ]
+	ends <- X[2:n]
+	prob <- sapply(	1:(n-1), 
+			function(i){ 
+				ensemble(starts[i,], initial=ends[i,], pars = pars, dt = dt, seed =seed, reps = reps)$probs[5]
+			})
+	-sum(log(prob))
 }
 

@@ -1,5 +1,5 @@
 /**
- * @file tribolium.c
+ * @file tribolium.cpp
  * @author Carl Boettiger, <cboettig@gmail.com>
  * @section DESCRIPTION
  * This is the actual population dynamics simulation.  Currently 
@@ -53,8 +53,8 @@
 #include <list>
 using namespace std;
 
-/** Simulate */
-void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
+/** Simulate function, not directly callable from R */
+void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng, FILE * file)
 {
 
 	list<double> pop;
@@ -148,12 +148,10 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 		t += timestep;
 		/* Sample the data at regular intervals */
 		while(t > sampletime && sampletime < *T){
-			/* update state, could be done more elegantly with vector views */
+			/* update state */
 			for(i=0;i<5;i++) state[i] = age_classes[i];
-			printf("%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
+			fprintf(file, "%lf %d %d %d %d %d\n", sampletime, state[0], state[1], state[2], state[3], state[4]);
 			sampletime += *dt;
-//printf("event %d, %g %g %g %g %g \n", event, rates[0], rates[1], rates[2], rates[3], rates[4]);
-//printf("nmt: %g, %g, %g\n", next_mature_time, timestep, t);
 		}
 
 		if(birthdeath){
@@ -184,12 +182,14 @@ void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng)
 void beetle_sim(int *state, double *pars, double *dt, double *T, int *seed){
 	gsl_rng *rng = gsl_rng_alloc( gsl_rng_default);
 	gsl_rng_set(rng, *seed);
-	simulate(state, pars, dt, T, rng);
+	FILE * file = fopen("beetle_sim.txt", "w");
+	simulate(state, pars, dt, T, rng, file);
 	gsl_rng_free(rng);
+	fclose(file);
 }
 
 
-
+/* Simulate an ensemble in order to estimate probability of an observation, can be called directly from R*/
 void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int *reps, double *probs, int *nstates)
 {
 	/* Initialize random number generator */
@@ -204,17 +204,19 @@ void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int
 		orig[j] = initial[j];
 	}
 
+	/* perform the simulations */
 	double *replicates = (double *) calloc(*nstates * *reps, sizeof(double));
 	for(i = 0; i < *reps; i++)
 	{
-		simulate(initial, pars, dt, dt, rng);
-		printf("%d\n", initial[0]);
+		simulate(initial, pars, dt, dt, rng, stdout);
 		for(j = 0; j < *nstates; j++)
 		{
 			replicates[*reps * j + i] = (double) initial[j];
 			initial[j] = orig[j];
 		}
 	}
+
+	/* estimate the kernel density */
 	for(j = 0; j < *nstates; j++)
 	{
 		probs[j] = kerneldensity(&replicates[*reps * j], (double) state[j], *reps);
@@ -254,7 +256,7 @@ int main(void){
 	ensemble(state, initial, pars, &dt, &seed, &reps, probs, &nstates);
 	printf("%g %g %g %g %g\n", probs[0], probs[1], probs[2], probs[3], probs[4]);
 
-//	beetle_sim(initial, pars, &dt, &T, &seed); 
+	beetle_sim(initial, pars, &dt, &T, &seed); 
 
 	return 0;
 }
