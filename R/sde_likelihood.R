@@ -93,34 +93,4 @@ warning.lik <- function(alpha_0, theta, sigma, beta){
 }
 
 
-require(stats4)
-require(sde)
-require(NORMT3)
-
-set.seed(123)
-theta <- 3
-alpha <- 1
-sigma <- 2
-alpha_0 <- 1
-beta <- .2
-pars = list(alpha_0=alpha, theta=theta, sigma=sigma, beta=beta)
-
-warning_model(Dt = 1, 1, pars)
-setOU(Dt = 1, 1, theta=c(theta*alpha, alpha, sigma) )
-
-numeric_V(Dt, pars)
-analytic_V(Dt, pars)
-
-X <- sde.sim(model="OU", theta= c(theta*alpha,alpha,sigma), N=1000, T=1000) # can specify N & delta and will calc T, or T & N.  
-
-
-OU.lik(alpha*theta, alpha, sigma) 
-warning.lik(alpha_0, theta, sigma, beta)
-
-
-fit <- mle(OU.lik, start=list(theta1=1, theta2=.5, theta3=.5), method="L-BFGS-B", lower=c(-Inf, 0,0))
-summary(fit)
-fit2 <- mle(warning.lik, start=list(alpha_0=1, theta=3, sigma=2, beta=2), method="L-BFGS-B", lower=c(0,0,0,1e-9))
-summary(fit2)
-
 
