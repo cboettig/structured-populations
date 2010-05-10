@@ -4,8 +4,8 @@
 # in src/ directory, run R CMD SHLIB warning_signals.c gillespie.c odeintegrators.c
 # 
 
-require(Kendall)
-dyn.load("../src/warning_signals.so")
+#require(Kendall)
+#dyn.load("../src/warning_signals.so")
 
 
 # sample_time should be called window
@@ -15,20 +15,20 @@ warning_signals <- function(sample_time = 50, sample_freq = 1, max_time = 270, n
 	N <- as.integer(max_time/sample_freq)
 
 	out <- .C(	"warning_signals", 
-							double(N), 
-							double(N), 
-							double(N), 
-							double(N), 
-							double(N), 
-							double(N), 
-							double(N), 
-							as.integer(sample_time), 
-							as.double(sample_freq), 
-							as.integer(max_time), 
-							as.integer(n_ensembles), 
-							as.double(start_polluting), 
-							as.double(pollute_timestep), 
-							as.double(pollute_increment) )
+				double(N), 
+				double(N), 
+				double(N), 
+				double(N), 
+				double(N), 
+				double(N), 
+				double(N), 
+				as.integer(sample_time), 
+				as.double(sample_freq), 
+				as.integer(max_time), 
+				as.integer(n_ensembles), 
+				as.double(start_polluting), 
+				as.double(pollute_timestep), 
+				as.double(pollute_increment) )
 
 	times <- out[[1]]
 	enviro <- out[[2]]
@@ -41,12 +41,12 @@ warning_signals <- function(sample_time = 50, sample_freq = 1, max_time = 270, n
 	x <- times != 0
 
 	output <- data.frame(	times = times[x],
-												enviro = enviro[x],
-												 means = means[x],
-												 vars = vars[x],
-												 skews = skews[x],
-												 ar1 = ar1[x],
-												 arN = arN[x] )
+							enviro = enviro[x],
+							means = means[x],
+							vars = vars[x],
+							skews = skews[x],
+							ar1 = ar1[x],
+							arN = arN[x] )
 	class(output) = "warning_signals"
 	output
 }
@@ -76,5 +76,6 @@ plot.warning_signals <- function(output){
 }
 
 
-output <- warning_signals(sample_time = 50, max_time=300, n_ensembles=1, start_polluting=400)
-plot(output)
+#output <- warning_signals(sample_time = 50, max_time=300, n_ensembles=1, start_polluting=200, pollute_timestep = .1, pollute_increment=.05)
+
+#plot(output)
