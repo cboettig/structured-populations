@@ -35,10 +35,15 @@ pcOU <- function(x, Dt, x0, theta, lower.tail = TRUE, log.p = FALSE){
 
 
 # sde likelihood fits exploration
-OU.lik <- function(alpha, theta, sigma){
-  n <- length(X)
-  dt <- deltat(X)
-  -sum( dcOU(X[2:n], dt, X[1:(n-1)], c(alpha, theta, sigma), log=TRUE) )
+OU.lik <- function(theta1, theta2, theta3){
+  if( theta2 < 0 | theta3 < 0){
+    out <- 1e12 
+  } else {
+    n <- length(X)
+    dt <- deltat(X)
+   out <- -sum( dcOU(X[2:n], dt, X[1:(n-1)], c(theta1, theta2, theta3), log=TRUE) )
+  }
+  out
 }
 
 
@@ -97,7 +102,7 @@ theta <- 3
 alpha <- 1
 sigma <- 2
 alpha_0 <- 1
-beta <- .02
+beta <- .2
 pars = list(alpha_0=alpha, theta=theta, sigma=sigma, beta=beta)
 
 warning_model(Dt = 1, 1, pars)
@@ -113,9 +118,9 @@ OU.lik(alpha*theta, alpha, sigma)
 warning.lik(alpha_0, theta, sigma, beta)
 
 
-#fit <- mle(OU.lik, start=list(alpha=1, theta=.5, sigma=.5), method="L-BFGS-B", lower=c(-Inf, 0,0))
-#summary(fit)
-#fit2 <- mle(warning.lik, start=list(alpha_0=1, theta=.5, sigma=.5, beta=0), method="L-BFGS-B", lower=c(-Inf, 0,0))
-
+fit <- mle(OU.lik, start=list(theta1=1, theta2=.5, theta3=.5), method="L-BFGS-B", lower=c(-Inf, 0,0))
+summary(fit)
+fit2 <- mle(warning.lik, start=list(alpha_0=1, theta=3, sigma=2, beta=2), method="L-BFGS-B", lower=c(0,0,0,1e-9))
+summary(fit2)
 
 

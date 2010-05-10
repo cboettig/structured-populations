@@ -5,8 +5,8 @@ Date: 2010-05-04
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
 Description:
-Requires: snowfall 
-Recommends:  NORMT3
+Requires: snowfall, NORMT3, sde 
+Recommends:  
 URL: http://two.ucdavis.edu/~cboettig/software.html
 License: GPL (>= 3)
 
