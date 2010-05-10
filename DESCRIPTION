@@ -5,7 +5,7 @@ Date: 2010-05-09
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
 Description:
-Requires: snowfall Kendall 
+Depends: snowfall Kendall 
 Recommends:  NORMT3
 URL: http://two.ucdavis.edu/~cboettig/software.html
 License: GPL (>= 3)

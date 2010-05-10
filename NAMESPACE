@@ -1,2 +1,3 @@
 useDynLib(warningSignals)
-export(warning_signals)
+export(	warning_signals, 
+		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU)
