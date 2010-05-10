@@ -1,0 +1,2 @@
+PKG_CPPFLAGS=-Wall -fopenmp
+PKG_LIBS=-lm -lgsl -lgslcblas -lgomp 

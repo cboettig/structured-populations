@@ -1,0 +1,12 @@
+Package: warningSignals
+Title: Tools for detecting early warning signals of regime shifts.
+Version: 0.0-1
+Date: 2010-05-09
+Author: Carl Boettiger <cboettig@gmail.com>
+Maintainer: Carl Boettiger <cboettig@gmail.com>
+Description:
+Requires: snowfall 
+Recommends:  NORMT3
+URL: http://two.ucdavis.edu/~cboettig/software.html
+License: GPL (>= 3)
+
