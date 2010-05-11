@@ -59,9 +59,9 @@ void
 gillespie(	const event_fn * rate_fn,
 			const event_fn * outcome,
 			const size_t n_event_types,
-			void * mypars,	
+			void * my_pars,	
 			void * my_record,
-			const size_t max_time,	
+			const size_t max_time, // should be double!!	
 			const size_t ensembles	
 		)
 {
@@ -76,19 +76,18 @@ gillespie(	const event_fn * rate_fn,
 	int l,i,check;
 	double lambda, t, tmp;
 	double * rates_data;
-	void * my_pars;
 
     /* private variables are accessible inside the parallel region only
 	 * Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  Currently this uses the pars_alloc function 
 	 * to allocate space in user-defined way without assuming the function type */
-	#pragma omp parallel shared(rng, rate_fn, outcome, my_record, mypars) \
+	#pragma omp parallel shared(rng, rate_fn, outcome, my_record) \
 	private(lambda, t, tmp, i, check, rates_data, my_pars)
 	{
 		/* The vector to store cumulative sum of rates */
 		rates_data = (double *) calloc (n_event_types,sizeof(double) );
 		/* allocates parameters based on user defined function */
-		my_pars = pars_cpy(mypars);
+//		my_pars = pars_cpy(mypars);
 
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for

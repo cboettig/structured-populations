@@ -16,7 +16,7 @@
  * http://www.gnu.org/copyleft/gpl.html
  *
  */
-#include "warning_signals.h"
+#include "gillespie.h"
 
 
 /*		   0  1  2   3   4   5   6   7   8
@@ -24,44 +24,45 @@
 
 /** Specify all event functions.  Functions should return the rate as type double
  * and take the sole argument as a pointer to the pars structure.  */
-double b1(void * vs)
+double b1(void * ss)
 {
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	      /* x *  bx *    K  -  x  -  y   +  cx  *   x  * y */
-	return s[0] * s[2] * (s[8]-s[0]-s[1]) + s[6] * s[0] * s[1]  ; 
+	return s[0] * s[2] *  (s[8]-s[0]-s[1])/s[8] + s[6] * s[0] * s[1]/s[8]  ; 
 }
-double b2(void * sv)
+double b2(void * ss)
 { 
-	double * s = (double *) vs;
-	      /* y *  by *    K  -  x  -  y   +  cy  *   x  * y */
-	return s[1] * s[3] * (s[8]-s[0]-s[1]) + s[7] * s[0] * s[1]  ; 
+	double * s = (double *) ss;
+	      /* y *  by *    K  -  x  -  y */
+	return s[1] * s[3] * (s[8]-s[0]-s[1])/s[8]  ; 
 }
-double d1(void * sv)
+double d1(void * ss)
 { 
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	      /* x *  bx */
 	return s[0] * s[4]  ; 
 }
 
-double d2(void * sv)
+double d2(void * ss)
 { 
-	double * s = (double *) vs;
-	      /* x *  bx */
-	return s[1] * s[5]  ; 
+	double * s = (double *) ss;
+	      /* x *  bx   +   cy *  x   *  y  */
+	return s[1] * s[5] + s[7] * s[0] * s[1]/s[8] ; 
 }
 
 
 /** outcomes functions can return a flag of 1 to break the time simulation (i.e. if extinction occurs)
  *  They take an argument of type pars and update the state directly via this structure.  Otherwise
  *  they should return 0 for success.  */
-double b1_out(void * vs)
+double b1_out(void * ss)
 { 
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	s[0] += 1;
+	return 0;
 }
-double d1_out(void * vs)
+double d1_out(void * ss)
 { 
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	s[0] -= 1;
 
 	if(s[0] <= 0){
@@ -70,17 +71,18 @@ double d1_out(void * vs)
 	}
 	return 0 ; 
 }
-double b2_out(void * vs)
+double b2_out(void * ss)
 { 
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	s[1] += 1;
+	return 0;
 }
-double d2_out(void * vs)
+double d2_out(void * ss)
 { 
-	double * s = (double *) vs;
+	double * s = (double *) ss;
 	s[1] -= 1;
 
-	if(s[0] <= 0){
+	if(s[1] <= 0){
 		fprintf(stderr, "extinction\n"); 
 		return 1 ;
 	}
@@ -91,17 +93,17 @@ double d2_out(void * vs)
 
 /*		   0  1  2   3   4   5   6   7   8
  * Pars = {x, y, bx, by, dx, dy, cx, cy, K} */
-void initial_conditions(void * vs)
+void initial_conditions(void * ss)
 {
-	double * s = (double *) vs;
-	s[0] = 500; 
+	double * s = (double *) ss;
+	s[0] = 50; 
 	s[1] = 500;
-	s[2] = 0.2;
+	s[2] = 0.0011;
 	s[3] = 0.6;
-	s[4] = 0.1;
+	s[4] = 0.001;
 	s[5] = 0.1;
-	s[6] = 0.1;
-	s[7] = 0.1;
+	s[6] = 0.001;
+	s[7] = 4.0;
 	s[8] = 1000;
 }
 
@@ -112,39 +114,37 @@ void initial_conditions(void * vs)
  * which itself could be abstracted more */
 void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
 {
-	pars * my_pars = (pars *) mypars;
-	record * my_record = (record *) myrecord;
-	size_t windowsize = my_record->windowsize;
-	double * checkpts = my_pars->checkpts;
-
-	/* Sample (print) system state at regular intervals */
-	if(t > checkpts[0]){
-		double * hist = my_record->hist;
-		hist[my_pars->hist_index] = my_pars->n;
-
-
-		if(t > my_record->sampletime){ /*  don't start printing until we've filled out the vector */
-			int i = my_pars->time_index; //replicate 
-			my_record->means[i] +=  gsl_stats_mean( hist, 1, windowsize);
-			my_record->vars[i] +=  gsl_stats_variance( hist, 1, windowsize);
-			reorder(hist, my_pars->hist_index, windowsize);
-			my_record->skews[i] += gsl_stats_skew( hist, 1, windowsize);
-			my_record->ar1[i] +=  gsl_stats_lag1_autocorrelation( hist, 1, windowsize);
-			/* Lag N/2 autocorrelation found by splitting data in half */			
-			my_record->arN[i] += gsl_stats_correlation(hist, 1, &(hist[windowsize/2]), 1, windowsize/2);
-
-			my_record->a[i] = my_pars->a;
-			++(my_pars->time_index);
-		}
-		my_pars->hist_index = (1+my_pars->hist_index) % windowsize;
-		checkpts[0] += my_record->samplefreq;
+	double * record = (double *) myrecord;
+	if(t>record[0]){
+		record[0] += 1;
+		double * s = (double *) mypars;
+		printf("%g %g %g\n", t, s[0], s[1]);
 	}
+}
 
-	/* Slowly change the bifurcation parameter */
-	if(t > checkpts[1]){
-		checkpts[1] += my_pars->pollute_rate;
-		my_pars->a += my_pars->pollute_increment;	
-	}
+/** record class for Crowley model */
+typedef struct {
+	double t_step;
+	double * s1;
+	double * s2;
+} record;
+
+record * = record_alloc(size_t N, double t_step)
+{
+	record * myrecord;
+	myrecord->t_step = 10;
+	myrecord->s1 = (double *) calloc(N, size(double));
+	myrecord->s2 = (double *) calloc(N, size(double));
+	return myrecord;
+}
+
+void record_free(record * myrecord)
+{
+	free(my_record->s1);
+	free(my_record->s2);
+	free(my_record);
+}
+
 
 void crowley()
 {
@@ -162,11 +162,22 @@ void crowley()
 	rate_fn[3] = &d2;
 	outcome[3] = &d2_out;
 
-	double * my_record = NULL;
-	size_t ensembles = *n_ensembles;
-	gillespie(rate_fn, outcome, 4, my_pars, my_record, *max_time, ensembles);
+	double my_record[3] = {0,0,0};
+	double my_pars[9];
+	initial_conditions(my_pars);
+
+	
+
+	const size_t n_event_types = 4;
+	const size_t ensembles = 1;
+	const size_t max_time = 500;
+	gillespie(rate_fn, outcome, n_event_types, my_pars, my_record, max_time, ensembles);
 //	euler(my_pars, MAX_TIME, stderr);
 //	gslode(my_pars, MAX_TIME, theory);
 }
 
-
+int main(void)
+{
+	crowley();
+	return 0;
+}

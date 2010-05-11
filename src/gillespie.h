@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <math.h>
+#include <gsl/gsl_math.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_vector.h>
@@ -9,7 +12,7 @@ typedef double (* event_fn)(void * my_pars);
 void * pars_cpy(void * in);
 
 void fixed_interval_tasks(const double t, const void * my_pars, void * my_record);
-void initial_conditions(void * mypars);
+void initial_conditions(void * ss);
 
 void gillespie( const event_fn * rate_fn, 
 				const event_fn * outcome, 

@@ -19,12 +19,8 @@
 
 
 /*Standard Libraries */
-#include <stdio.h>
-#include <math.h>
-#include <time.h> 
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
-#include <gsl/gsl_math.h>
 #include <gsl/gsl_statistics.h>
 #include "gillespie.h"
 
