@@ -30,7 +30,7 @@ warning.lik(alpha_0, theta, sigma, beta)
 # Fit the models
 fit <- mle(OU.lik, start=list(theta1=1, theta2=.5, theta3=.5), method="L-BFGS-B", lower=c(-Inf, 0,0))
 summary(fit)
-fit2 <- mle(warning.lik, start=list(alpha_0=.5, theta=1, sigma=2, beta=2), method="L-BFGS-B", lower=c(0,0,0,1e-9))
+fit2 <- mle(warning.lik, start=list(alpha_0=.5, theta=1, sigma=5, beta=2), method="L-BFGS-B", lower=c(0,0,0,1e-9))
 summary(fit2)
 
 
