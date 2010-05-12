@@ -18,6 +18,33 @@
  */
 #include "gillespie.h"
 
+/** record class for Crowley model */
+typedef struct {
+	int i;
+	double t_step;
+	double * s1;
+	double * s2;
+} record;
+
+record* record_alloc(size_t N, double maxtime)
+{
+	record* myrecord = (record*) malloc(sizeof(record));
+	myrecord->t_step = maxtime/N;
+	printf("%g\n", maxtime/N);
+	myrecord->i = 0;
+	myrecord->s1 = (double*) calloc(N+1, sizeof(double));
+	myrecord->s2 = (double*) calloc(N+1, sizeof(double));
+	return myrecord;
+}
+
+void record_free(record * myrecord)
+{
+	free(myrecord->s1);
+	free(myrecord->s2);
+	free(myrecord);
+}
+
+
 
 /*		   0  1  2   3   4   5   6   7   8
  * Pars = {x, y, bx, by, dx, dy, cx, cy, K} */
@@ -91,22 +118,18 @@ double d2_out(void * ss)
 
 
 
-/*		   0  1  2   3   4   5   6   7   8
- * Pars = {x, y, bx, by, dx, dy, cx, cy, K} */
-void initial_conditions(void * ss)
-{
-	double * s = (double *) ss;
-	s[0] = 50; 
-	s[1] = 500;
-	s[2] = 0.11;
-	s[3] = 0.6;
-	s[4] = 0.1;
-	s[5] = 0.1;
-	s[6] = 0.1;
-	s[7] = 4.0;
-	s[8] = 1000;
-}
 
+
+/** Must create a copy of parameter statespace which can be
+ * modified in the loop.  Will also take */
+void * reset(void * inits)
+{
+	double * ss = (double *) inits;
+	double * s = (double *) calloc(9, sizeof(double));
+	int i;
+	for(i=0;i<9;i++) s[i] = ss[i];
+	return s;
+}
 
 /** Execute all tasks that occur on fixed interval schedule 
  * Currently this function isn't very api like, as it is 
@@ -114,39 +137,18 @@ void initial_conditions(void * ss)
  * which itself could be abstracted more */
 void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
 {
-	double * record = (double *) myrecord;
-	if(t>record[0]){
-		record[0] += 1;
+	record * my_record = (record *) myrecord;
+	if (t > my_record->i * my_record->t_step) 
+	{
 		double * s = (double *) mypars;
+		my_record->s1[my_record->i] = s[0]; 
+		my_record->s2[my_record->i] = s[1]; 
 		printf("%g %g %g\n", t, s[0], s[1]);
+		++my_record->i;
 	}
 }
 
-/** record class for Crowley model */
-typedef struct {
-	double t_step;
-	double * s1;
-	double * s2;
-} record;
-
-record * = record_alloc(size_t N, double t_step)
-{
-	record * myrecord;
-	myrecord->t_step = 10;
-	myrecord->s1 = (double *) calloc(N, size(double));
-	myrecord->s2 = (double *) calloc(N, size(double));
-	return myrecord;
-}
-
-void record_free(record * myrecord)
-{
-	free(my_record->s1);
-	free(my_record->s2);
-	free(my_record);
-}
-
-
-void crowley()
+void crowley(double* s1, double* s2, double* inits, int* n_samples)
 {
 	/** Create a list of all event functions and their associated outcomes 
 	 *  Order doesn't matter, but make sure outcomes are paired with the 
@@ -162,22 +164,50 @@ void crowley()
 	rate_fn[3] = &d2;
 	outcome[3] = &d2_out;
 
-	double my_record[3] = {0,0,0};
-	double my_pars[9];
-	initial_conditions(my_pars);
-
 	
-
 	const size_t n_event_types = 4;
 	const size_t ensembles = 1;
-	const size_t max_time = 500;
-	gillespie(rate_fn, outcome, n_event_types, my_pars, my_record, max_time, ensembles);
+	const size_t max_time = 5000;
+	
+	record * my_record = record_alloc(*n_samples, max_time);
+
+	gillespie(rate_fn, outcome, n_event_types, inits, my_record, max_time, ensembles);
+
+	int i;
+	for(i = 0; i< *n_samples; i++)
+	{ 
+		s1[i] = my_record->s1[i]; 
+		s2[i] = my_record->s2[i];
+	}
+	free(my_record);
 //	euler(my_pars, MAX_TIME, stderr);
 //	gslode(my_pars, MAX_TIME, theory);
 }
 
 int main(void)
 {
-	crowley();
+	int n_samples = 100;
+	double s1[100];
+	double s2[100];
+	/*			0  1  2   3   4   5   6   7   8
+		Pars = {x, y, bx, by, dx, dy, cx, cy, K} */
+	double inits[9];
+	inits[0] = 500; 
+	inits[1] = 4500;
+	inits[2] = 0; //0.11;
+	inits[3] = 0.6;
+	inits[4] = 0; //0.1;
+	inits[5] = 0.1;
+	inits[6] = 0; // 0.1;
+	inits[7] = 4.0;
+	inits[8] = 10000;
+
+	crowley(s1, s2, inits, &n_samples);
+	printf("m1 = %g sd1 = %g\nm2 = %g sd2 = %g\n",
+			gsl_stats_mean(s1, 1, n_samples), 
+			sqrt(gsl_stats_variance(s1, 1, n_samples)),
+			gsl_stats_mean(s2, 1, n_samples), 
+			sqrt(gsl_stats_variance(s2, 1, n_samples))
+	); 
 	return 0;
 }
