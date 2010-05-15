@@ -1,5 +1,64 @@
+# A one-dimensional test case: b(n) = n, d(n) = n^2/K
+
+require(odesolve)
+
+
+
+oneD <- function(t, y, p){
+	# \dot x = \alpha_1(x)
+	yd1 <- p["r"]*y[1] *(1 - y[1]/p["K"])
+	# \dot \sigma^2 = - \partial_x \alpha_1(x) \sigma^2 + \alpha_2(x)
+	yd2 <- 2*p["r"]*(1-2*y[1]/p["K"] ) * y[2] + 
+		p["r"]*y[1] *(1 + y[1]/p["K"])
+
+	list(c(yd1, yd2))
+}
+
+logistic_parameters <- c(K=100, r=1)
+times <- seq(0,10,by=.1)
+yo <- c(10, 0)
+o <- lsoda(yo, times, oneD, logistic_parameters)
+
+
+# two-dimenstional test case: 
+twoD <- function(t, y, p){
+
+
+	# \dot x = \alpha_1(x,y)
+	yd1 <- p["b1"] * y[1] * (p["K"] - y[1] - y[2]) - p["d1"] * y[1] + p["c1"] * y[1] * y[2]
+	# \dot y = \beta_1(x,y)
+	yd2 <- p["b2"] * y[2] * (p["K"] - y[1] - y[2]) - p["d2"] * y[2] - p["c2"] * y[1] * y[2]
+	# sigma_x^2
+	yd3 <-  2*( p["b1"] * (p["K"] - 2*y[1] - y[2]) - p["d1"] + p["c1"] * y[2] ) * y[3]	+		# 2 \partial_x \alpha_1(x,y)  * \sigma_x^2
+		(-p["b1"] * y[1]  + p["c1"] * y[1]  ) *  y[5]									+		# \partial_y \alpha_1(x,y)  * cov(x,y)
+		p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2]		# \alpha_2
+	# sigma_y^2
+	yd4 <- 2*( p["b2"] * (p["K"] - y[1] - 2*y[2]) - p["d1"] + p["c2"] * y[1] ) * y[4]	+		# 2 \partial_y beta_1(x,y)  * \sigma_y^2
+		(-p["b2"] * y[2]  + p["c2"] * y[2]  ) * y[5]									+		# \partial_x \beta_1(x,y) * cov(x,y)
+		p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2]		# \beta_2
+	# cov 
+	yd5 <- (  2*( p["b1"] * (p["K"] - 2*y[1] - y[2]) - p["d1"] + p["c1"] * y[2] )  +			# (\partial_x \alpha_1 +
+		( p["b2"] * (p["K"] - y[1] - 2*y[2]) - p["d1"] + p["c2"] * y[1] ) ) * y[5] +			#   \partial_y \beta_1 )* cov 
+		(-p["b2"] * y[2]  + p["c2"] * y[2]  ) * y[3]	+										# \partial_x \beta_1 * sigma_x^2
+		(-p["b1"] * y[1]  + p["c1"] * y[1]  ) * y[4]
+
+	list(c(yd1, yd2, yd3, yd4, yd5))
+}
+k<-1000
+crowley_parameters <- c(b1=.11/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=4/k, K=k)
+times <- seq(0,1000,length=10000)
+yo <- c(40, 400, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
+o2 <- lsoda(yo, times, twoD, crowley_parameters)
+
+plot(o2[,1], o2[,3], type='l', col="darkblue", ylim=c(0,600))
+lines(o2[,1], o2[,2], col="darkgreen")
+
+
 # solve the system of equations
 eqns <- function(t, x, p){
+## add macroscopic equations for the state
+
+## Covariance equations
 	n <- sqrt( length(x) )
 	y <- matrix(x, n,n)
 	yd <- diag(H(x,p), n,n)
@@ -14,6 +73,8 @@ eqns <- function(t, x, p){
 	}
 	list(as.numeric(yd))
 }
+
+
 
 
 
