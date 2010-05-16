@@ -45,14 +45,21 @@ twoD <- function(t, y, p){
 	list(c(yd1, yd2, yd3, yd4, yd5))
 }
 k<-1000
-crowley_parameters <- c(b1=.11/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=4/k, K=k)
-times <- seq(0,1000,length=10000)
-yo <- c(40, 400, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
+#crowley_parameters <- c(b1=.11/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=4/k, K=k)
+crowley_parameters <- c(b1=.11/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=3.9/k, K=k)
+times <- seq(0,100,length=1000)
+yo <- c(50, 450, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
 o2 <- lsoda(yo, times, twoD, crowley_parameters)
 
-plot(o2[,1], o2[,3], type='l', col="darkblue", ylim=c(0,600))
-lines(o2[,1], o2[,2], col="darkgreen")
-
+png("diverge.png")
+par(mfrow=c(2,1) )
+plot(o2[,1], o2[,2], type='l', col="darkblue", ylim=c(0,1100), ylab = "expected abundance", xlab= "time")
+lines(o2[,1], o2[,3], col="darkgreen")
+legend("topleft", c("competitor", "colonist"), col=c("darkblue", "darkgreen"), pch='l')
+plot(o2[,1], sqrt(o2[,5]), type='l', ylab = "stdev", xlab="time")
+lines(o2[,1], sqrt(o2[,4]), col="darkblue")
+lines(o2[,1], sqrt(o2[,5]), col="darkgreen")
+dev.off()
 
 # solve the system of equations
 eqns <- function(t, x, p){
