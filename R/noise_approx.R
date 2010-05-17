@@ -1,9 +1,8 @@
-# A one-dimensional test case: b(n) = n, d(n) = n^2/K
 
 require(odesolve)
 
 
-
+# A one-dimensional test case: b(n) = rn(K-n) 
 oneD <- function(t, y, p){
 	# \dot x = \alpha_1(x)
 	yd1 <- p["r"]*y[1] *(1 - y[1]/p["K"])
@@ -14,13 +13,13 @@ oneD <- function(t, y, p){
 	list(c(yd1, yd2))
 }
 
-logistic_parameters <- c(K=100, r=1)
+logistic_parameters <- c(K=100, r=1, d = .1)
 times <- seq(0,10,by=.1)
 yo <- c(10, 0)
 o <- lsoda(yo, times, oneD, logistic_parameters)
 
 
-# two-dimenstional test case: 
+# two-dimenstional test case:   ## For some reason this isn't accurate, i.e. with yo[2] = 0, variance of x is zero...
 twoD <- function(t, y, p){
 
 	# \dot x = \alpha_1(x,y)
@@ -28,9 +27,9 @@ twoD <- function(t, y, p){
 	# \dot y = \beta_1(x,y)
 	yd2 <- p["b2"] * y[2] * (p["K"] - y[1] - y[2]) - p["d2"] * y[2] - p["c2"] * y[1] * y[2]
 	# sigma_x^2
-	yd3 <-  2*( p["b1"] * (p["K"] - 2*y[1] - y[2]) - p["d1"] + p["c1"] * y[2] ) * y[3]	+		# 2 \partial_x \alpha_1(x,y)  * \sigma_x^2 +
-		2 * (-p["b1"] * y[1]  + p["c1"] * y[1]  ) *  y[5]								+		# 2 \partial_y \alpha_1(x,y)  * cov(x,y) +
-		p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2]		# \alpha_2
+	yd3 <-  2*( p["b1"] * (p["K"] - 2*y[1] - y[2]) - p["d1"] + p["c1"] * y[2] ) * y[3]	+		# 2 \partial_x \alpha_1(x,y)  * \sigma_x^2 
+		2 * (-p["b1"] * y[1]  + p["c1"] * y[1]  ) *  y[5]								+		# + 2 \partial_y \alpha_1(x,y)  * cov(x,y) 
+		p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2]		# + \alpha_2
 	# sigma_y^2
 	yd4 <- 2*( p["b2"] * (p["K"] - y[1] - 2*y[2]) - p["d2"] - p["c2"] * y[1] ) * y[4]	+		# 2 \partial_y beta_1(x,y)  * \sigma_y^2 +
 		2 * (-p["b2"] * y[2]  - p["c2"] * y[2]  ) * y[5]								+		# 2 \partial_x \beta_1(x,y) * cov(x,y) +
@@ -43,6 +42,9 @@ twoD <- function(t, y, p){
 	list(c(yd1, yd2, yd3, yd4, yd5))
 }
 
+
+
+## General form for arbitrary dimensions
 linnoise <- function(t,y,p, f, g, J){
 	n <- length(y)				# d states, d variances, (d^2-d)/2 covariances
 	d <- -3/2 + sqrt(9/4+2*n)	# dimension of the system
@@ -90,9 +92,9 @@ f_crowley <- function(t,y,p){
 
 g_crowley <- function(t,y,p){
 # \dot x = \alpha_1(x,y)
-	yd1 <- p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2]
+	yd1 <- (p["b1"] * y[1] * (p["K"] - y[1] - y[2]) + p["d1"] * y[1] + p["c1"] * y[1] * y[2])/sqrt(p["K"])
 	# \dot y = \beta_1(x,y)
-	yd2 <- p["b2"] * y[2] * (p["K"] - y[1] - y[2]) + p["d2"] * y[2] + p["c2"] * y[1] * y[2]
+	yd2 <- (p["b2"] * y[2] * (p["K"] - y[1] - y[2]) + p["d2"] * y[2] + p["c2"] * y[1] * y[2])/sqrt(p["K"])
 	c(yd1, yd2)
 }
 
@@ -106,27 +108,24 @@ J_crowley <- function(t,y,p){
 # lsoda needs a function of only t,y,p
 
 
-k<-1000
-crowley_parameters <- c(b1=.11/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=3.9/k, K=k)
-crowley_parameters <- c(b1=.2/k, b2=.6/k, d1=0.1, d2=.1, c1=0.1/k, c2=.2/k, K=k)
-times <- seq(0,500,length=500)
-yo <- c(200, 550, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
+pop<-10000
+crowley_parameters <- c(b1=.11/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=4/pop, K=pop)
+#crowley_parameters <- c(b1=.2/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=.2/pop, K=pop)
+times <- seq(0,4000,length=1000)
+yo <- c(400, 3500, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
 
 
-o2 <- lsoda(yo, times, twoD, crowley_parameters)
-
-
+#o <- lsoda(yo, times, twoD, crowley_parameters)
 eqns <- function(t,y,p){ linnoise(t,y,p, f_crowley, g_crowley, J_crowley) }
-testcase <- lsoda(yo, times, eqns, crowley_parameters)
+crowley_sim <- lsoda(yo, times, eqns, crowley_parameters)
 
-
-jac <- J_crowley(0, yo, crowley_parameters)
-
-
-
-
-
-
+png("crowley_noise.png")
+par(mfrow=c(2,1))
+plot(crowley_sim[,1], crowley_sim[,2], col="darkblue", lwd=3, type='l', ylim=c(0,5000), xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
+lines(crowley_sim[,1], crowley_sim[,3], col="darkgreen", lwd = 3)
+plot(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkblue", lwd=3, type='l', ylim=c(0,1000), xlab="time",ylab="stdev", cex.lab=1.3 )
+lines(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkgreen", lwd = 3)
+dev.off()
 
 
 
@@ -134,15 +133,13 @@ jac <- J_crowley(0, yo, crowley_parameters)
 #d <- 4
 #n <- 1.5*d+d^2/2
 
-#Yo <- numeric(n)
-#Yo[1] <- 100
 
 
 ## Beetle model parameters
-p = c(	b=5, ue= 0, ul = .001, up = 0, ua = .003, ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(25.5-20.2), cle = 0.01, cap = 0.004, cae = 0.01)
+beetle_pars <- c(	b=5, ue= 0, ul = .001, up = 0, ua = .03, ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(25.5-20.2), cle = 0.01, cap = 0.004, cae = 0.01)
 
 ## Beetle model macroscopic eqns
-f <- function(t,y,p){
+f_beetles <- function(t,y,p){
 	f1 <- p["b"]*y[4]  - (p["ue"] + p["ae"] + p["cle"]*y[2] + p["cae"]*y[4] )*y[1]  
 	f2 <- p["ae"]*y[1] - (p["ul"] + p["al"])*y[2]
 	f3 <- p["al"]*y[2] - (p["up"] + p["ap"])*y[3] 
@@ -151,7 +148,7 @@ f <- function(t,y,p){
 }
 
 ## Beetles second jump moment
-g <- function(t,y,p){
+g_beetles <- function(t,y,p){
 	g1 <- p["b"]*y[4]  + (p["ue"] + p["ae"] + p["cle"]*y[2] + p["cae"]*y[4] )*y[1]  
 	g2 <- p["ae"]*y[1] + (p["ul"] + p["al"])*y[2]
 	g3 <- p["al"]*y[2] + (p["up"] + p["ap"])*y[3] 
@@ -160,7 +157,7 @@ g <- function(t,y,p){
 }
 
 ## Jacobian of f
-J <- function(t,y,p){
+J_beetles <- function(t,y,p){
  j <- c( -(p["ue"] + p["ae"] + p["cle"]*y[2] + p["cae"]*y[4]),	-p["cle"]*y[1],	0,			p["b"] - p["cae"]*y[1],
 	  p["ae"],			-p["ul"]-p["al"],	0,			0,
 	  0,				p["al"],	-p["up"]-p["ap"],	0,
@@ -168,6 +165,27 @@ J <- function(t,y,p){
  t(matrix(j,4,4))
 }
 
+times <- seq(0,1000,length=100)
+d <- 4
+n <- 1.5*d+d^2/2
+yo_beetles <- numeric(n)
+yo_beetles[1] = 100
 
-	
+beetle_eqns <- function(t,y,p){ linnoise(t,y,p, f_beetles, g_beetles, J_beetles) }
+beetle_data <- lsoda(yo_beetles, times, beetle_eqns, beetle_pars)
 
+
+png("beetles_noise.png")
+par(mfrow=c(2,1))
+m <- max(beetle_data[,2:5])
+plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", lwd=3, ylim=c(0,m), xlab="time", ylab="mean", cex.lab=1.3, main="Beetle ELPA model" )
+lines(beetle_data[,1], beetle_data[,3], col="yellowgreen", lwd=3)	
+lines(beetle_data[,1], beetle_data[,4], col="lightgreen", lwd = 3)	
+lines(beetle_data[,1], beetle_data[,5], col="darkgreen", lwd = 3)	
+
+v <- max(sqrt(beetle_data[,6:9]))
+plot(beetle_data[,1], sqrt(beetle_data[,6]), type = 'l', col="yellow", lwd=3, ylim=c(0,v), xlab="time", ylab="stdev", cex=1.3 )
+lines(beetle_data[,1], sqrt(beetle_data[,7]), col="yellowgreen", lwd=3)	
+lines(beetle_data[,1], sqrt(beetle_data[,8]), col="lightgreen", lwd = 3)	
+lines(beetle_data[,1], sqrt(beetle_data[,9]), col="darkgreen", lwd = 3)	
+dev.off()
