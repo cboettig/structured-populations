@@ -19,61 +19,13 @@
 
 
 /*Standard Libraries */
-#include <gsl/gsl_randist.h>
-#include <gsl/gsl_rng.h>
 #include <gsl/gsl_statistics.h>
 #include "gillespie.h"
-
-/* constants provided from main/R */
-#define SAMPLE_TIME 50
-#define ENSEMBLES 100
-#define SAMPLE_FREQ 1.
-#define MAX_TIME 500
-#define START_POLLUTING 600
-
-/* embedded constants (in intial_conditions() fn)*/
-#define No 572 
-#define Ao 160
-#define N_EVENT_TYPES 2
-
-/** A record of the system state looking back 'sampletime' timesteps*/
-typedef struct {
-	double * hist;
-//	int hist_index;
-	double * means;
-	double * vars;
-	double * skews;
-	double * ar1;
-	double * arN;
-	double * a;
-//	int index;
-
-	size_t sampletime;
-	double samplefreq;
-	size_t windowsize;
-	size_t maxtime;
-} record;
-
-/** Event functions must use this custom structure to represent 
- *  both the state of the system and any model parameters */
-typedef struct {
-	int n;
-	int K;
-	double e;
-	double a;
-	double h;
-	int time_index;
-	int hist_index;
-	double checkpts[N_EVENT_TYPES];
-	double start_polluting;
-	double pollute_rate;
-	double pollute_increment;
-} pars;
-
+#include "pars.h"
+#include "record.h"
 
 void gslode(void * mypars, double max_time, FILE *theory);
 void euler(void *pars, double max_time, FILE *theory);
-
 
 void warning_signals(
 	double * time, 

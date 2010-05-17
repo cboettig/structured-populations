@@ -5,7 +5,7 @@ CC = gcc
 C_OMP = -fopenmp 
 CFLAGS = -Wall -lgsl -lgslcblas -lm -O3 -fpic
 EXE = warning_signals.exe
-FILES = warning_signals.c odeintegrators.c gillespie.c correlation.c  main.c 
+FILES = warning_signals.c odeintegrators.c gillespie.c correlation.c  record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c 
 
 build: $(FILES)

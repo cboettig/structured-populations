@@ -194,11 +194,11 @@ int main(void)
 	double inits[9];
 	inits[0] = 500; 
 	inits[1] = 4500;
-	inits[2] = 0; //0.11;
+	inits[2] = 0.11;
 	inits[3] = 0.6;
-	inits[4] = 0; //0.1;
+	inits[4] = 0.1;
 	inits[5] = 0.1;
-	inits[6] = 0; // 0.1;
+	inits[6] =  0.1;
 	inits[7] = 4.0;
 	inits[8] = 10000;
 

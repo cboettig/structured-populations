@@ -15,6 +15,7 @@
 #define DIM 2
 #define NPTS 50.0 // number of points to print out, best as double notation
 
+#define No 572
 
 double round(double);
 
@@ -77,7 +78,7 @@ void gslode(void * mypars, double max_time, FILE *theory)
 	double t = 0.0, t1 = max_time;
 	/* Initial step size, will be modified as needed by adaptive alogorithm */
 	double h = 1e-6;
-	/* initial conditions */
+	/* initial conditions, No */
 	double y[DIM] = { No, 0.0 };
 
 

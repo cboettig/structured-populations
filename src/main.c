@@ -1,4 +1,9 @@
 #include "warning_signals.h"
+#define SAMPLE_TIME 50
+#define ENSEMBLES 100
+#define SAMPLE_FREQ 1.
+#define MAX_TIME 500
+#define START_POLLUTING 600
 
 void correlation(void);
 

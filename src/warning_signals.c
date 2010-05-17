@@ -59,16 +59,6 @@ double birth_outcome(void * mypars)
 	return 0; 
 }
 
-void initial_conditions(void * mypars)
-{
-	pars * my_pars = (pars *) mypars;
-	my_pars->n = No;
-	my_pars->a = Ao;
-	my_pars->time_index = 0;
-	my_pars->hist_index = 0;
-	my_pars->checkpts[0] = 0;
-	my_pars->checkpts[1] = my_pars->start_polluting;
-}
 
 /** Some things, like sampling the state of the system, we want 
  *  to occur at fixed intervals.  */
@@ -83,7 +73,6 @@ void reorder(double * data, const int i, const size_t windowsize){
 	for(j=0;j<windowsize;j++)
 		data[j] = tmp[j];
 }
-
 
 /** Execute all tasks that occur on fixed interval schedule 
  * Currently this function isn't very api like, as it is 
@@ -128,51 +117,7 @@ void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
 
 }
 
-record * record_alloc(size_t sampletime, double samplefreq, size_t maxtime){
-	size_t windowsize = sampletime/samplefreq;
-	size_t length = maxtime/samplefreq;
-	record * my_record = (record *) malloc(sizeof(record) );
-	my_record->hist  = (double *) calloc( windowsize, sizeof(double) );
-	my_record->means = (double *) calloc( length, sizeof(double) );
-	my_record->vars  = (double *) calloc( length, sizeof(double) );
-	my_record->skews = (double *) calloc( length, sizeof(double) );
-	my_record->ar1   = (double *) calloc( length, sizeof(double) );
-	my_record->arN   = (double *) calloc( length, sizeof(double) );
-//	my_record->index = 0;
-	my_record->windowsize = windowsize;
-	my_record->sampletime = sampletime;
-	my_record->samplefreq = samplefreq;
-	my_record->maxtime = maxtime;
-//	my_record->hist_index = 0;
-	my_record->a   = (double *) calloc( length, sizeof(double) );
-	return my_record;
-}
-
-void record_free(record * my_record){
-	free(my_record->hist);
-	free(my_record->means);
-	free(my_record->vars);
-	free(my_record->skews);
-	free(my_record->ar1);
-	free(my_record->arN);
-	free(my_record->a);
-	free(my_record);
-}
-void * pars_alloc(int N, int K, double e, double h, double start_polluting, double pollute_rate, double pollute_increment)
-{
-
-	pars * my_pars = (pars *) malloc(sizeof(pars));
-	my_pars->n = N;
-	my_pars->K = K;
-	my_pars->e = e;
-	my_pars->h = h;
-	my_pars->start_polluting = start_polluting;
-	my_pars->pollute_rate = pollute_rate;
-	my_pars->pollute_increment = pollute_increment;
-	return my_pars;
-}
-
-void * pars_cpy(void * in)
+void * reset(void * in)
 {
 	/** Allocate a new copy of pars */
 	pars * mypars = (pars *) in;
@@ -180,9 +125,10 @@ void * pars_cpy(void * in)
 	my_pars->n = mypars->n;
 	my_pars->K = mypars->K;
 	my_pars->e = mypars->e;
+	my_pars->a = mypars->a;
 	my_pars->h = mypars->h;
-	my_pars->hist_index = mypars->hist_index;
 	my_pars->time_index = mypars->time_index;
+	my_pars->hist_index = mypars->hist_index;
 	int i;
 	for(i=0; i< N_EVENT_TYPES; i++){
 		my_pars->checkpts[i] =	mypars->checkpts[i];
@@ -190,7 +136,6 @@ void * pars_cpy(void * in)
 	my_pars->start_polluting = mypars->start_polluting;
 	my_pars->pollute_rate = mypars->pollute_rate;
 	my_pars->pollute_increment = mypars->pollute_increment;
-
 	return my_pars;
 }
 
@@ -223,11 +168,17 @@ void warning_signals(
 
 	record * my_record = record_alloc(*sample_time, *sample_freq, *max_time);
 	/** Allocate and intialize the parameters structure for the functions */
-	pars * my_pars = pars_alloc(No, 1000, 0.5, 200, *start_polluting, *pollute_rate, *pollute_increment);
+	int No = 572;
+	int K = 1000;
+	double e = 0.5;
+	int Ao = 160;
+	double h = 200;
+
+	pars * my_pars = pars_alloc(No, K, e, Ao, h, *start_polluting, *pollute_rate, *pollute_increment);
 	size_t ensembles = *n_ensembles;
 	gillespie(rate_fn, outcome, N_EVENT_TYPES, my_pars, my_record, *max_time, ensembles);
-//	euler(my_pars, MAX_TIME, stderr);
-//	gslode(my_pars, MAX_TIME, theory);
+//	euler(my_pars, *max_time, stderr);
+//	gslode(my_pars, *max_time, theory);
 	
 	double t = my_record->sampletime;
 	int i=0;
