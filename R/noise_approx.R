@@ -40,7 +40,7 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 	yd <- numeric(n)
 	
 	transition_matrix <- Transition(t,y,p)
-	net_transitions <- sapply(1:D, function(i){ sum(transition_matrix[i,]-transition_matrix[,i]) } )
+	net_transitions <- sapply(1:D, function(i){ sum(transition_matrix[,i]-transition_matrix[i,]) } )
 	
 	# macroscopics
 	yd[1:d] <- birth(t,y,p) - death(t,y,p)  + net_transitions
@@ -56,8 +56,12 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 		}
 	}
 	
+	#build T matrix
+	T <- transition_matrix + t(transition_matrix)
+	diag(T) = -rowSums(T)
+
 	E <- Jacobian(t,y,p) %*% M
-	dM <- E + t(E) + diag( birth(t,y,p)+death(t,y,p) ) - transition_matrix
+	dM <- E + t(E) + diag( birth(t,y,p)+death(t,y,p) ) - T
 
 	# unfold the matrix, consider cholskey decomposition!
 	yd[(D+1):(2*D) ] <- diag(dM) 
