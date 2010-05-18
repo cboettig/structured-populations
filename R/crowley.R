@@ -10,7 +10,7 @@ d_crowley <- function(t,y,p){
 	# \dot x = \alpha_1(x,y)
 	yd1 <- p["d1"] * y[1] 
 	# \dot y = \beta_1(x,y)
-	yd2 <- - p["d2"] * y[2] - p["c2"] * y[1] * y[2]
+	yd2 <- p["d2"] * y[2] + p["c2"] * y[1] * y[2]
 	c(yd1, yd2)
 }
 
@@ -46,10 +46,10 @@ crowley_sim <- lsoda(yo, times, eqns, crowley_parameters)
 
 #png("crowley_noise.png")
 par(mfrow=c(2,1))
-plot(crowley_sim[,1], crowley_sim[,2], col="darkblue", lwd=3, type='l', ylim=c(0,8000), xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
-lines(crowley_sim[,1], crowley_sim[,3], col="darkgreen", lwd = 3)
-plot(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkblue", lwd=3, type='l', ylim=c(0,8000), xlab="time",ylab="stdev", cex.lab=1.3 )
-lines(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkgreen", lwd = 3)
+plot(crowley_sim[,1], crowley_sim[,3], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
+lines(crowley_sim[,1], crowley_sim[,2], col="darkgreen", lwd = 3)
+plot(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkblue", lwd=3, type='l', xlab="time",ylab="stdev", cex.lab=1.3 )
+lines(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkgreen", lwd = 3)
 #dev.off()
 
 
