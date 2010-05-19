@@ -40,7 +40,7 @@ T_beetles <- function(t,y,p){
 
 
 ## Beetle model parameters
-beetle_pars <- c(	b=5, ue= 0, ul = .001, up = 0.00, ua = .003, ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(5.5-5.2), cle = 0.01, cap = 0.004, cae = 0.01)
+beetle_pars <- c(	b=5, ue= 0, ul = .0001, up = 0.00, ua = .003, ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(5.5-5.2), cle = 0.01, cap = 0.004, cae = 0.01)
 
 
 
@@ -55,7 +55,7 @@ beetle_data <- lsoda(yo_beetles, times, beetle_eqns, beetle_pars)
 
 
 
-png("beetles_noise.png")
+png("beetles_noise2.png")
 par(mfrow=c(2,1))
 m <- max(beetle_data[,2:5])
 plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", lwd=3, ylim=c(0,m), xlab="time", ylab="mean", cex.lab=1.3, main="Beetle ELPA model" )
