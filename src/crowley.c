@@ -143,7 +143,7 @@ void crowley_fixed_interval(const double t, const void * mypars, void * myrecord
 		double * s = (double *) mypars;
 		my_record->s1[my_record->i] = s[0]; 
 		my_record->s2[my_record->i] = s[1]; 
-		printf("%g %g %g\n", t, s[0], s[1]);
+//		printf("%g %g %g\n", t, s[0], s[1]);
 		++my_record->i;
 	}
 }

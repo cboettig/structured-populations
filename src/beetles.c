@@ -178,7 +178,7 @@ void beetles_fixed_interval(const double t, const void * mypars, void * myrecord
 		my_record->s2[my_record->i] = s[1]; 
 		my_record->s3[my_record->i] = s[2]; 
 		my_record->s4[my_record->i] = s[3]; 
-		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
+//		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
 		++my_record->i;
 	}
 }

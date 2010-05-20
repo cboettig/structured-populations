@@ -37,7 +37,7 @@ crowley_example <- function(){
 	times <- seq(0,2000,length=1000)
 	Xo <- c(595, 4550)
 
-	crowley_sim <-linear_noise_approx(Xo, times, crowley_parameters, 
+	crowley_sim <- linear_noise_approx(Xo, times, crowley_parameters, 
 										b_crowley, d_crowley, J_crowley,
 										T_crowley, Omega=pop)
 

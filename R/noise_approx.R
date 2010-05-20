@@ -81,6 +81,21 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){
 	
 	D <- length(Xo) # dimension
+	n_covs <- D+(D^2-D)/2 # Number of vars/covs: upper triangle + diagonal
+	Mo <-  numeric(n_covs)	# initialize covariances at 0
+	yo = c(Xo, Mo)
+	eqns <- function(t,y,p){ linnoise(t,y,p, b, d, J, T) }
+
+	out <- lsoda(yo, times, eqns, parameters)
+	
+	out[ , (D+2):(dim(out)[2]) ] <- out[ , (D+2):(dim(out)[2]) ]/sqrt(Omega)
+	out
+}
+
+#depricated way
+old_linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){
+	
+	D <- length(Xo) # dimension
 	Mo <-  numeric(D+(D^2-D)/2)	# initialize correct size covariance matrix
 	yo = c(Xo/Omega, Mo)
 
@@ -91,8 +106,12 @@ linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){
 	NT <- function(t,y,p){T(t,y,p)/Omega }
 	eqns <- function(t,y,p){ linnoise(t,y,p, Nb, Nd, NJ, NT) }
 
-	o <- lsoda(yo, times, eqns, parameters)
-	Omega*o[ , 2:dim(o)[2] ]
+	out <- lsoda(yo, times, eqns, parameters)
+	print(mean(out[,4]))
+	out[ , 2:(D+1) ] <- Omega*out[ , 2:(D+1) ]
+	out[ , (D+2):(dim(out)[2]) ] <- Omega^2*out[ , (D+2):(dim(out)[2]) ]
+	print(mean(out[,4]))
+	out
 }
 
 
