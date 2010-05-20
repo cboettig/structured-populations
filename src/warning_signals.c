@@ -78,7 +78,7 @@ void reorder(double * data, const int i, const size_t windowsize){
  * Currently this function isn't very api like, as it is 
  * closely tied to the logical structure of the record data structure 
  * which itself could be abstracted more */
-void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
+void warning_fixed_interval(const double t, const void * mypars, void * myrecord)
 {
 	pars * my_pars = (pars *) mypars;
 	record * my_record = (record *) myrecord;
@@ -117,7 +117,7 @@ void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
 
 }
 
-void * reset(void * in)
+void * warning_reset(void * in)
 {
 	/** Allocate a new copy of pars */
 	pars * mypars = (pars *) in;
@@ -165,6 +165,9 @@ void warning_signals(
 	rate_fn[1] = &death;
 	outcome[1] = &death_outcome;
 
+	RESET reset_fn = &warning_reset;
+	FIXED fixed_interval_fn = &warning_fixed_interval;
+
 
 	record * my_record = record_alloc(*sample_time, *sample_freq, *max_time);
 	/** Allocate and intialize the parameters structure for the functions */
@@ -174,9 +177,16 @@ void warning_signals(
 	int Ao = 160;
 	double h = 200;
 
-	pars * my_pars = pars_alloc(No, K, e, Ao, h, *start_polluting, *pollute_rate, *pollute_increment);
+	pars * my_pars = pars_alloc(No, K, e, Ao, h, 
+								*start_polluting, 
+								*pollute_rate, 
+								*pollute_increment);
 	size_t ensembles = *n_ensembles;
-	gillespie(rate_fn, outcome, N_EVENT_TYPES, my_pars, my_record, *max_time, ensembles);
+
+	gillespie(rate_fn, outcome, N_EVENT_TYPES, 
+				my_pars, my_record, *max_time, 
+				ensembles, reset_fn, fixed_interval_fn);
+
 //	euler(my_pars, *max_time, stderr);
 //	gslode(my_pars, *max_time, theory);
 	

@@ -1,6 +1,6 @@
-Package: stochasticPopulations
+Package: stochPop
 Title: Likelihood Analysis for Models of Stochastic Population Dynamics 
-Version: 0.0-1
+Version: 0.0-2
 Date: 2010-05-04
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>

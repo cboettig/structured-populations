@@ -10,9 +10,14 @@
 #define _RNDSEED 1 /* 1 for true */
 
 typedef double (* event_fn)(void * my_pars);
+typedef void * (* RESET)(void * inits);
+typedef void (* FIXED)(const double t, const void * my_pars, void * my_record);
+
 void * reset(void * inits);
 
 void fixed_interval_tasks(const double t, const void * my_pars, void * my_record);
+
+
 
 void gillespie( const event_fn * rate_fn, 
 				const event_fn * outcome, 
@@ -20,5 +25,7 @@ void gillespie( const event_fn * rate_fn,
 				void * my_pars,
 				void * my_record,
 				const size_t max_time, 
-				const size_t ensembles 
+				const size_t ensembles,
+				RESET reset_fn,
+				FIXED fixed_interval_fn
 				);

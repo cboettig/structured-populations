@@ -1,3 +1,15 @@
+/**
+ * @file correlation.c
+ * @author Carl Boettiger, <cboettig@gmail.com>
+ * @section DESCRIPTION
+ *  Takes a signal and computes the autocorrelation function
+ *  log transforms the autocorrelation function, fits least squares
+ *  line to determine the eigenvalue (slope).  
+ */
+
+
+
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>

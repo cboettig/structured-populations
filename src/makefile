@@ -12,7 +12,7 @@ CROWLEY = crowley.c gillespie.c
 build: 
 	$(CC) $(CFLAGS) -o warning.exe $(WARNING)
 	$(CC) $(CFLAGS) -o crowley.exe $(CROWLEY)
-	$(CC) $(CFLAGS) -o beetles.exe $(BEETLES)
+	$(CCP) $(CFLAGS) -o beetles.exe $(BEETLES)
 
 warning: $(WARNING)
 	$(CC) $(CFLAGS) -o warning.exe $(WARNING)
@@ -21,7 +21,7 @@ crowley: $(CROWLEY)
 	$(CC) $(CFLAGS) -o crowley.exe $(CROWLEY)
 
 beetles: $(BEETLES)
-	$(CC) $(CFLAGS) -o beetles.exe $(BEETLES)
+	$(CCP) $(CFLAGS) -o beetles.exe $(BEETLES)
 
 clean:
 	rm -f *.o *.so

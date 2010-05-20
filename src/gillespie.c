@@ -24,6 +24,11 @@
  *
  */
 
+
+#include "gillespie.h"
+
+
+
 /** @short Simulates a continuous time stochastic process exactly.
  *
  * The gillespie function computes the rates of all possible events
@@ -36,25 +41,28 @@
  * the one corresponding to the first number in the cumulative sum 
  * larger than a uniform random variable (on 0,1). 
  *
- * @param rate_fn An array of function pointers for calculating the 
- *  rates at which each possible event can occur.  Order is irrelevant but 
- *  must match the order used in outcomes array. Rate functions must 
- *  take a single argument, void pointer promoted to necessary type
- * @param outcome An array of fn ptrs for creating the outcome of each event. 
- *  Order must match rate_fn array and take the same argument.
- * @param n_event_types Number of different types of events
- * @param my_pars A pointer to a structure of type pars for specifying 
- *  the parameters and variables. This is the argument to rates and 
- *  outcomes fns.  my_pars should also contain an array of times at 
- *  which fixed events such as sampling events occur.   
- * @param max_time Length of time to simulate each replicate
- * @param ensembles Number of replicates to simulate
+ * @param rate_fn 
+ *			An array of function pointers for calculating the 
+ *			rates at which each possible event can occur.  Order is irrelevant but 
+ *			must match the order used in outcomes array. Rate functions must 
+ *			take a single argument, void pointer promoted to necessary type
+ * @param outcome 
+ *			An array of fn ptrs for creating the outcome of each event. 
+ *			Order must match rate_fn array and take the same argument.
+ * @param n_event_types 
+ *			Number of different types of events
+ * @param my_pars 
+ *			A pointer to a structure of type pars for specifying 
+ *			the parameters and variables. This is the argument to rates and 
+ *			outcomes fns.  my_pars should also contain an array of times at 
+ *			which fixed events such as sampling events occur.   
+ * @param max_time 
+ *			Length of time to simulate each replicate
+ * @param ensembles 
+ *			Number of replicates to simulate
  *
  * @return void.  Usually system status is printed out by the fixed_interval_tasks fn.
  * */
-
-#include "gillespie.h"
-
 void 
 gillespie(	const event_fn * rate_fn,
 			const event_fn * outcome,
@@ -62,7 +70,9 @@ gillespie(	const event_fn * rate_fn,
 			void * inits,	
 			void * my_record,
 			const size_t max_time,	
-			const size_t ensembles	
+			const size_t ensembles,
+			RESET reset_fn,
+			FIXED fixed_interval_fn
 		)
 {
 
@@ -81,8 +91,8 @@ gillespie(	const event_fn * rate_fn,
 	 * Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  Currently this uses the pars_alloc function 
 	 * to allocate space in user-defined way without assuming the function type */
-	#pragma omp parallel shared(rng, rate_fn, outcome, my_record, inits) \
-	private(lambda, t, tmp, i, check, rates_data, my_pars)
+	#pragma omp parallel shared(rng, rate_fn, outcome, my_record, inits, reset_fn, fixed_interval_fn) \
+	private(lambda, t, tmp, i, check, rates_data)
 	{
 		/* The vector to store cumulative sum of rates */
 		rates_data = (double *) calloc (n_event_types,sizeof(double) );
@@ -92,7 +102,7 @@ gillespie(	const event_fn * rate_fn,
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for
 		for(l = 0; l < ensembles; l++){
-			void * my_pars = reset(inits);
+			void * my_pars = reset_fn(inits);
 			t = 0;
 			check=0;
 			while(t < max_time){
@@ -105,7 +115,7 @@ gillespie(	const event_fn * rate_fn,
 				t += gsl_ran_exponential(rng, 1/lambda);
 			
 				/* Events such as sampling occur at regular intervals */
-				fixed_interval_tasks(t, my_pars, my_record);
+				fixed_interval_fn(t, my_pars, my_record);
 
 				/* Determine if event is a birth or death */
 				tmp = gsl_rng_uniform(rng);

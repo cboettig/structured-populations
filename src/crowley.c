@@ -26,7 +26,7 @@ typedef struct {
 	double * s2;
 } record;
 
-record* record_alloc(size_t N, double maxtime)
+record* c_record_alloc(size_t N, double maxtime)
 {
 	record* myrecord = (record*) malloc(sizeof(record));
 	myrecord->t_step = maxtime/N;
@@ -37,7 +37,7 @@ record* record_alloc(size_t N, double maxtime)
 	return myrecord;
 }
 
-void record_free(record * myrecord)
+void c_record_free(record * myrecord)
 {
 	free(myrecord->s1);
 	free(myrecord->s2);
@@ -122,7 +122,7 @@ double d2_out(void * ss)
 
 /** Must create a copy of parameter statespace which can be
  * modified in the loop.  Will also take */
-void * reset(void * inits)
+void * crowley_reset(void * inits)
 {
 	double * ss = (double *) inits;
 	double * s = (double *) calloc(9, sizeof(double));
@@ -135,7 +135,7 @@ void * reset(void * inits)
  * Currently this function isn't very api like, as it is 
  * closely tied to the logical structure of the record data structure 
  * which itself could be abstracted more */
-void fixed_interval_tasks(const double t, const void * mypars, void * myrecord)
+void crowley_fixed_interval(const double t, const void * mypars, void * myrecord)
 {
 	record * my_record = (record *) myrecord;
 	if (t > my_record->i * my_record->t_step) 
@@ -164,14 +164,15 @@ void crowley(double* s1, double* s2, double* inits, int* n_samples)
 	rate_fn[3] = &d2;
 	outcome[3] = &d2_out;
 
-	
+	RESET reset_fn = &crowley_reset;
+	FIXED fixed_interval_fn = &crowley_fixed_interval;
+
 	const size_t n_event_types = 4;
 	const size_t ensembles = 1;
 	const size_t max_time = 5000;
 	
-	record * my_record = record_alloc(*n_samples, max_time);
-
-	gillespie(rate_fn, outcome, n_event_types, inits, my_record, max_time, ensembles);
+	record * my_record = c_record_alloc(*n_samples, max_time);
+	gillespie(rate_fn, outcome, n_event_types, inits, my_record, max_time, ensembles, reset_fn, fixed_interval_fn);
 
 	int i;
 	for(i = 0; i< *n_samples; i++)
@@ -179,7 +180,7 @@ void crowley(double* s1, double* s2, double* inits, int* n_samples)
 		s1[i] = my_record->s1[i]; 
 		s2[i] = my_record->s2[i];
 	}
-	free(my_record);
+	c_record_free(my_record);
 //	euler(my_pars, MAX_TIME, stderr);
 //	gslode(my_pars, MAX_TIME, theory);
 }
