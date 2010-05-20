@@ -23,6 +23,10 @@
 #include "gillespie.h"
 #include "pars.h"
 #include "record.h"
+double death(void * mypars);
+double birth(void * mypars);
+double death_outcome(void * mypars);
+double birth_outcome(void * mypars);
 
 void gslode(void * mypars, double max_time, FILE *theory);
 void euler(void *pars, double max_time, FILE *theory);

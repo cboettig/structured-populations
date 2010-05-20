@@ -22,47 +22,13 @@
  */
 #include "warning_signals.h"
 
-
-/** Specify all event functions.  Functions should return the rate as type double
- * and take the sole argument as a pointer to the pars structure.  */
-double death(void * mypars)
-{ 
-	pars * my_pars = (pars *) mypars;
-	return my_pars->n * my_pars->e + my_pars->a; 
-}
-double birth(void * mypars)
-{ 
-	pars * my_pars = (pars *) mypars;
-	return my_pars->e * my_pars->K * gsl_pow_2( my_pars->n ) / 
-			(gsl_pow_2(my_pars->n) + gsl_pow_2(my_pars->h) ); 
-}
-
-
-
-/** outcomes functions can return a flag of 1 to break the time simulation (i.e. if extinction occurs)
- *  They take an argument of type pars and update the state directly via this structure.  Otherwise
- *  they should return 0 for success.  */
-double death_outcome(void * mypars)
-{ 
-	pars * my_pars = (pars *) mypars;
-	--(my_pars->n);
-	if(my_pars->n <= 0){
-		fprintf(stderr, "extinction\n"); 
-		return 1 ;
-	}
-	return 0 ; 
-}
-double birth_outcome(void * mypars)
-{
-	pars * my_pars = (pars *) mypars;
-	++(my_pars->n) ; 
-	return 0; 
-}
-
-
-/** Some things, like sampling the state of the system, we want 
- *  to occur at fixed intervals.  */
-
+/** Storage of statistics in window wraps around, so that once 
+ * the sample window has been filled, it starts overwriting 
+ * from the beginning.  This saves space but breaks the temporal
+ * ordering of the data, which throws off some statistics (such as
+ * autocorrelation or skew).  This function reorders the window so
+ * that events are listed in temporal order.  Eventually might be 
+ * best to store all data and avoid the extra computations!  */
 void reorder(double * data, const int i, const size_t windowsize){
 	int j,k;
 	double tmp[windowsize];
@@ -117,10 +83,13 @@ void warning_fixed_interval(const double t, const void * mypars, void * myrecord
 
 }
 
-void * warning_reset(void * in)
+/** A function to reset pars to the initial conditions 
+ * for ensemble runs.  Creates a copy so the original
+ * initial conditions aren't destroyed while each sim
+ * has its own copy to modify as system evolves.  */
+void * warning_reset(const void * in)
 {
-	/** Allocate a new copy of pars */
-	pars * mypars = (pars *) in;
+	const pars * mypars = (const pars *) in;
 	pars * my_pars = (pars *) malloc(sizeof(pars));
 	my_pars->n = mypars->n;
 	my_pars->K = mypars->K;
@@ -139,6 +108,7 @@ void * warning_reset(void * in)
 	return my_pars;
 }
 
+/** Stitching it all together */
 void warning_signals(
 	double * time, 
 	double * a, 

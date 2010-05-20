@@ -6,13 +6,17 @@ CC = gcc
 C_OMP = -fopenmp 
 CFLAGS = -Wall -lgsl -lgslcblas -lm -O3 -fpic
 BEETLES = tribolium.cpp kde.cpp 
-WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c  record.c pars.c main.c 
+WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c 
+STAGES = beetles.c gillespie.c
 
 build: 
 	$(CC) $(CFLAGS) -o warning.exe $(WARNING)
 	$(CC) $(CFLAGS) -o crowley.exe $(CROWLEY)
 	$(CCP) $(CFLAGS) -o beetles.exe $(BEETLES)
+
+stages:
+	$(CC) $(CFLAGS) -o stages.exe $(STAGES)
 
 warning: $(WARNING)
 	$(CC) $(CFLAGS) -o warning.exe $(WARNING)

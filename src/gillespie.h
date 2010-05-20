@@ -10,7 +10,7 @@
 #define _RNDSEED 1 /* 1 for true */
 
 typedef double (* event_fn)(void * my_pars);
-typedef void * (* RESET)(void * inits);
+typedef void * (* RESET)(const void * inits);
 typedef void (* FIXED)(const double t, const void * my_pars, void * my_record);
 
 void * reset(void * inits);

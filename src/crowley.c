@@ -53,26 +53,26 @@ void c_record_free(record * myrecord)
  * and take the sole argument as a pointer to the pars structure.  */
 double b1(void * ss)
 {
-	double * s = (double *) ss;
+	const double * s = (double *) ss;
 	      /* x *  bx *    K  -  x  -  y   +  cx  *   x  * y */
 	return s[0] * s[2] *  (s[8]-s[0]-s[1])/s[8] + s[6] * s[0] * s[1]/s[8]  ; 
 }
 double b2(void * ss)
 { 
-	double * s = (double *) ss;
+	const double * s = (double *) ss;
 	      /* y *  by *    K  -  x  -  y */
 	return s[1] * s[3] * (s[8]-s[0]-s[1])/s[8]  ; 
 }
 double d1(void * ss)
 { 
-	double * s = (double *) ss;
+	const double * s = (double *) ss;
 	      /* x *  bx */
 	return s[0] * s[4]  ; 
 }
 
 double d2(void * ss)
 { 
-	double * s = (double *) ss;
+	const double * s = (double *) ss;
 	      /* x *  bx   +   cy *  x   *  y  */
 	return s[1] * s[5] + s[7] * s[0] * s[1]/s[8] ; 
 }
@@ -122,9 +122,9 @@ double d2_out(void * ss)
 
 /** Must create a copy of parameter statespace which can be
  * modified in the loop.  Will also take */
-void * crowley_reset(void * inits)
+void * crowley_reset(const void * inits)
 {
-	double * ss = (double *) inits;
+	const double * ss = (const double *) inits;
 	double * s = (double *) calloc(9, sizeof(double));
 	int i;
 	for(i=0;i<9;i++) s[i] = ss[i];
