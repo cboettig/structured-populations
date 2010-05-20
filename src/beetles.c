@@ -48,7 +48,7 @@ double bE(void * ss)
 double dE(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[0]*s[5]+s[3]*s[14] +s[1]*s[12]; // E*ue+A*cae+L*cle
+	return s[0]*(s[5]+s[3]*s[14] +s[1]*s[12]); // E*(ue+A*cae+L*cle)
 }
 
 double dL(void * ss)
@@ -59,7 +59,7 @@ double dL(void * ss)
 double dP(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[2]*s[7] + s[3]*s[13]; // P*up+A*cap
+	return s[2]*(s[7] + s[3]*s[13]); // P(*up+A*cap)
 }
 
 double dA(void * ss)
@@ -97,6 +97,7 @@ double bE_out(void * ss)
 { 
 	double * s = (double *) ss;
 	s[0] += 1;
+//	printf("birth, %g %g\n", s[3], bE(ss)); //error checking
 	return 0;
 }
 double dE_out(void * ss)
@@ -141,7 +142,7 @@ double mP_out(void * ss)
 { 
 	double * s = (double *) ss;
 	s[2] -= 1;
-	s[3] -= 1;
+	s[3] += 1;
 	return 0 ; 
 }
 
@@ -150,7 +151,10 @@ double mP_out(void * ss)
 
 
 /** Must create a copy of parameter statespace which can be
- * modified in the loop.  Will also take */
+ * modified in the loop.  Called from gillespie with no 
+ * way to free this!  will create memory leak. must either make 
+ * a free function or make this not allocate and instead pass two 
+ * copies, one of which must become private */
 void * beetles_reset(const void * inits)
 {
 	const double * ss = (const double *) inits;
@@ -208,7 +212,7 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 	FIXED fixed_interval_fn = &beetles_fixed_interval;
 
 	const size_t ensembles = 1;
-	const size_t max_time = 5;
+	const size_t max_time = 500;
 	
 	record * my_record = b_record_alloc(*n_samples, max_time);
 
@@ -230,11 +234,11 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 
 int main(void)
 {
-	int n_samples = 100;
-	double s1[100];
-	double s2[100];
-	double s3[100];
-	double s4[100];
+	const int n_samples = 500;
+	double s1[n_samples];
+	double s2[n_samples];
+	double s3[n_samples];
+	double s4[n_samples];
 /*		0  1  2  3  4   5   6   7   8   9  10   11  12   13  14  
 Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} */
 	double inits[15] = {100, 0, 0, 0, 
@@ -243,7 +247,9 @@ Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} */
 						0.263, .0005, .189, 
 						0.01, 0.004, 0.01};
 
-	beetles(s1, s2, s3, s4, inits, &n_samples);
+	int n = n_samples;
+
+	beetles(s1, s2, s3, s4, inits, &n);
 
 	printf("m1 = %g sd1 = %g\nm2 = %g sd2 = %g\n",
 			gsl_stats_mean(s1, 1, n_samples), 
