@@ -30,26 +30,20 @@ T_crowley <- function(t,y,p){
 }
 
 
-# lsoda needs a function of only t,y,p
-
-
-pop<-10000
-crowley_parameters <- c(b1=.11/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=4/pop, K=pop)
-#crowley_parameters <- c(b1=.2/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=.2/pop, K=pop)
-times <- seq(0,4000,length=1000)
-yo <- c(6, 5, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
-
-
-#o <- lsoda(yo, times, twoD, crowley_parameters)
-eqns <- function(t,y,p){ linnoise(t,y,p, b_crowley, d_crowley, J_crowley, T_crowley) }
-crowley_sim <- lsoda(yo, times, eqns, crowley_parameters)
-
-#png("crowley_noise.png")
-par(mfrow=c(2,1))
-plot(crowley_sim[,1], crowley_sim[,3], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
-lines(crowley_sim[,1], crowley_sim[,2], col="darkgreen", lwd = 3)
-plot(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkblue", lwd=3, type='l', xlab="time",ylab="stdev", cex.lab=1.3 )
-lines(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkgreen", lwd = 3)
-#dev.off()
-
+crowley_example <- function(){
+	pop<-10000
+	crowley_parameters <- c(b1=.11/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=4/pop, K=pop)
+	#crowley_parameters <- c(b1=.2/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=.2/pop, K=pop)
+	times <- seq(0,4000,length=1000)
+	yo <- c(6, 5, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
+	eqns <- function(t,y,p){ linnoise(t,y,p, b_crowley, d_crowley, J_crowley, T_crowley) }
+	crowley_sim <- lsoda(yo, times, eqns, crowley_parameters)
+	#png("crowley_noise.png")
+	par(mfrow=c(2,1))
+	plot(crowley_sim[,1], crowley_sim[,3], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
+	lines(crowley_sim[,1], crowley_sim[,2], col="darkgreen", lwd = 3)
+	plot(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkblue", lwd=3, type='l', xlab="time",ylab="stdev", cex.lab=1.3 )
+	lines(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkgreen", lwd = 3)
+	#dev.off()
+}
 

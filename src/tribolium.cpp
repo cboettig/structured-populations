@@ -23,7 +23,6 @@
  */
 
 
-
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -52,6 +51,7 @@
 #include <iostream>
 #include <list>
 using namespace std;
+extern "C" {
 
 /** Simulate function, not directly callable from R */
 void simulate(int *state, double *pars, double *dt, double *T, gsl_rng *rng, FILE * file)
@@ -226,20 +226,24 @@ void ensemble(int *state, int *initial, double *pars, double *dt, int *seed, int
 	gsl_rng_free(rng);
 }
 
+}
 
-int main(void){
-	const double b = 5;													/* Birth rate (per day) */
+
+
+extern "C" {
+int tibol(void){
+	const double b = 5;		// Birth rate (per day) 
 	const double u_egg = 0.00001, 
 				 u_larva = .001,
 				 u_pupa = 0.0,
-				 u_adult = 0.003; /* Mortality rate (per day) */
+				 u_adult = 0.003; // Mortality rate (per day) 
 	const double a_egg = 3.8,
 				 a_larva = 20.2,
-				 a_pupa = 25.2;	/* age at which each stage matures, in days */
+				 a_pupa = 25.2;	// age at which each stage matures, in days 
 	const double cannibal_larva_eggs = 0.01,
 				 cannibal_adults_pupa = 0.004,
-				 cannibal_adults_eggs =  0.01; /* cannibalism of x on y, per day */
-	const double a_larva_asym = 11.8;	  /* age after which larval size asymptotes */
+				 cannibal_adults_eggs =  0.01; // cannibalism of x on y, per day
+	const double a_larva_asym = 11.8;	  // age after which larval size asymptotes 
 	double pars[12] = {	b, u_egg, u_larva, u_pupa, u_adult, a_egg,
 						a_larva, a_pupa, cannibal_larva_eggs,
 						cannibal_adults_pupa, cannibal_adults_eggs,
@@ -261,5 +265,6 @@ int main(void){
 	return 0;
 }
 
+} // ends the  extern "C"
 
 

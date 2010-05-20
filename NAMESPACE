@@ -1,6 +1,7 @@
-useDynLib(beetles)
-export(ensemble, beetle_sim, likelihood,
-useDynLib(warningSignals)
-export(	warning_signals, 
-		regime_shifts,
-		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU)
+export(ensemble, beetle_sim, likelihood)
+export(	warning_signals,
+		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU,
+		linnoise,
+		beetles_ibm, crowley_ibm)
+useDynLib(stochPop)
+

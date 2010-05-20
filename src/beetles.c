@@ -59,7 +59,7 @@ double dL(void * ss)
 double dP(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[2]*(s[7] + s[3]*s[13]); // P(*up+A*cap)
+	return s[2]*(s[7] + s[3]*s[13]); // P*(up+A*cap)
 }
 
 double dA(void * ss)
@@ -78,7 +78,7 @@ double mE(void * ss)
 double mL(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[1]*s[10]; //L*a
+	return s[1]*s[10]; //L*al
 }
 
 double mP(void * ss)
@@ -176,14 +176,14 @@ void beetles_fixed_interval(const double t, const void * mypars, void * myrecord
 		double * s = (double *) mypars;
 		my_record->s1[my_record->i] = s[0]; 
 		my_record->s2[my_record->i] = s[1]; 
-		my_record->s3[my_record->i] = s[3]; 
-		my_record->s4[my_record->i] = s[4]; 
+		my_record->s3[my_record->i] = s[2]; 
+		my_record->s4[my_record->i] = s[3]; 
 		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
 		++my_record->i;
 	}
 }
 
-void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int* n_samples)
+void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int* n_samples, double* maxtime)
 {
 	/** Create a list of all event functions and their associated outcomes 
 	 *  Order doesn't matter, but make sure outcomes are paired with the 
@@ -212,12 +212,11 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 	FIXED fixed_interval_fn = &beetles_fixed_interval;
 
 	const size_t ensembles = 1;
-	const size_t max_time = 500;
 	
-	record * my_record = b_record_alloc(*n_samples, max_time);
+	record * my_record = b_record_alloc(*n_samples, *maxtime);
 
 	gillespie(	rate_fn, outcome, n_event_types, 
-				inits, my_record, max_time, 
+				inits, my_record, *maxtime, 
 				ensembles, reset_fn, fixed_interval_fn);
 
 
@@ -232,30 +231,36 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 	b_record_free(my_record);
 }
 
-int main(void)
+
+int beetle(void)
 {
 	const int n_samples = 500;
 	double s1[n_samples];
 	double s2[n_samples];
 	double s3[n_samples];
 	double s4[n_samples];
-/*		0  1  2  3  4   5   6   7   8   9  10   11  12   13  14  
-Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} */
+//	       0  1  2  3  4   5   6   7   8   9  10   11  12   13  14  
+// Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
 	double inits[15] = {100, 0, 0, 0, 
-						5, 
-						0, .001, 0, .003,
-						0.263, .0005, .189, 
+						5., 
+						0, 0.001, 0, 0.003,
+						1/3.8, 1/(20.2-3.8), 1/(25.5-20.2), 
 						0.01, 0.004, 0.01};
 
 	int n = n_samples;
+	double maxtime = 5000; 
 
-	beetles(s1, s2, s3, s4, inits, &n);
+	beetles(s1, s2, s3, s4, inits, &n, &maxtime);
 
-	printf("m1 = %g sd1 = %g\nm2 = %g sd2 = %g\n",
+	printf("m1 = %g sd1 = %g nm2 = %g sd2 = %g m3 = %g sd3 = %g m4 = %g sd4 = %g\n",
 			gsl_stats_mean(s1, 1, n_samples), 
 			sqrt(gsl_stats_variance(s1, 1, n_samples)),
 			gsl_stats_mean(s2, 1, n_samples), 
-			sqrt(gsl_stats_variance(s2, 1, n_samples))
+			sqrt(gsl_stats_variance(s2, 1, n_samples)),
+			gsl_stats_mean(s3, 1, n_samples), 
+			sqrt(gsl_stats_variance(s3, 1, n_samples)),
+			gsl_stats_mean(s4, 1, n_samples), 
+			sqrt(gsl_stats_variance(s4, 1, n_samples))
 	); 
 	return 0;
 }

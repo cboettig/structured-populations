@@ -7,19 +7,36 @@
 #define S 500 
 void correlation(void);
 
+int tribol(void);
+int crow(void);
+int beetle(void);
+
 int main(void){
+
+/* Test Warning Signals */
+
 	double  time[S], a[S], means[S], vars[S], skews[S], ar1[S], arN[S];
 	double sample_freq = SAMPLE_FREQ, start_polluting = START_POLLUTING, pollute_rate = 1, pollute_increment = 1;
 	int sample_time = SAMPLE_TIME, max_time = MAX_TIME, n_ensembles = ENSEMBLES;
-
-	warning_signals(time, a, means, vars, skews, ar1, arN, &sample_time, &sample_freq, &max_time, &n_ensembles, &start_polluting, &pollute_rate, &pollute_increment);
-
+	warning_signals(time, a, means, vars, skews, ar1, arN, &sample_time, 
+					&sample_freq, &max_time, &n_ensembles, &start_polluting,
+					&pollute_rate, &pollute_increment);
 	int i;
-	for(i=0; i<S; i++){
+	for(i=0; i<S; i++)
 		printf("%g %g %g\n", time[i], a[i], means[i] );
-	}
+	
 
+	/* Test correlation (for warning_signals) */
 	correlation();
+
+	/* Test beetles "main"*/
+	beetle();
+
+	/* Test crowley "main" */
+	crow();
+
+	/* Test tribolium "main" */
+//	tribol();
 	return 0;
 }
 

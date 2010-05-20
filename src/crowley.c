@@ -148,7 +148,7 @@ void crowley_fixed_interval(const double t, const void * mypars, void * myrecord
 	}
 }
 
-void crowley(double* s1, double* s2, double* inits, int* n_samples)
+void crowley(double* s1, double* s2, double* inits, int* n_samples, double * maxtime)
 {
 	/** Create a list of all event functions and their associated outcomes 
 	 *  Order doesn't matter, but make sure outcomes are paired with the 
@@ -169,10 +169,10 @@ void crowley(double* s1, double* s2, double* inits, int* n_samples)
 
 	const size_t n_event_types = 4;
 	const size_t ensembles = 1;
-	const size_t max_time = 5000;
+//	const size_t maxtime = 5000;
 	
-	record * my_record = c_record_alloc(*n_samples, max_time);
-	gillespie(rate_fn, outcome, n_event_types, inits, my_record, max_time, ensembles, reset_fn, fixed_interval_fn);
+	record * my_record = c_record_alloc(*n_samples, *maxtime);
+	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, ensembles, reset_fn, fixed_interval_fn);
 
 	int i;
 	for(i = 0; i< *n_samples; i++)
@@ -185,25 +185,19 @@ void crowley(double* s1, double* s2, double* inits, int* n_samples)
 //	gslode(my_pars, MAX_TIME, theory);
 }
 
-int main(void)
+
+
+int crow(void)
 {
 	int n_samples = 100;
 	double s1[100];
 	double s2[100];
-	/*			0  1  2   3   4   5   6   7   8
-		Pars = {x, y, bx, by, dx, dy, cx, cy, K} */
-	double inits[9];
-	inits[0] = 500; 
-	inits[1] = 4500;
-	inits[2] = 0.11;
-	inits[3] = 0.6;
-	inits[4] = 0.1;
-	inits[5] = 0.1;
-	inits[6] =  0.1;
-	inits[7] = 4.0;
-	inits[8] = 10000;
+	//			0  1  2   3   4   5   6   7   8
+	//	Pars = {x, y, bx, by, dx, dy, cx, cy, K} 
+	double c_inits[9] = {500, 4500, 0.11, .6, .1, .1, .1, 4, 10000};
+	double maxtime = 5000; 
 
-	crowley(s1, s2, inits, &n_samples);
+	crowley(s1, s2, c_inits, &n_samples, &maxtime);
 	printf("m1 = %g sd1 = %g\nm2 = %g sd2 = %g\n",
 			gsl_stats_mean(s1, 1, n_samples), 
 			sqrt(gsl_stats_variance(s1, 1, n_samples)),
