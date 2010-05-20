@@ -31,19 +31,34 @@ T_crowley <- function(t,y,p){
 
 
 crowley_example <- function(){
-	pop<-10000
+	pop <- 10000
 	crowley_parameters <- c(b1=.11/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=4/pop, K=pop)
 	#crowley_parameters <- c(b1=.2/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=.2/pop, K=pop)
-	times <- seq(0,4000,length=1000)
-	yo <- c(6, 5, 0, 0, 0) # (xo, yo, sigma_xo sigma_yo, cov)
-	eqns <- function(t,y,p){ linnoise(t,y,p, b_crowley, d_crowley, J_crowley, T_crowley) }
-	crowley_sim <- lsoda(yo, times, eqns, crowley_parameters)
+	times <- seq(0,2000,length=1000)
+	Xo <- c(595, 4550)
+
+	crowley_sim <-linear_noise_approx(Xo, times, crowley_parameters, 
+										b_crowley, d_crowley, J_crowley,
+										T_crowley, Omega=pop)
+
+	ibm <- crowley_ibm(Xo = Xo, par=crowley_parameters, time=times)
+
 	#png("crowley_noise.png")
 	par(mfrow=c(2,1))
-	plot(crowley_sim[,1], crowley_sim[,3], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", cex.lab=1.3, main="Modified Crowley Model")
-	lines(crowley_sim[,1], crowley_sim[,2], col="darkgreen", lwd = 3)
-	plot(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkblue", lwd=3, type='l', xlab="time",ylab="stdev", cex.lab=1.3 )
-	lines(crowley_sim[,1], sqrt(crowley_sim[,4]), col="darkgreen", lwd = 3)
+	m <- max(crowley_sim[,2:3])*1.2
+	plot(crowley_sim[,1], crowley_sim[,2], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", ylim = c(0,m), cex.lab=1.3, main="Modified Crowley Model")
+	lines(crowley_sim[,1], crowley_sim[,3], col="darkgreen", lwd = 3)
+	legend("right", c("competitor", "colonist"), lty=1, col=c("darkblue", "darkgreen") )
+
+		
+	points(crowley_sim[,1], ibm$x1, col="darkblue")
+	points(crowley_sim[,1], ibm$x2, col="darkgreen")
+
+	print(c(sd(ibm$x1), sd(ibm$x2)))	
+
+	v <- max(sqrt(crowley_sim[,4:5]))
+	plot(crowley_sim[,1], sqrt(crowley_sim[,4]), ylim = c(0,v), col="darkblue", lwd=3, type='l', xlab="time",ylab="stdev", cex.lab=1.3 )
+	lines(crowley_sim[,1], sqrt(crowley_sim[,5]), col="darkgreen", lwd = 3)
 	#dev.off()
 }
 

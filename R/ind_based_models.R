@@ -3,12 +3,12 @@
 # @section DESCRIPTION wrapper to the C code containing the gillespie simulation for individual-based models.  
 
 # Pars = {x, y, bx, by, dx, dy, cx, cy, K} 
-crowley_pars <- c(500, 4500, 0.11, .6, .1, .1, .1, 4, 10000)
-
-crowley_ibm <- function(parameters=crowley_pars, sample_pts = 500, maxtime = 1000){
-	N <- sample_pts
-	o <- .C("crowley", double(N), double(N), as.double(parameters), as.integer(N), as.double(maxtime) )
-	list(x1 = o[[1]], x2 = o[[2]], parameters = parameters)
+crowley_ibm <- function(Xo = c(500,4500), parameters=c(0.11, .6, .1, .1, .1, 4, 10000), times = seq(0,1000,length=500)){
+	N <- length(times)
+	maxtime <- max(times)
+	pars <- c(Xo, parameters)
+	o <- .C("crowley", double(N), double(N), as.double(pars), as.integer(N), as.double(maxtime) )
+	list(x1 = o[[1]], x2 = o[[2]], parameters = parameters, Xo = Xo)
 }
 
 # Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
@@ -21,5 +21,5 @@ beetles_ibm <- function(Xo = c(100,0,0,0),
 	maxtime <- max(times)
 	pars <- c(Xo, parameters)
 	o <- .C("beetles", double(N), double(N), double(N), double(N),  as.double(pars), as.integer(N), as.double(maxtime) )
-	list(E = o[[1]], L = o[[2]], P = o[[3]], A = o[[4]], parameters = parameters)
+	list(E = o[[1]], L = o[[2]], P = o[[3]], A = o[[4]], parameters = parameters, Xo = Xo)
 }

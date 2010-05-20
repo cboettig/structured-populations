@@ -40,10 +40,13 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 	yd <- numeric(n)
 	
 	transition_matrix <- Transition(t,y,p)
-	net_transitions <- sapply(1:D, function(i){ sum(transition_matrix[,i]-transition_matrix[i,]) } )
+	net_transitions <- sapply(1:D, 
+		function(i){
+			sum(transition_matrix[,i]-transition_matrix[i,]) 
+		})
 	
 	# macroscopics
-	yd[1:d] <- birth(t,y,p) - death(t,y,p)  + net_transitions
+	yd[1:D] <- birth(t,y,p) - death(t,y,p)  + net_transitions
 
 	# build the variance-covariance matrix
 	M = matrix(0, D,D)
@@ -75,6 +78,21 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 	list(yd)
 }
 
+linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){
+	
+	D <- length(Xo) # dimension
+	Mo <-  numeric(D+(D^2-D)/2)	# initialize correct size covariance matrix
+	yo = c(Xo/Omega, Mo)
 
+	# extra function call slows this down, but keeps logic intuitive
+	Nb <- function(t,y,p){b(t,y,p)/Omega }
+	Nd <- function(t,y,p){d(t,y,p)/Omega }
+	NJ <- function(t,y,p){J(t,y,p)/Omega }
+	NT <- function(t,y,p){T(t,y,p)/Omega }
+	eqns <- function(t,y,p){ linnoise(t,y,p, Nb, Nd, NJ, NT) }
+
+	o <- lsoda(yo, times, eqns, parameters)
+	Omega*o[ , 2:dim(o)[2] ]
+}
 
 

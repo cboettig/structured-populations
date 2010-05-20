@@ -54,14 +54,14 @@ void c_record_free(record * myrecord)
 double b1(void * ss)
 {
 	const double * s = (double *) ss;
-	      /* x *  bx *    K  -  x  -  y   +  cx  *   x  * y */
-	return s[0] * s[2] *  (s[8]-s[0]-s[1])/s[8] + s[6] * s[0] * s[1]/s[8]  ; 
+	/*		    x*bx*(K  -  x  -  y)  +     cx*x*y        */
+	return s[0]*s[2]*(s[8]-s[0]-s[1]) + s[6]*s[0]*s[1]  ; 
 }
 double b2(void * ss)
 { 
 	const double * s = (double *) ss;
 	      /* y *  by *    K  -  x  -  y */
-	return s[1] * s[3] * (s[8]-s[0]-s[1])/s[8]  ; 
+	return s[1] * s[3] * (s[8]-s[0]-s[1])  ; 
 }
 double d1(void * ss)
 { 
@@ -74,7 +74,7 @@ double d2(void * ss)
 { 
 	const double * s = (double *) ss;
 	      /* x *  bx   +   cy *  x   *  y  */
-	return s[1] * s[5] + s[7] * s[0] * s[1]/s[8] ; 
+	return s[1] * s[5] + s[7] * s[0] * s[1] ; 
 }
 
 
@@ -194,7 +194,7 @@ int crow(void)
 	double s2[100];
 	//			0  1  2   3   4   5   6   7   8
 	//	Pars = {x, y, bx, by, dx, dy, cx, cy, K} 
-	double c_inits[9] = {500, 4500, 0.11, .6, .1, .1, .1, 4, 10000};
+	double c_inits[9] = {500, 4500, 0.11/10000, .6/10000, .1, .1, .1/10000, 4/10000, 10000};
 	double maxtime = 5000; 
 
 	crowley(s1, s2, c_inits, &n_samples, &maxtime);
