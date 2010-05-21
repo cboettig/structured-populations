@@ -4,34 +4,31 @@
 CCP = g++
 CC = gcc
 C_OMP = -fopenmp 
-CFLAGS = -Wall -lgsl -lgslcblas -lm -O3 -fpic
-BEETLES = tribolium.cpp kde.cpp 
+CFLAGS = -Wall -lgsl -lgslcblas -lm -O3 -fpic -g
+TRIBOL = tribolium.cpp kde.cpp 
 WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
-CROWLEY = crowley.c gillespie.c 
-STAGES = beetles.c gillespie.c
+CROWLEY = crowley.c gillespie.c main.c
+BEETLES = beetles.c gillespie.c main.c
 
-build: 
+build:
 
-#build: 
-#	$(CC) $(CFLAGS) -o warning.exe $(WARNING)
-#	$(CC) $(CFLAGS) -o crowley.exe $(CROWLEY)
-#	$(CCP) $(CFLAGS) -o beetles.exe $(BEETLES)
-#
-#stages:
-#	$(CC) $(CFLAGS) -o stages.exe $(STAGES)
-#
-#warning: $(WARNING)
-#	$(CC) $(CFLAGS) -o warning.exe $(WARNING)
-#
-#crowley: $(CROWLEY)
-#	$(CC) $(CFLAGS) -o crowley.exe $(CROWLEY)
-#
-#beetles: $(BEETLES)
-#	$(CCP) $(CFLAGS) -o beetles.exe $(BEETLES)
-#
-#clean:
-#	rm -f *.o *.so
-#
+warning: 
+	$(CC) $(CFLAGS) $(C_OMP) -o warning.exe $(WARNING)
+
+crowley:
+	$(CC) $(CFLAGS) $(C_OMP) -o crowley.exe $(CROWLEY)
+
+beetles:
+	$(CC) $(CFLAGS) $(C_OMP) -o beetles.exe $(BEETLES)
+
+tribol:
+	$(CCP) $(CFLAGS) $(C_OMP) -o tribol.exe $(TRIBOL)
+
+clean:
+	rm -f *.o *.so
+
+
+
 ### run make profile, then execute program, then run gprof -a $(EXE) gmon.out
 #profile:  
 #	$(CC) $(CFLAGS) -g -pg -o $(EXE) $(FILES)

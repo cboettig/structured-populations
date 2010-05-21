@@ -11,11 +11,11 @@
 
 typedef double (* event_fn)(void * my_pars);
 typedef void * (* RESET)(const void * inits);
-typedef void (* FIXED)(const double t, const void * my_pars, void * my_record);
+typedef void (* FIXED)(const double t, void * my_pars, void * my_record, int rep);
 
 void * reset(void * inits);
 
-void fixed_interval_tasks(const double t, const void * my_pars, void * my_record);
+//void fixed_interval_tasks(const double t, const void * my_pars, void * my_record);
 
 
 

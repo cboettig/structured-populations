@@ -92,12 +92,10 @@ gillespie(	const event_fn * rate_fn,
 	 * the parallel region.  Currently this uses the pars_alloc function 
 	 * to allocate space in user-defined way without assuming the function type */
 	#pragma omp parallel shared(rng, rate_fn, outcome, my_record, inits, reset_fn, fixed_interval_fn) \
-	private(lambda, t, tmp, i, check, rates_data)
+	private(lambda, t, tmp, i, check, rates_data,l)
 	{
 		/* The vector to store cumulative sum of rates */
 		rates_data = (double *) calloc (n_event_types,sizeof(double) );
-		/* allocates parameters based on user defined function */
-//		my_pars = pars_cpy(mypars);
 
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for
@@ -115,7 +113,7 @@ gillespie(	const event_fn * rate_fn,
 				t += gsl_ran_exponential(rng, 1/lambda);
 			
 				/* Events such as sampling occur at regular intervals */
-				fixed_interval_fn(t, my_pars, my_record);
+				fixed_interval_fn(t, my_pars, my_record, l);
 
 				/* Determine if event is a birth or death */
 				tmp = gsl_rng_uniform(rng);
@@ -128,9 +126,10 @@ gillespie(	const event_fn * rate_fn,
 			if(check) break;
 
 		   }/* end evolution */
+			free(my_pars);
 		}/* end ensembles */
 		free(rates_data);
-	}
+	} /* end parallel */
 	gsl_rng_free(rng);
 }
 

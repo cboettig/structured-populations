@@ -168,7 +168,7 @@ void * beetles_reset(const void * inits)
  * Currently this function isn't very api like, as it is 
  * closely tied to the logical structure of the record data structure 
  * which itself could be abstracted more */
-void beetles_fixed_interval(const double t, const void * mypars, void * myrecord)
+void beetles_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 {
 	record * my_record = (record *) myrecord;
 	if (t > my_record->i * my_record->t_step) 

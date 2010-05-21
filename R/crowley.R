@@ -31,17 +31,28 @@ T_crowley <- function(t,y,p){
 
 
 crowley_example <- function(){
+
 	pop <- 10000
 	crowley_parameters <- c(b1=.11/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=4/pop, K=pop)
 	#crowley_parameters <- c(b1=.2/pop, b2=.6/pop, d1=0.1, d2=.1, c1=0.1/pop, c2=.2/pop, K=pop)
-	times <- seq(0,2000,length=1000)
-	Xo <- c(595, 4550)
+	times <- seq(0,1000,length=500)
+	Xo <- c(505, 4550)
+	ibm <- crowley_ibm(Xo = Xo, par=crowley_parameters, time=times,reps=1)
 
-	crowley_sim <- linear_noise_approx(Xo, times, crowley_parameters, 
-										b_crowley, d_crowley, J_crowley,
-										T_crowley, Omega=pop)
 
-	ibm <- crowley_ibm(Xo = Xo, par=crowley_parameters, time=times)
+	crowley_sim <- linear_noise_approx(
+				Xo, times, crowley_parameters, 
+				b_crowley, d_crowley, J_crowley,
+				T_crowley, Omega=pop)
+
+	ens <- sfLapply(1:10, 
+			function(i){
+				ibm <- crowley_ibm(Xo = Xo, 
+					par=crowley_parameters, 
+					time=times)
+				list(ibm$x1, ibm$x2)
+		})
+
 
 	#png("crowley_noise.png")
 	par(mfrow=c(2,1))

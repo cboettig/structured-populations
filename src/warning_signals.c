@@ -44,7 +44,7 @@ void reorder(double * data, const int i, const size_t windowsize){
  * Currently this function isn't very api like, as it is 
  * closely tied to the logical structure of the record data structure 
  * which itself could be abstracted more */
-void warning_fixed_interval(const double t, const void * mypars, void * myrecord)
+void warning_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 {
 	pars * my_pars = (pars *) mypars;
 	record * my_record = (record *) myrecord;
@@ -192,4 +192,25 @@ void warning_signals(
 	record_free(my_record);
 }
 
+/* ws "main" function */
+int ws(void)
+{
+	const size_t S = 500;
+	double  time[S], a[S], means[S], vars[S], skews[S], ar1[S], arN[S];
+	double sample_freq = 1;
+	double start_polluting = 450;
+	double pollute_rate = 1; 
+	double pollute_increment = 1;
+	int sample_time = 1; 
+	int max_time = 500;
+	int n_ensembles = 1;
+	warning_signals(time, a, means, vars, skews, ar1, arN, &sample_time, 
+					&sample_freq, &max_time, &n_ensembles, &start_polluting,
+					&pollute_rate, &pollute_increment);
+	int i;
+	for(i=0; i<S; i++)
+		printf("%g %g %g\n", time[i], a[i], means[i] );
+	
+	return 0;
+}
 
