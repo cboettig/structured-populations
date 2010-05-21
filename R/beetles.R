@@ -43,26 +43,24 @@ T_beetles <- function(t,y,p){
 beetles_example <- function(){
 
 
-	beetle_pars <- c(	b=5, ue= 0, ul = .001, up = 0, ua = .003, ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(25.5-20.2), cle = 0.01, cap = 0.004, cae = 0.01)
+	beetle_pars <- c(	b=5, ue= 0, ul = .001, up = 0, ua = .003, 
+						ae = 1/3.8, al = 1/(20.2-3.8), ap = 1/(25.5-20.2),
+						cle = 0.01, cap = 0.004, cae = 0.01)
 	times <- seq(0,5000,length=500)
-	d <- 4
-	n <- 1.5*d+d^2/2
-	yo_beetles <- numeric(n)
-	yo_beetles[1] = 100
-	beetle_eqns <- function(t,y,p){ linnoise(t,y,p, b_beetles, d_beetles, J_beetles, T_beetles) }
-	beetle_data <- lsoda(yo_beetles, times, beetle_eqns, beetle_pars)
-
-
-	ibm <- beetles_ibm(Xo=yo_beetles[1:4], par=beetle_pars, time=times)
+	Xo <- c(100,0,0,0)
+	linear_noise_approx(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=1) 
+	ibm <- beetles_ibm(Xo=Xo, par=beetle_pars, time=times, reps=1)
 
 	#png("beetles_noise2.png")
 	par(mfrow=c(2,1))
 	m <- max(beetle_data[,2:5])*1.2
-	plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", lwd=3, ylim=c(0,m), xlab="time", ylab="mean", cex.lab=1.3, main="Beetle ELPA model" )
+	plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", 
+		lwd=3, ylim=c(0,m), xlab="time", ylab="mean", cex.lab=1.3, main="Beetle ELPA model" )
 	lines(beetle_data[,1], beetle_data[,3], col="yellowgreen", lwd=3)	
 	lines(beetle_data[,1], beetle_data[,4], col="lightgreen", lwd = 3)	
 	lines(beetle_data[,1], beetle_data[,5], col="darkgreen", lwd = 3)	
-	legend("right", c("egg", "larva", "pupa", "adult"), lty=1, col=c("yellow", "yellowgreen", "lightgreen", "darkgreen") )
+	legend("right", c("egg", "larva", "pupa", "adult"), 
+		lty=1, col=c("yellow", "yellowgreen", "lightgreen", "darkgreen") )
 
 	points(beetle_data[,1], ibm$E, col="yellow")	
 	points(beetle_data[,1], ibm$L, col="yellowgreen")	
@@ -71,7 +69,8 @@ beetles_example <- function(){
 
 
 	v <- max(sqrt(beetle_data[,6:9]))
-	plot(beetle_data[,1], sqrt(beetle_data[,6]), type = 'l', col="yellow", lwd=3, ylim=c(0,v), xlab="time", ylab="stdev", cex=1.3 )
+	plot(beetle_data[,1], sqrt(beetle_data[,6]), type = 'l', col="yellow",
+		lwd=3, ylim=c(0,v), xlab="time", ylab="stdev", cex=1.3 )
 	lines(beetle_data[,1], sqrt(beetle_data[,7]), col="yellowgreen", lwd=3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,8]), col="lightgreen", lwd = 3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,9]), col="darkgreen", lwd = 3)

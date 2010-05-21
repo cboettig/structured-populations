@@ -145,14 +145,15 @@ void * crowley_reset(const void * inits)
 	return s;
 }
 
-void crowley(double* s1, double* s2, double* inits, int* n_samples, int* replicates, double * maxtime)
+void crowley(double* s1, double* s2, double* inits, int* n_samples, int* reps, double* maxtime)
 {
 
 	/** Create a list of all event functions and their associated outcomes 
 	 *  Order doesn't matter, but make sure outcomes are paired with the 
 	 *  appropriate function! */
-	event_fn rate_fn[4];	
-	event_fn outcome[4];
+	const size_t n_event_types = 4;
+	event_fn rate_fn[n_event_types];	
+	event_fn outcome[n_event_types];
 	rate_fn[0] = &b1;
 	outcome[0] = &b1_out;
 	rate_fn[1] = &d1;
@@ -164,44 +165,55 @@ void crowley(double* s1, double* s2, double* inits, int* n_samples, int* replica
 
 	RESET reset_fn = &crowley_reset;
 	FIXED fixed_interval_fn = &crowley_fixed_interval;
-
-	const size_t n_event_types = 4;
 	
-	record * my_record = c_record_alloc(*n_samples, *replicates, *maxtime);
-	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, (size_t) *replicates, reset_fn, fixed_interval_fn);
+	record * my_record = c_record_alloc(*n_samples, *reps, *maxtime);
+	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, (size_t) *reps, reset_fn, fixed_interval_fn);
 
 	int i;
-	for(i = 0; i< (*n_samples)*(*replicates); i++)
+	for(i = 0; i< (*n_samples)*(*reps); i++)
 	{ 
 		s1[i] = my_record->s1[i]; 
 		s2[i] = my_record->s2[i];
 	}
-
 	c_record_free(my_record);
+
+/*
+	for(i=0; i< *n_samples; i++)
+	{
+		printf("%g %g %g %g\n",
+			gsl_stats_mean( &(s1[i]),*n_samples, *reps),
+			gsl_stats_mean( &(s2[i]),*n_samples, *reps),
+			gsl_stats_variance( &(s1[i]),*n_samples, *reps),
+			gsl_stats_variance( &(s2[i]),*n_samples, *reps));
+	}
+*/
 }
 
 
 
 int crow(void)
 {
-	const int n_samples = 10;
-	const int replicates = 2;
+	const int n_samples = 100;
+	const int replicates = 20;
 	double s1[n_samples*replicates];
 	double s2[n_samples*replicates];
 
-	int n = n_samples;
-	int reps = replicates;
+//	double mean[n_samples];
+//	double var[n_samples];
+
 	//			0  1  2   3   4   5   6   7   8
 	//	Pars = {x, y, bx, by, dx, dy, cx, cy, K} 
 	double c_inits[9] = {500, 4500, 0.11/10000, .6/10000, .1, .1, .1/10000, 4/10000, 10000};
-	double maxtime = 1; 
+
+	double maxtime = 10; 
+	int n = n_samples;
+	int reps = replicates;
 
 	crowley(s1, s2, c_inits, &n, &reps, &maxtime);
 
 	int i;
 	for(i = 0; i< n_samples * replicates; i++)
 		printf("%g, %g\n", s1[i], s2[i] );
-
 
 	printf("m1 = %g sd1 = %g\nm2 = %g sd2 = %g\n",
 			gsl_stats_mean(s1, 1, n_samples), 

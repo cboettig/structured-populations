@@ -7,7 +7,7 @@
 #include "gillespie.h"
 
 typedef struct {
-	int i;
+	size_t N;
 	double t_step;
 	double * s1;
 	double * s2;
@@ -15,15 +15,15 @@ typedef struct {
 	double * s4;
 } record;
 
-record* b_record_alloc(size_t N, double maxtime)
+record* b_record_alloc(size_t N, size_t replicates, double maxtime)
 {
 	record* myrecord = (record*) malloc(sizeof(record));
 	myrecord->t_step = maxtime/N;
-	myrecord->i = 0;
-	myrecord->s1 = (double*) calloc(N+1, sizeof(double));
-	myrecord->s2 = (double*) calloc(N+1, sizeof(double));
-	myrecord->s3 = (double*) calloc(N+1, sizeof(double));
-	myrecord->s4 = (double*) calloc(N+1, sizeof(double));
+	myrecord->N = N;
+	myrecord->s1 = (double*) calloc(replicates*(N+1), sizeof(double));
+	myrecord->s2 = (double*) calloc(replicates*(N+1), sizeof(double));
+	myrecord->s3 = (double*) calloc(replicates*(N+1), sizeof(double));
+	myrecord->s4 = (double*) calloc(replicates*(N+1), sizeof(double));
 return myrecord;
 }
 
@@ -158,9 +158,10 @@ double mP_out(void * ss)
 void * beetles_reset(const void * inits)
 {
 	const double * ss = (const double *) inits;
-	double * s = (double *) calloc(15, sizeof(double));
+	double * s = (double *) calloc(16, sizeof(double));
 	int i;
 	for(i=0;i<15;i++) s[i] = ss[i];
+	s[15] = 0; // sample counter.  needs to be thread-private and reset, hence is in pars not record
 	return s;
 }
 
@@ -171,19 +172,19 @@ void * beetles_reset(const void * inits)
 void beetles_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 {
 	record * my_record = (record *) myrecord;
-	if (t > my_record->i * my_record->t_step) 
+	double * s = (double *) mypars;
+	if (t > s[15]*my_record->t_step) 
 	{
-		double * s = (double *) mypars;
-		my_record->s1[my_record->i] = s[0]; 
-		my_record->s2[my_record->i] = s[1]; 
-		my_record->s3[my_record->i] = s[2]; 
-		my_record->s4[my_record->i] = s[3]; 
-//		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
-		++my_record->i;
+		my_record->s1[(int) s[15]+rep*my_record->N] = s[0]; 
+		my_record->s2[(int) s[15]+rep*my_record->N] = s[1]; 
+		my_record->s3[(int) s[15]+rep*my_record->N] = s[2]; 
+		my_record->s4[(int) s[15]+rep*my_record->N] = s[3]; 
+		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
+		s[15] += 1; 
 	}
 }
 
-void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int* n_samples, double* maxtime)
+void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int* n_samples, int* reps, double* maxtime)
 {
 	/** Create a list of all event functions and their associated outcomes 
 	 *  Order doesn't matter, but make sure outcomes are paired with the 
@@ -211,17 +212,14 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 	RESET reset_fn = &beetles_reset;
 	FIXED fixed_interval_fn = &beetles_fixed_interval;
 
-	const size_t ensembles = 1;
-	
-	record * my_record = b_record_alloc(*n_samples, *maxtime);
+	record * my_record = b_record_alloc(*n_samples, *reps, *maxtime);
 
 	gillespie(	rate_fn, outcome, n_event_types, 
 				inits, my_record, *maxtime, 
-				ensembles, reset_fn, fixed_interval_fn);
-
+				*reps, reset_fn, fixed_interval_fn);
 
 	int i;
-	for(i = 0; i< *n_samples; i++)
+	for(i = 0; i< *n_samples * *reps; i++)
 	{ 
 		s1[i] = my_record->s1[i]; 
 		s2[i] = my_record->s2[i];
@@ -234,11 +232,12 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 
 int beetle(void)
 {
-	const int n_samples = 500;
-	double s1[n_samples];
-	double s2[n_samples];
-	double s3[n_samples];
-	double s4[n_samples];
+	const int replicates = 1;
+	const int n_samples = 10;
+	double s1[n_samples*replicates];
+	double s2[n_samples*replicates];
+	double s3[n_samples*replicates];
+	double s4[n_samples*replicates];
 //	       0  1  2  3  4   5   6   7   8   9  10   11  12   13  14  
 // Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
 	double inits[15] = {100, 0, 0, 0, 
@@ -248,9 +247,10 @@ int beetle(void)
 						0.01, 0.004, 0.01};
 
 	int n = n_samples;
-	double maxtime = 5000; 
+	double maxtime = 50; 
+	int reps = replicates;
 
-	beetles(s1, s2, s3, s4, inits, &n, &maxtime);
+	beetles(s1, s2, s3, s4, inits, &n, &reps, &maxtime);
 
 	printf("m1 = %g sd1 = %g nm2 = %g sd2 = %g m3 = %g sd3 = %g m4 = %g sd4 = %g\n",
 			gsl_stats_mean(s1, 1, n_samples), 

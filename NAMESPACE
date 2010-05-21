@@ -1,7 +1,9 @@
 export(ensemble, beetle_sim, likelihood)
 export(	warning_signals,
 		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU,
-		linnoise,
-		beetles_ibm, crowley_ibm)
+		linnoise, linear_noise_approx, old_linear_noise_approx,
+		beetles_ibm, crowley_ibm,
+		crowley_example,
+		b_crowley, d_crowley, J_crowley, T_crowley)
 useDynLib(stochPop)
 
