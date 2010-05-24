@@ -40,7 +40,7 @@ metapop_example <- function(){
 							c2=0.15, K=pop)
 
 	times <- seq(0,100,length=50)
-	Xo <- c(500, 4500)
+	Xo <- c(1500, 1500)
 	meta_sim <- linear_noise_approx(
 				Xo, times, crowley_parameters, 
 				b_meta, d_meta, J_meta,
@@ -52,17 +52,19 @@ metapop_example <- function(){
 				b_crowley, d_crowley, J_crowley,
 				T_crowley, Omega=pop)
 
-	ibm <- metapop_ibm(Xo = Xo, parameters=crowley_parameters, times=times,reps=20)
-	ibm2 <- crowley_ibm(Xo = Xo, parameters=crowley_parameters, times=times,reps=20)
+	ibm <- metapop_ibm(Xo = Xo, parameters=crowley_parameters, times=times,reps=80)
+	ibm2 <- crowley_ibm(Xo = Xo, parameters=crowley_parameters, times=times,reps=80)
 
 
-	#png("crowley_noise.png")
+	png("crowley_noise2.png", 800,800)
 	par(mfrow=c(2,1))
-	m <- max(crowley_sim[,2:3])*1.2
-	plot(crowley_sim[,1], crowley_sim[,2], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", ylim = c(0,m), cex.lab=1.3, main="Modified Crowley Model")
+	m <- max(crowley_sim[,2:3])*1.4
+	plot(crowley_sim[,1], crowley_sim[,2], col="darkblue", lwd=3, type='l', xlab="time",ylab="mean", ylim = c(0,m), cex.lab=1.3, main="Two-step vs one-step Noise")
 	lines(crowley_sim[,1], crowley_sim[,3], col="darkgreen", lwd = 3)
-	lines(crowley_sim[,1], meta_sim[,2], col="blue", lwd = 3, lty="dashed")
-	lines(crowley_sim[,1], meta_sim[,3], col="green", lwd = 3, lty="dashed")
+	lines(crowley_sim[,1], meta_sim[,2], col="lightblue", lwd = 3, lty="dashed")
+	lines(crowley_sim[,1], meta_sim[,3], col="lightgreen", lwd = 3, lty="dashed")
+	legend("right", c("crolwey sim", "metapop sim"), pch=c('+', 'o'))
+
 
 	points(crowley_sim[,1], ibm$m1, col="darkblue", pch='+')
 	points(crowley_sim[,1], ibm$m2, col="darkgreen", pch='+')
@@ -81,9 +83,8 @@ metapop_example <- function(){
 	points(crowley_sim[,1], sqrt(ibm$v2), col="darkgreen", pch='+')
 	points(crowley_sim[,1], sqrt(ibm2$v1), col="darkblue" )
 	points(crowley_sim[,1], sqrt(ibm2$v2), col="darkgreen")
+	legend("bottomright", c("crowley x", "crowley y", "metapop x", "metapop y"), lty=c(1,1,2,2), col=c("darkblue", "darkgreen", "lightblue", "lightgreen") )
 
-
-
-#	dev.off()
+	dev.off()
 }
 
