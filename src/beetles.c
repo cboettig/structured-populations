@@ -5,6 +5,7 @@
  */
 
 #include "gillespie.h"
+#define NP 16
 
 typedef struct {
 	size_t N;
@@ -48,7 +49,7 @@ double bE(void * ss)
 double dE(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[0]*(s[5]+s[3]*s[14] +s[1]*s[12]); // E*(ue+A*cae+L*cle)
+	return s[0]*(s[5] + s[3]*s[14]/s[15] + s[1]*s[12]/s[15]); // E*(ue+A*cae/V+L*cle/V)
 }
 
 double dL(void * ss)
@@ -59,7 +60,7 @@ double dL(void * ss)
 double dP(void * ss)
 { 
 	double * s = (double *) ss;
-	return s[2]*(s[7] + s[3]*s[13]); // P*(up+A*cap)
+	return s[2]*(s[7] + s[3]*s[13]/s[15]); // P*(up+A*cap/V)
 }
 
 double dA(void * ss)
@@ -158,10 +159,10 @@ double mP_out(void * ss)
 void * beetles_reset(const void * inits)
 {
 	const double * ss = (const double *) inits;
-	double * s = (double *) calloc(16, sizeof(double));
+	double * s = (double *) calloc(1+NP, sizeof(double));
 	int i;
-	for(i=0;i<15;i++) s[i] = ss[i];
-	s[15] = 0; // sample counter.  needs to be thread-private and reset, hence is in pars not record
+	for(i=0;i<NP;i++) s[i] = ss[i];
+	s[NP] = 0; // sample counter.  needs to be thread-private and reset, hence is in pars not record
 	return s;
 }
 
@@ -173,14 +174,14 @@ void beetles_fixed_interval(const double t, void * mypars, void * myrecord, int 
 {
 	record * my_record = (record *) myrecord;
 	double * s = (double *) mypars;
-	if (t > s[15]*my_record->t_step) 
+	if (t > s[NP]*my_record->t_step) 
 	{
-		my_record->s1[(int) s[15]+rep*my_record->N] = s[0]; 
-		my_record->s2[(int) s[15]+rep*my_record->N] = s[1]; 
-		my_record->s3[(int) s[15]+rep*my_record->N] = s[2]; 
-		my_record->s4[(int) s[15]+rep*my_record->N] = s[3]; 
-		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
-		s[15] += 1; 
+		my_record->s1[(int) s[NP]+rep*my_record->N] = s[0]; 
+		my_record->s2[(int) s[NP]+rep*my_record->N] = s[1]; 
+		my_record->s3[(int) s[NP]+rep*my_record->N] = s[2]; 
+		my_record->s4[(int) s[NP]+rep*my_record->N] = s[3]; 
+//		printf("%g %g %g %g %g\n", t, s[0], s[1], s[2], s[3]);
+		s[NP] += 1; 
 	}
 }
 
@@ -232,19 +233,19 @@ void beetles(double* s1, double* s2, double* s3, double* s4, double* inits, int*
 
 int beetle(void)
 {
-	const int replicates = 1;
+	const int replicates = 10;
 	const int n_samples = 10;
 	double s1[n_samples*replicates];
 	double s2[n_samples*replicates];
 	double s3[n_samples*replicates];
 	double s4[n_samples*replicates];
 //	       0  1  2  3  4   5   6   7   8   9  10   11  12   13  14  
-// Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
-	double inits[15] = {100, 0, 0, 0, 
+// Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae, V} 
+	double inits[NP] = {100, 0, 0, 0, 
 						5., 
 						0, 0.001, 0, 0.003,
 						1/3.8, 1/(20.2-3.8), 1/(25.5-20.2), 
-						0.01, 0.004, 0.01};
+						0.1, 0.04, 0.1, 1000};
 
 	int n = n_samples;
 	double maxtime = 50; 

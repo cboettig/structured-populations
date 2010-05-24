@@ -1,23 +1,6 @@
 
 require(odesolve)
 
-
-# A one-dimensional test case: b(n) = rn(K-n) 
-oneD <- function(t, y, p){
-	# \dot x = \alpha_1(x)
-	yd1 <- p["r"]*y[1] *(1 - y[1]/p["K"])
-	# \dot \sigma^2 = - \partial_x \alpha_1(x) \sigma^2 + \alpha_2(x)
-	yd2 <- 2*p["r"]*(1-2*y[1]/p["K"] ) * y[2] + 
-		p["r"]*y[1] *(1 + y[1]/p["K"])
-
-	list(c(yd1, yd2))
-}
-
-logistic_parameters <- c(K=100, r=1, d = .1)
-times <- seq(0,10,by=.1)
-yo <- c(10, 0)
-o <- lsoda(yo, times, oneD, logistic_parameters)
-
 # Transition=function(){0}
 linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 # General form for arbitrary dimensions
@@ -55,10 +38,11 @@ linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 	for (i in 1:(D-1)){
 		for (j in (i+1):D){
 			M[i,j] <- y[k]
+			M[j,i] <- y[k]
 			k <- k+1
 		}
 	}
-	
+
 	#build T matrix
 	T <- transition_matrix + t(transition_matrix)
 	diag(T) = -rowSums(T)
@@ -83,14 +67,21 @@ linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){
 	D <- length(Xo) # dimension
 	n_covs <- D+(D^2-D)/2 # Number of vars/covs: upper triangle + diagonal
 	Mo <-  numeric(n_covs)	# initialize covariances at 0
-	yo = c(Xo, Mo)
+	yo = c(Xo/Omega, Mo)
 	eqns <- function(t,y,p){ linnoise(t,y,p, b, d, J, T) }
 
 	out <- lsoda(yo, times, eqns, parameters)
-	
-	out[ , (D+2):(dim(out)[2]) ] <- out[ , (D+2):(dim(out)[2]) ]/sqrt(Omega)
+	len <- dim(out)[2]
+#	out[ , (D+2):(dim(out)[2]) ] <- out[ , (D+2):len ]*Omega
+	out[,2:len] <- Omega*out[,2:len]
 	out
 }
+
+
+
+
+
+
 
 #depricated way
 old_linear_noise_approx <- function(Xo, times, parameters, b, d, J, T, Omega){

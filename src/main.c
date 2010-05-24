@@ -3,6 +3,8 @@ int tribol(void);
 int crow(void);
 int beetle(void);
 int ws(void);
+int meta(void);
+int hast(void);
 
 int main(void){
 
@@ -10,12 +12,13 @@ int main(void){
 //	ws();
 	/* Test correlation (for warning_signals) */
 //	correlation();
-	/* Test beetles "main"*/
-//	beetle();
-	/* Test crowley "main" */
-	crow();
 	/* Test tribolium "main" */
 //	tribol();
+
+//	beetle();
+//	crow();
+//	meta();
+	hast();	
 	return 0;
 }
 

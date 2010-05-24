@@ -9,8 +9,10 @@ TRIBOL = tribolium.cpp kde.cpp
 WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c main.c
 BEETLES = beetles.c gillespie.c main.c
+FILES = metapop.c beetles.c crowley.c gillespie.c hastings.c main.c
 
 build:
+	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(FILES)
 
 warning: 
 	$(CC) $(CFLAGS) $(C_OMP) -o warning.exe $(WARNING)
