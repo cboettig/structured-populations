@@ -51,7 +51,10 @@ beetles_example <- function(){
 	beetle_data <- linear_noise_approx(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=volume) 
 	ibm <- beetles_ibm(Xo=Xo, par=beetle_pars, time=times, reps=4)
 
-	#png("beetles_noise2.png")
+
+	
+
+	png("beetles_bugs.png")
 	par(mfrow=c(2,1))
 	m <- max(beetle_data[,2:5])*1.2
 	plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", 
@@ -79,5 +82,5 @@ beetles_example <- function(){
 	points(beetle_data[,1], sqrt(ibm$mv[[2,2]]), col="yellowgreen")	
 	points(beetle_data[,1], sqrt(ibm$mv[[2,3]]), col="lightgreen")	
 	points(beetle_data[,1], sqrt(ibm$mv[[2,4]]), col="darkgreen")	
-	#dev.off()
+	dev.off()
 }

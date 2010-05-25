@@ -6,6 +6,9 @@ export(	warning_signals,
 		crowley_example,
 		b_crowley, d_crowley, J_crowley, T_crowley,
 		metapop_example, 
-		b_meta, d_meta, J_meta, T_meta)
+		b_meta, d_meta, J_meta, T_meta,
+		beetles_example, 
+		b_beetles, d_beetles, J_beetles, T_beetles
+)
 useDynLib(stochPop)
 
