@@ -66,31 +66,34 @@ gamma_example <- function(){
 
 
 	volume <- 100
-	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.001, 
-						ae = .1*k, al = .01*k, ap = .1*k,
-						cle = 1, cap = .4, cae = 1, V=volume)
-	times <- seq(0,400,length=100)
+	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
+						ae = .13*k, al = .01*k, ap = .15*k,
+						cle = .2, cap = .1, cae = 5, V=volume)
+	times <- seq(0,800,length=100)
 	Xo <- numeric(adults)
 	Xo[1] <- 100
-
+#	Xo = rep(10, adults)
 
 	beetle_data <- linear_noise_approx	(Xo, times, beetle_pars, b_gamma, d_gamma, J_gamma, T_gamma, Omega=volume)
 
+
+	# Collapse the pseudo-classes
 	data <- matrix(0, length(times), 8)
 	for( i in 1:3) {
 		data[,i] = rowSums(beetle_data[,(2+k*(i-1)):(1+k*i)] )
 	}
 	data[,4] = beetle_data[,3*k+2]
-	for( i in 5:7) {
-		data[,i] = rowSums(beetle_data[,(2+k*(i-1)):(1+k*i)] )
+	vars_start <- 3*k+3
+	for( i in 1:3) {
+		data[,4+i] = rowSums(beetle_data[,(vars_start+k*(i-1)):(vars_start+1+k*i)] )
 	}
 	data[,8] = beetle_data[,1+2*(3*k+1)]
 
+
+	png("oscillate_noise.png", 800, 800)
+	# Plot results
 	cols = c("yellow", "yellowgreen", "lightgreen", "darkgreen");
-
 	par(mfrow=c(2,1))
-
-
 	m<- max(data[,1:4])
 	plot(times, data[,1], col=cols[1], lwd=3, type='l', ylim=c(0,m), ylab="means", main="Gamma Aging" )
 	for (i in 2:4) {
@@ -102,12 +105,13 @@ gamma_example <- function(){
 
 
 
-	v<- max(sqrt(data[,5:8]))
-	plot(times, sqrt(data[,5]), col=cols[1], lwd=3, type='l', ylim=c(0,v) )
+	v<- max(data[,5:8])
+	plot(times, (data[,5]), col=cols[1], lwd=3, type='l', ylim=c(0,v) )
 	for (i in 2:4) {
-		lines(times, sqrt(data[,4+i]), col=cols[i], lwd=3)
+		lines(times, (data[,4+i]), col=cols[i], lwd=3)
 	}
 
 
+	dev.off()
 
 }
