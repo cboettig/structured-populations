@@ -60,18 +60,15 @@ beetles_example <- function(){
 
 	volume <- 100
 	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
-						ae = .01, al = .01, ap = .1,
-						cle = 3, cap = .4, cae = 1, V=volume)
-	times <- seq(0,4000,length=100)
+						ae = .1, al = .01, ap = .1,
+						cle = 1, cap = .4, cae = 1, V=volume)
+	times <- seq(0,500,length=100)
 	Xo <- c(100,0,0,0)
 	beetle_data <- linear_noise_approx(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=volume) 
 #	ibm <- beetles_ibm(Xo=Xo, par=beetle_pars, time=times, reps=40)
 
-
-	
-
 #	png("beetles_bugs.png")
-	par(mfrow=c(2,2))
+	par(mfrow=c(2,1))
 	m <- max(beetle_data[,2:5])*1.2
 	plot(beetle_data[,1], beetle_data[,2], type = 'l', col="yellow", 
 		lwd=3, ylim=c(0,m), xlab="time", ylab="mean", cex.lab=1.3, main="Beetle ELPA model" )
@@ -93,6 +90,10 @@ beetles_example <- function(){
 	lines(beetle_data[,1], sqrt(beetle_data[,7]), col="yellowgreen", lwd=3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,8]), col="lightgreen", lwd = 3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,9]), col="darkgreen", lwd = 3)
+
+
+
+
 
 	eps <- .1
 	v <- max(sqrt(beetle_data[,6:9])/(eps+beetle_data[,2:5]))

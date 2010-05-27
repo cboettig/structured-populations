@@ -1,44 +1,49 @@
 
+k <-10
+eggs <- 1:k	
+larva <- (k+1):(2*k)
+pupa <- (2*k+1):(3*k)
+adults <- 3*k+1
+
 ## Beetle model macroscopic eqns
-b_beetles <- function(t,y,p){
-	o <- numeric(40);
-	o[1] <- p["b"]*sum(y[31:40])
+b_gamma <- function(t,y,p){
+	o <- numeric(adults);
+	o[1] <- p["b"]*y[adults]
 	o
 }
 
 ## Beetle model macroscopic eqns
-d_beetles <- function(t,y,p){
-	o <- numeric(40)
-	o[1:10] <-  (p["ue"] + p["cle"]*sum(y[11:20]) + p["cae"]*sum(y[31:40]) )*y[1:10]  
-	o[11:20] <- p["ul"]*y[11:20]
-	o[21:30] <- (p["up"]+p["cap"]*sum(y[31:40]))*y[21:30] 
-	o[31:40] <- p["ua"]*y[31:40]
+d_gamma <- function(t,y,p){
+	o <- numeric(adults)
+
+	o[eggs] <-  (p["ue"] + p["cle"]*sum(y[larva]) + p["cae"]*y[adults])*y[eggs]  
+	o[larva] <- p["ul"]*y[larva]
+	o[pupa] <- (p["up"]+p["cap"]*y[adults])*y[pupa] 
+	o[adults] <- p["ua"]*y[adults]
 	o
 }
 ## Jacobian of f
-J_beetles <- function(t,y,p){
-	o <- matrix(0, 40, 40)
-	d <- numeric(40)
+J_gamma <- function(t,y,p){
+	o <- matrix(0, adults, adults)
+	d <- numeric(adults)
 
 	#diagonal
-	d[1:10] <- -p["ue"] - p["ae"] -p["cle"]*sum(y[11:20]) - p["cae"]*sum(y[31:40])
-	d[11:20] <- -p["ul"] - p["al"]
-	d[21:30] <- -p["up"] - p["ap"] -p["cap"]*sum(y[31:40])
-	d[31:39] <- -p["ua"] - p["ap"]
-	d[40] <- -p["ua"] 
+	d[eggs] <- -p["ue"] - p["ae"] -p["cle"]*sum(y[larva]) - p["cae"]*y[adults]
+	d[larva] <- -p["ul"] - p["al"]
+	d[pupa] <- -p["up"] - p["ap"] -p["cap"]*y[adults]
+	d[adults] <- -p["ua"] 
 	diag(o) <- d
 
 	# lower diagonal,
-	o[matrix(c(2:11,1:10),10)] <-  p["ae"]
-	o[matrix(c(12:21,11:20),10)] <- p["al"]
-	o[matrix(c(22:31,21:30),10)] <- p["ap"]
-	o[matrix(c(32:39,31:40),9)] <- p["ap"]
+	o[matrix(c(eggs+1,eggs),k)] <-  p["ae"]
+	o[matrix(c(larva+1,larva),k)] <- p["al"]
+	o[matrix(c(pupa+1,pupa),k)] <- p["ap"]
 
 	# cannibalism
-	o[matrix(c(1:10, 2:11),10)] <- -p["cle"]*y[1:10]
-	o[matrix(c(1:10, 4:13),10)] <- -p["cae"]*y[1:10]
-	o[1, 4] <- o[1,4] + p["b"]*sum(y[31:40])
-	o[matrix(c(21:30, 24:33),10)] <- -p["cap"]*y[21:30]
+	o[matrix(c(eggs, eggs+k),k)] <- -p["cle"]*y[eggs]
+	o[matrix(c(eggs, rep(adults,k)),k)] <- -p["cae"]*y[eggs]
+	o[1, adults] <- o[1,adults] + p["b"]*y[adults]
+	o[matrix(c(pupa, rep(adults,k)),k)] <- -p["cap"]*y[pupa]
 	o
 }
 
@@ -46,35 +51,44 @@ J_beetles <- function(t,y,p){
 
 
 ## Beetle model macroscopic eqns
-T_beetles <- function(t,y,p){
-	o <- matrix(0,40,40)
-	o[matrix(c(1:10,2:11), 10, 2)] <-  p["ae"]*y[1:10]
-	o[matrix(c(11:20,12:21),10)] <- p["al"]*y[11:20]
-	o[matrix(c(21:30,22:31),10)] <- p["ap"]*y[21:30]
-	o[matrix(c(31:39,32:40), 9)] <- p["ap"]*y[31:39]
+T_gamma <- function(t,y,p){
+	o <- matrix(0,adults,adults)
+	o[matrix(c(eggs,eggs+1),  k)] <-  p["ae"]*y[eggs]
+	o[matrix(c(larva,larva+1),k)] <- p["al"]*y[larva]
+	o[matrix(c(pupa,pupa+1), k)] <- p["ap"]*y[pupa]
 	o
 }
 
 ### No need to have structure in adults!
 
-beetles_example <- function(){
+gamma_example <- function(){
+
+
 
 	volume <- 100
-	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0.00001, ua = 0.01, 
-						ae = 1.3, al = .1, ap = 1.5,
-						cle = .2, cap = .1, cae = 5, V=volume)
-	times <- seq(0,900,length=100)
-	Xo <- numeric(40)
+	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.001, 
+						ae = .1*k, al = .01*k, ap = .1*k,
+						cle = 1, cap = .4, cae = 1, V=volume)
+	times <- seq(0,400,length=100)
+	Xo <- numeric(adults)
 	Xo[1] <- 100
 
 
-	beetle_data <- linear_noise_approx(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=volume)
-#	beetle_data <- mean_only(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=volume)
+	beetle_data <- linear_noise_approx	(Xo, times, beetle_pars, b_gamma, d_gamma, J_gamma, T_gamma, Omega=volume)
 
-	data <- sapply(1:8, function(i){  rowSums(beetle_data[,(2+10*(i-1)):(1+10*i)] ) } )
+	data <- matrix(0, length(times), 8)
+	for( i in 1:3) {
+		data[,i] = rowSums(beetle_data[,(2+k*(i-1)):(1+k*i)] )
+	}
+	data[,4] = beetle_data[,3*k+2]
+	for( i in 5:7) {
+		data[,i] = rowSums(beetle_data[,(2+k*(i-1)):(1+k*i)] )
+	}
+	data[,8] = beetle_data[,1+2*(3*k+1)]
+
 	cols = c("yellow", "yellowgreen", "lightgreen", "darkgreen");
 
-#	par(mfrow=c(2,1))
+	par(mfrow=c(2,1))
 
 
 	m<- max(data[,1:4])
@@ -85,9 +99,12 @@ beetles_example <- function(){
 	legend("right", c("egg", "larva", "pupa", "adult"), 
 		lty=1, col=c("yellow", "yellowgreen", "lightgreen", "darkgreen") )
 
-	v<- max(sqrt(data[,5:6]))
+
+
+
+	v<- max(sqrt(data[,5:8]))
 	plot(times, sqrt(data[,5]), col=cols[1], lwd=3, type='l', ylim=c(0,v) )
-	for (i in 2:2) {
+	for (i in 2:4) {
 		lines(times, sqrt(data[,4+i]), col=cols[i], lwd=3)
 	}
 
