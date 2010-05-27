@@ -18,17 +18,6 @@ d_beetles <- function(t,y,p){
 }
 
 ## Jacobian of f
-wrong_J_beetles <- function(t,y,p){
- t( matrix(c(
-	-(p["ue"]+p["cle"]*y[2]+p["cae"]*y[4]),			-p["cle"]*y[1],	0,	p["b"] - p["cae"]*y[1],
-	  0,			-p["ul"],	0,						0,
-	  0,				0,	-p["up"]-p["cap"]*y[4],		-p["cap"]*y[3],
-	  0,				0,		0,						-p["ua"] 
-	  ), 4, 4))
-
-}
-
-## Jacobian of f
 J_beetles <- function(t,y,p){
  j <- c(	-(p["ue"] + p["ae"] + p["cle"]*y[2] + p["cae"]*y[4]),
 			-p["cle"]*y[1],
@@ -69,12 +58,12 @@ T_beetles <- function(t,y,p){
 
 beetles_example <- function(){
 
-	volume <- 1
-	beetle_pars <- c(	b=5, ue= 0, ul = .01, up = 0, ua = .003, 
-						ae = 1000, al = .1, ap = 1,
-						cle = .01, cap = .004, cae = .01, V=volume)
-	times <- seq(0,400,length=50)
-	Xo <- c(100,2000,0,0)
+	volume <- 100
+	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
+						ae = .01, al = .01, ap = .1,
+						cle = 3, cap = .4, cae = 1, V=volume)
+	times <- seq(0,4000,length=100)
+	Xo <- c(100,0,0,0)
 	beetle_data <- linear_noise_approx(Xo, times, beetle_pars, b_beetles, d_beetles, J_beetles, T_beetles, Omega=volume) 
 #	ibm <- beetles_ibm(Xo=Xo, par=beetle_pars, time=times, reps=40)
 
@@ -104,6 +93,15 @@ beetles_example <- function(){
 	lines(beetle_data[,1], sqrt(beetle_data[,7]), col="yellowgreen", lwd=3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,8]), col="lightgreen", lwd = 3)	
 	lines(beetle_data[,1], sqrt(beetle_data[,9]), col="darkgreen", lwd = 3)
+
+	eps <- .1
+	v <- max(sqrt(beetle_data[,6:9])/(eps+beetle_data[,2:5]))
+	plot(beetle_data[,1], sqrt(beetle_data[,6])/beetle_data[,2], type = 'l', col="yellow",
+		lwd=3, ylim=c(0,v), xlab="time", ylab="stdev/mean", cex=1.3 )
+	lines(beetle_data[,1], sqrt(beetle_data[,7])/beetle_data[,3], col="yellowgreen", lwd=3)	
+	lines(beetle_data[,1], sqrt(beetle_data[,8])/beetle_data[,4], col="lightgreen", lwd = 3)	
+	lines(beetle_data[,1], sqrt(beetle_data[,9])/beetle_data[,5], col="darkgreen", lwd = 3)
+
 
 #	points(beetle_data[,1], sqrt(ibm$mv[[2,1]]), col="yellow")	
 #	points(beetle_data[,1], sqrt(ibm$mv[[2,2]]), col="yellowgreen")	
