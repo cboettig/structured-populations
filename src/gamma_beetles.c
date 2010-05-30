@@ -12,52 +12,81 @@
 // Totals: 3K+1 states
 
 
-//parameters = {ae, al, ap, ue, ul, up, ua, b, K}
+//parameters = {ae, al, ap, ue, ul, up, ua, b, K, cle, cae, cap}
 
 /** Calculate rates */
 void rates_calc(double * rates, const int * states, const double * parameters){
-
 	double transition_rate[3] = {parameters[0], parameters[1], parameters[2]};
 	double death_rate[4] = {parameters[3], parameters[4], parameters[5], parameters[6]};
 	double b = parameters[7];
 	int K = parameters[8];
-	int N = 6*K+2;
-	int d_start = 3*K+1;
-
+	const size_t n_rates = 6*K+2;
+	const size_t n_states = 3*K+1;
 	int i;
-	for(i = 0; i < N-1; i++){
-		rates[i] = transition_rate[i%K] * states[i];
-		rates[i+d_start] = death_rate[i%K] * states[i];
+
+	/* sum classes for cannibalism */
+	int classes[4] = {0,0,0,0};
+	for(i = 0; i < n_states; i++)
+	{
+		classes[i / K] += states[i] ;
 	}
-	rates[N] = b*states[N-1];
+
+	/* rates calc for eggs, larva, pupa */
+	for(i = 0; i < n_states-1; i++){
+		rates[i] = transition_rate[i/K] * states[i];	/* transitions: 0 : 3K-1 */
+		rates[i+n_states-1] = death_rate[i/K] * states[i];/* mortality: 3K :6K-1 */
+		if(i < K) 
+		{	/* additional egg morality from cannibalism */
+			rates[i+n_states-1] += parameters[9]*classes[1]*states[i]/parameters[12] +
+				parameters[10]*classes[3]*states[i]/parameters[12];
+		}
+		if(i >= 2*K && i < 3*K)
+		{	/* additional pupa morality from cannibalism */
+			rates[i+n_states-1] += parameters[11]*classes[3]*states[i]/parameters[12];
+		}
+	}
+	/* adults births */
+	rates[n_rates-2] = death_rate[3]*states[n_states-1];
+	rates[n_rates-1] = b*states[n_states-1];
 
 	/* cumsum the rates */
-	for(i = 1; i < N; i++)
+	for(i = 1; i < n_rates; i++)
 	{
 		rates[i] += rates[i-1]; 
 	}
-
-
 }
 
 /* event handling */
-int outcome(int * state, const double * parameters, int event){
-	int K = parameters[9];
-	if (event < 3*K){
-		--state[event];
-		++state[event+1]; 
-	} else if (event < 6*K){
-		--state[event];
-	} else if (event == 6*K+1){
-		++state[0];
-	} else { printf("error\n"); }
+int outcome(int * states, const double * parameters, int event){
+	int K = parameters[8];
+	if (event < 3*K){ /* transitions */
+		--states[event];
+		++states[event+1];
+	} else if (event < 6*K+1){ /* deaths */
+		--states[event - 3*K ];
+		if( states[event - 3*K] < 0) printf("whoops! %d %d\n", event, event - 3*K);
+	} else if (event == 6*K+1){ /* birth */
+		++states[0];
+	} else { printf("error: event is: %d\n", event); }
 	return 0; // switch to 1 to stop simulation
 }
 
 void 
-fixed_interval_fn(const double t, const int * states, const double * parameters, void * record)
+fixed_interval_fn(const double t, const int * states, const double * parameters, void * my_record)
 {
-
+	double * rec = (double *) my_record;
+	if( t > rec[0]){
+		int classes[4] = {0,0,0,0};
+		int K = parameters[8];
+		const size_t n_states = 3*K+1;
+		int i;
+		for(i = 0; i < n_states; i++)
+		{
+			classes[i / K] += states[i] ;
+		}
+		printf("%g %d %d %d %d\n", t, classes[0], classes[1], classes[2], classes[3]);
+		rec[0] += rec[1];
+	}
 };
 
 
@@ -76,7 +105,7 @@ void
 gillespie_sim(
 	const int * inits, 
 	const double * parameters, 
-	const size_t n_event_types, 
+	const size_t n_rates, 
 	const size_t n_states, 
 	void * my_record, 
 	const double max_time, 
@@ -94,11 +123,11 @@ gillespie_sim(
 
     /* Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  */
-	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_event_types, n_states) \
+	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_rates, n_states) \
 		private(lambda, t, tmp, i, check, l)
 	{
 		/* The vector to store cumulative sum of rates */
-		double * rates_data = (double *) calloc (n_event_types,sizeof(double) );
+		double * rates_data = (double *) calloc (n_rates,sizeof(double) );
 		int * states = (int *) calloc (n_states, sizeof(int) );
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for
@@ -108,7 +137,7 @@ gillespie_sim(
 			while(t < max_time){
 				/* calculate time until next event */
 			rates_calc(rates_data, states, parameters);
-			lambda = rates_data[n_event_types-1]; 
+			lambda = rates_data[n_rates-1]; 
 				t += gsl_ran_exponential(rng, 1/lambda);
 			
 				/* Events such as sampling occur at regular intervals */
@@ -116,7 +145,7 @@ gillespie_sim(
 
 				/* Execute the appropriate event */
 				tmp = gsl_rng_uniform(rng);
-				for(i=0;i<n_event_types;i++){
+				for(i=0;i<n_rates;i++){
 					if( tmp < rates_data[i]/lambda ){
 						check = outcome(states, parameters, i);
 						break;
@@ -142,21 +171,29 @@ int main(void)
 
 
 
-	/*					  {ae, al, ap, ue , ul , up , ua , b, K} */
-	double parameters[] = {.1, .1, .1, .01, .01, .01, .01, 5, 10};
-	int K = parameters[9];
-	const size_t n_event_types = 6*K+2;
+
+	const int K = 10;
+	const size_t n_rates = 6*K+2;
 	const size_t n_states = 3*K+1;
 	int * inits = (int *) calloc(n_states, sizeof(int));
-	inits[n_states - 1] = 100;
 
-	double max_time = 100;
+	inits[0] = 100;
+	/*                      {ae,  al,  ap, ue ,   ul,   up , ua , b, K,  cle,  cae,  cap, Vol*/
+	double parameters[13] = {1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100};
+
+	double max_time = 200;
 	int ensembles = 1;
 
-	void * my_record = NULL;
+	double my_record[2] = {0, 10};
+	
+	double rates_data[n_rates];
+	rates_calc(rates_data, inits, parameters);
 
-	gillespie_sim(inits, parameters, n_event_types, n_states, my_record, max_time, ensembles);
+//	fixed_interval_fn(0, inits, parameters, my_record);
+//	outcome(inits, parameters, 6*K+1);
 
+	gillespie_sim(inits, parameters, n_rates, n_states, my_record, max_time, ensembles);
+	free(inits);
 	return 0;
 }
 
