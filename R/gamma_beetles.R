@@ -66,10 +66,14 @@ gamma_example <- function(){
 
 
 	volume <- 100
-	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
-						ae = .13*k, al = .01*k, ap = .15*k,
-						cle = .2, cap = .1, cae = 5, V=volume)
-	times <- seq(0,800,length=100)
+#	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
+#						ae = .13*k, al = .01*k, ap = .15*k,
+#						cle = .2, cap = .1, cae = 5, V=volume)
+	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
+						ae = .1*k, al = .01*k, ap = .1*k,
+						cle = 1, cap = .4, cae = 1, V=volume)
+
+	times <- seq(0,400,length=100)
 	Xo <- numeric(adults)
 	Xo[1] <- 100
 #	Xo = rep(10, adults)
@@ -90,7 +94,7 @@ gamma_example <- function(){
 	data[,8] = beetle_data[,1+2*(3*k+1)]
 
 
-	png("oscillate_noise.png", 800, 800)
+	png("poisson_noise.png", 800, 800)
 	# Plot results
 	cols = c("yellow", "yellowgreen", "lightgreen", "darkgreen");
 	par(mfrow=c(2,1))
