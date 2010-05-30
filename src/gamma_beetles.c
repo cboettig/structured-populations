@@ -62,7 +62,7 @@ fixed_interval_fn(const double t, const int * states, const double * parameters,
 
 
 /** */
-reset(int * states, const int * inits, n_states)
+void reset_state(int * states, const int * inits, const int n_states)
 {
 	int i;
 	for(i = 0; i < n_states; i++)
@@ -74,11 +74,11 @@ reset(int * states, const int * inits, n_states)
 
 void 
 gillespie_sim(
-	const init * inits, 
+	const int * inits, 
 	const double * parameters, 
 	const size_t n_event_types, 
 	const size_t n_states, 
-	void * recording, 
+	void * my_record, 
 	const double max_time, 
 	const size_t ensembles )
 {
@@ -94,7 +94,7 @@ gillespie_sim(
 
     /* Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  */
-	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, record, n_event_types, n_states) \
+	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_event_types, n_states) \
 		private(lambda, t, tmp, i, check, l)
 	{
 		/* The vector to store cumulative sum of rates */
@@ -103,7 +103,7 @@ gillespie_sim(
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for
 		for(l = 0; l < ensembles; l++){
-			reset(states, inits, n_states);	
+			reset_state(states, inits, n_states);	
 			t = 0; check=0;
 			while(t < max_time){
 				/* calculate time until next event */
@@ -112,22 +112,22 @@ gillespie_sim(
 				t += gsl_ran_exponential(rng, 1/lambda);
 			
 				/* Events such as sampling occur at regular intervals */
-				fixed_interval_fn(t, states, parameters, record);
+				fixed_interval_fn(t, states, parameters, my_record);
 
 				/* Execute the appropriate event */
 				tmp = gsl_rng_uniform(rng);
 				for(i=0;i<n_event_types;i++){
 					if( tmp < rates_data[i]/lambda ){
-						check = outcome(state, i);
+						check = outcome(states, parameters, i);
 						break;
 					} 
 				}
 			if(check) break;
 
 		   }/* end evolution */
-			free(my_pars);
 		}/* end ensembles */
 		free(rates_data);
+		free(states);
 	} /* end parallel */
 	gsl_rng_free(rng);
 }
@@ -144,7 +144,7 @@ int main(void)
 
 	/*					  {ae, al, ap, ue , ul , up , ua , b, K} */
 	double parameters[] = {.1, .1, .1, .01, .01, .01, .01, 5, 10};
-	int K = parameters[9]
+	int K = parameters[9];
 	const size_t n_event_types = 6*K+2;
 	const size_t n_states = 3*K+1;
 	int * inits = (int *) calloc(n_states, sizeof(int));
@@ -153,8 +153,12 @@ int main(void)
 	double max_time = 100;
 	int ensembles = 1;
 
-	gillespie_sim(inits, parameters, n_event_types, n_states, recording, max_time, ensembles);
+	void * my_record = NULL;
 
+	gillespie_sim(inits, parameters, n_event_types, n_states, my_record, max_time, ensembles);
+
+	return 0;
 }
+
 
 
