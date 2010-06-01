@@ -26,53 +26,59 @@
  */
 
 typedef struct {
-	int ** classes;
-	int sample_index;
-	double sample_time;
-	double sample_timestep;
+	size_t n_samples;
+	double t_step;
+	int * s1;
+	int * s2;
+	int * s3;
+	int * s4;
 } record;
 
-record * record_alloc(size_t n_samples, double sample_timestep)
+record* record_alloc(size_t n_samples, size_t replicates, double maxtime)
 {
-	record * my_record = (record *) malloc(sizeof(record));
-	my_record->classes = (int **) malloc(4*sizeof(int *));
-	int i;
-	for(i = 0; i < 4; i++)
-		my_record->classes[i] = (int *) malloc(n_samples * sizeof(int) );
-	my_record->sample_time = 0;
-	my_record->sample_timestep = sample_timestep; 
-	my_record->sample_index = 0;
-	return my_record;
+	record* myrecord = (record*) malloc(sizeof(record));
+	myrecord->t_step = maxtime/n_samples;
+	myrecord->n_samples = n_samples;
+	myrecord->s1 = (int *) calloc(replicates*(n_samples+1), sizeof(int));
+	myrecord->s2 = (int *) calloc(replicates*(n_samples+1), sizeof(int));
+	myrecord->s3 = (int *) calloc(replicates*(n_samples+1), sizeof(int));
+	myrecord->s4 = (int *) calloc(replicates*(n_samples+1), sizeof(int));
+return myrecord;
 }
 
-void record_free(record * my_record)
+void record_free(record * myrecord)
 {
-	int i;
-	for(i = 0; i < 4; i++)
-		free(my_record->classes[i]); 
-	free(my_record->classes);
-	free(my_record);
+	free(myrecord->s1);
+	free(myrecord->s2);
+	free(myrecord->s3);
+	free(myrecord->s4);
+	free(myrecord);
 }
+
 
 void 
-fixed_interval_fn(const double t, const int * states, const double * parameters, void * my_record)
+fixed_interval_fn(const double t, const int * states, const double * parameters, void * my_record, int * sample_index, int rep)
 {
 	record * rec = (record *) my_record;
-	if( t > rec->sample_time){
+	if( t > rec->t_step * sample_index[0]){
 		int K = parameters[8];
-		const size_t n_states = 3*K+1;
+		int j = sample_index[0]+rep*rec->n_samples; // sample_index is within a replicate, j is position including replicate number
+
 		int i;
-		for(i = 0; i < n_states; i++)
-		{
-			rec->classes[i / K][rec->sample_index] += states[i] ;
-		}
+		for(i = 0; i < K; i++)
+			rec->s1[j] += states[i] ;
+		for(i = K; i < 2*K; i++)
+			rec->s2[j] += states[i] ;
+		for(i = 2*K; i < 3*K; i++)
+			rec->s3[j] += states[i] ;
+		rec->s4[j] += states[3*K] ;
+
 		printf("%g %d %d %d %d\n", t, 
-			rec->classes[0][rec->sample_index], 
-			rec->classes[1][rec->sample_index], 
-			rec->classes[2][rec->sample_index],
-			rec->classes[3][rec->sample_index]);
-		rec->sample_time += rec->sample_timestep;
-		++rec->sample_index;
+			rec->s1[j], 
+			rec->s2[j], 
+			rec->s3[j],
+			rec->s4[j]);
+		++sample_index[0];
 	}
 };
 
@@ -171,22 +177,23 @@ gillespie_sim(
 	#endif
 
 	/* Gillespie simulation variables */
-	int l,i,check;
-	double lambda, t, tmp;
-
+	
     /* Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  */
-	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_rates, n_states) \
-		private(lambda, t, tmp, i, check, l)
+	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_rates, n_states) 
+//		private(lambda, t, tmp, rep, i, check, sample_index)
 	{
 		/* The vector to store cumulative sum of rates */
 		double * rates_data = (double *) calloc (n_rates,sizeof(double) );
 		int * states = (int *) calloc (n_states, sizeof(int) );
+		int rep,i,check,sample_index[1];
+		double lambda, t, tmp;
+
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
 		#pragma omp for
-		for(l = 0; l < ensembles; l++){
+		for(rep = 0; rep < ensembles; rep++){
 			reset_state(states, inits, n_states);	
-			t = 0; check=0;
+			t = 0; check=0; sample_index[0] = 0;
 			while(t < max_time){
 				/* calculate time until next event */
 			rates_calc(rates_data, states, parameters);
@@ -194,7 +201,7 @@ gillespie_sim(
 				t += gsl_ran_exponential(rng, 1/lambda);
 			
 				/* Events such as sampling occur at regular intervals */
-				fixed_interval_fn(t, states, parameters, my_record);
+				fixed_interval_fn(t, states, parameters, my_record, sample_index, rep);
 
 				/* Execute the appropriate event */
 				tmp = gsl_rng_uniform(rng);
@@ -232,14 +239,14 @@ void gamma_beetles(	int * inits,
 // X[3K+1] = K egg classes, K larva classes, K pupa classes, adult class, 
 // Totals: 3K+1 states
 
-	record *  my_record = record_alloc(*n_samples, *max_time / *n_samples);
+	record *  my_record = record_alloc(*n_samples, *n_ensembles, *max_time);
 	gillespie_sim(inits, parameters, *n_rates, *n_states, my_record, *max_time, *n_ensembles);
 	int i;
 	for(i = 0; i < *n_samples; i++){
-		s1[i] = my_record->classes[0][i];
-		s2[i] = my_record->classes[1][i];
-		s3[i] = my_record->classes[2][i];
-		s4[i] = my_record->classes[3][i];
+		s1[i] = my_record->s1[i];
+		s2[i] = my_record->s2[i];
+		s3[i] = my_record->s3[i];
+		s4[i] = my_record->s4[i];
 	}
 	record_free(my_record);
 }
