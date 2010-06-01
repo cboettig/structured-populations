@@ -259,7 +259,7 @@ main(void)
 	int n_states = 3*K+1;
 	double max_time = 200;
 	int samples = 50;
-	int ensembles = 1;
+	int ensembles = 2;
 
 	int * inits = (int *) calloc(n_states, sizeof(int));
 	inits[0] = 100;
@@ -267,10 +267,10 @@ main(void)
 	double parameters[13] = {1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100};
 	
 	// outputs -- Doubles because the ensemble averaging will require it! 
-	double s1[50];
-	double s2[50];
-	double s3[50];
-	double s4[50];
+	double s1[50*2];
+	double s2[50*2];
+	double s3[50*2];
+	double s4[50*2];
 
 
 	gamma_beetles(inits, parameters, &n_rates, &n_states, &max_time, &samples, &ensembles, s1, s2, s3, s4);
