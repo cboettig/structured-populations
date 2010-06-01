@@ -14,6 +14,71 @@
 
 //parameters = {ae, al, ap, ue, ul, up, ua, b, K, cle, cae, cap}
 
+
+/*
+ *  Dah, should use the same record as beetles.c, to handle 
+ *  parallelization and ensembles. Prallellization requires
+ *  a private counter for the sample index (sample time is 
+ *  sample_index times timestep).  Perhaps this private counter
+ *  can be hardwired into gillespie and passed to fixed_interval_tasks()
+ * 
+ *
+ */
+
+typedef struct {
+	int ** classes;
+	int sample_index;
+	double sample_time;
+	double sample_timestep;
+} record;
+
+record * record_alloc(size_t n_samples, double sample_timestep)
+{
+	record * my_record = (record *) malloc(sizeof(record));
+	my_record->classes = (int **) malloc(4*sizeof(int *));
+	int i;
+	for(i = 0; i < 4; i++)
+		my_record->classes[i] = (int *) malloc(n_samples * sizeof(int) );
+	my_record->sample_time = 0;
+	my_record->sample_timestep = sample_timestep; 
+	my_record->sample_index = 0;
+	return my_record;
+}
+
+void record_free(record * my_record)
+{
+	int i;
+	for(i = 0; i < 4; i++)
+		free(my_record->classes[i]); 
+	free(my_record->classes);
+	free(my_record);
+}
+
+void 
+fixed_interval_fn(const double t, const int * states, const double * parameters, void * my_record)
+{
+	record * rec = (record *) my_record;
+	if( t > rec->sample_time){
+		int K = parameters[8];
+		const size_t n_states = 3*K+1;
+		int i;
+		for(i = 0; i < n_states; i++)
+		{
+			rec->classes[i / K][rec->sample_index] += states[i] ;
+		}
+		printf("%g %d %d %d %d\n", t, 
+			rec->classes[0][rec->sample_index], 
+			rec->classes[1][rec->sample_index], 
+			rec->classes[2][rec->sample_index],
+			rec->classes[3][rec->sample_index]);
+		rec->sample_time += rec->sample_timestep;
+		++rec->sample_index;
+	}
+};
+
+
+
+
 /** Calculate rates */
 void rates_calc(double * rates, const int * states, const double * parameters){
 	double transition_rate[3] = {parameters[0], parameters[1], parameters[2]};
@@ -71,26 +136,14 @@ int outcome(int * states, const double * parameters, int event){
 	return 0; // switch to 1 to stop simulation
 }
 
-void 
-fixed_interval_fn(const double t, const int * states, const double * parameters, void * my_record)
-{
-	double * rec = (double *) my_record;
-	if( t > rec[0]){
-		int classes[4] = {0,0,0,0};
-		int K = parameters[8];
-		const size_t n_states = 3*K+1;
-		int i;
-		for(i = 0; i < n_states; i++)
-		{
-			classes[i / K] += states[i] ;
-		}
-		printf("%g %d %d %d %d\n", t, classes[0], classes[1], classes[2], classes[3]);
-		rec[0] += rec[1];
-	}
-};
 
 
-/** */
+
+
+
+
+/** Function is needed by gillespie algorithm, but can be hardwired to gillespie library,
+ * as form isn't unique it need not be specified seperately for each model.  */
 void reset_state(int * states, const int * inits, const int n_states)
 {
 	int i;
@@ -163,39 +216,57 @@ gillespie_sim(
 
 
 
-int main(void)
+void gamma_beetles(	int * inits, 
+					double * parameters, 
+					int * n_rates, 
+					int * n_states, 
+					double * max_time, 
+					int * n_samples, 
+					int * n_ensembles,
+					double * s1,
+					double * s2,
+					double * s3,
+					double * s4)
 {
 // Totals 6K+2 events
 // X[3K+1] = K egg classes, K larva classes, K pupa classes, adult class, 
 // Totals: 3K+1 states
 
+	record *  my_record = record_alloc(*n_samples, *max_time / *n_samples);
+	gillespie_sim(inits, parameters, *n_rates, *n_states, my_record, *max_time, *n_ensembles);
+	int i;
+	for(i = 0; i < *n_samples; i++){
+		s1[i] = my_record->classes[0][i];
+		s2[i] = my_record->classes[1][i];
+		s3[i] = my_record->classes[2][i];
+		s4[i] = my_record->classes[3][i];
+	}
+	record_free(my_record);
+}
 
-
-
+int
+main(void)
+{
 	const int K = 10;
-	const size_t n_rates = 6*K+2;
-	const size_t n_states = 3*K+1;
-	int * inits = (int *) calloc(n_states, sizeof(int));
-
-	inits[0] = 100;
-	/*                      {ae,  al,  ap, ue ,   ul,   up , ua , b, K,  cle,  cae,  cap, Vol*/
-	double parameters[13] = {1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100};
-
+	int n_rates = 6*K+2;
+	int n_states = 3*K+1;
 	double max_time = 200;
+	int samples = 50;
 	int ensembles = 1;
 
-	double my_record[2] = {0, 10};
+	int * inits = (int *) calloc(n_states, sizeof(int));
+	inits[0] = 100;
+//                      {ae,  al,  ap, ue ,   ul,   up , ua , b, K,  cle,  cae,  cap, Vol
+	double parameters[13] = {1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100};
 	
-	double rates_data[n_rates];
-	rates_calc(rates_data, inits, parameters);
+	// outputs -- Doubles because the ensemble averaging will require it! 
+	double s1[50];
+	double s2[50];
+	double s3[50];
+	double s4[50];
 
-//	fixed_interval_fn(0, inits, parameters, my_record);
-//	outcome(inits, parameters, 6*K+1);
 
-	gillespie_sim(inits, parameters, n_rates, n_states, my_record, max_time, ensembles);
+	gamma_beetles(inits, parameters, &n_rates, &n_states, &max_time, &samples, &ensembles, s1, s2, s3, s4);
 	free(inits);
 	return 0;
 }
-
-
-
