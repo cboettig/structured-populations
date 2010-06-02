@@ -45,17 +45,17 @@ metapop_ibm <- function(Xo = c(500,500), parameters=c(0.2, .6, .1, .1, .1, .1, 1
 
 
 
-# Pars = {b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
+# Pars = {b, ue, ul, up, ua, ae, al, ap, cle, cap, cae, Vol} 
 gamma_beetles_ibm <- function(Xo = c(100,0,0,0), 
-						parameters= c(5., 0, 0.001, 0, 0.003, 1/3.8, 1/(20.2-3.8), 1/(25.5-20.2), 0.01, 0.004, 0.01, 100),
+						parameters= c(5, 0, 0.001, 0, 0.003, 1.3, .1, 1.5, 2, 5, 1, 100),
 						K = 10,
 						times = seq(0,1000,length=500),
 						reps = 1 ){
 	samples <- length(times)
 	N <- reps*samples
 	maxtime <- max(times)
-	pars <- c(parameters[2:8], parameters[1], K, parameters[9:11])
-	test_pars <- c(1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100)
+	## Note that the C code is using a very different convention for order of parameters
+	pars <- c(parameters[6:8], parameters[2:5], parameters[1], K, parameters[9:11], parameters[12])
 	n_rates = 6*K+2;
 	n_states = 3*K+1;
 	max_time = 200;
@@ -69,7 +69,7 @@ gamma_beetles_ibm <- function(Xo = c(100,0,0,0),
 
 	o <- .C("gamma_beetles",  
 				as.integer(inits),
-				as.double(test_pars), 
+				as.double(pars), 
 				as.integer(n_rates),
 				as.integer(n_states),
 				as.double(maxtime),
