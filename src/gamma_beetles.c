@@ -34,7 +34,7 @@ typedef struct {
 	int * s4;
 } record;
 
-record* record_alloc(size_t n_samples, size_t replicates, double maxtime)
+record* g_record_alloc(size_t n_samples, size_t replicates, double maxtime)
 {
 	record* myrecord = (record*) malloc(sizeof(record));
 	myrecord->t_step = maxtime/n_samples;
@@ -46,7 +46,7 @@ record* record_alloc(size_t n_samples, size_t replicates, double maxtime)
 return myrecord;
 }
 
-void record_free(record * myrecord)
+void g_record_free(record * myrecord)
 {
 	free(myrecord->s1);
 	free(myrecord->s2);
@@ -180,7 +180,7 @@ gillespie_sim(
 	
     /* Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  */
-	#pragma omp parallel shared(rng, inits, parameters, max_time, ensembles, my_record, n_rates, n_states) 
+	#pragma omp parallel shared(rng, inits, parameters, my_record) 
 //		private(lambda, t, tmp, rep, i, check, sample_index)
 	{
 		/* The vector to store cumulative sum of rates */
@@ -239,7 +239,7 @@ void gamma_beetles(	int * inits,
 // X[3K+1] = K egg classes, K larva classes, K pupa classes, adult class, 
 // Totals: 3K+1 states
 
-	record *  my_record = record_alloc(*n_samples, *n_ensembles, *max_time);
+	record *  my_record = g_record_alloc(*n_samples, *n_ensembles, *max_time);
 	gillespie_sim(inits, parameters, *n_rates, *n_states, my_record, *max_time, *n_ensembles);
 	int i;
 	for(i = 0; i < *n_samples; i++){
@@ -248,11 +248,12 @@ void gamma_beetles(	int * inits,
 		s3[i] = my_record->s3[i];
 		s4[i] = my_record->s4[i];
 	}
-	record_free(my_record);
+	g_record_free(my_record);
 }
 
-int
-main(void)
+
+//int main(void)
+int ga(void)
 {
 	const int K = 10;
 	int n_rates = 6*K+2;

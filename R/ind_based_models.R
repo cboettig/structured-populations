@@ -45,27 +45,59 @@ metapop_ibm <- function(Xo = c(500,500), parameters=c(0.2, .6, .1, .1, .1, .1, 1
 
 
 
-# Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
+# Pars = {b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
 gamma_beetles_ibm <- function(Xo = c(100,0,0,0), 
 						parameters= c(5., 0, 0.001, 0, 0.003, 1/3.8, 1/(20.2-3.8), 1/(25.5-20.2), 0.01, 0.004, 0.01, 100),
+						K = 10,
 						times = seq(0,1000,length=500),
 						reps = 1 ){
 	samples <- length(times)
 	N <- reps*samples
 	maxtime <- max(times)
-	pars <- c(Xo, parameters)
-	o <- .C("gamma_beetles",  as.double(pars), as.integer(samples), as.integer(reps), as.double(maxtime), double(N), double(N), double(N), double(N) )
+	pars <- c(parameters[2:8], parameters[1], K, parameters[9:11])
+	test_pars <- c(1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100)
+	n_rates = 6*K+2;
+	n_states = 3*K+1;
+	max_time = 200;
+
+	# start at beginning of each age class
+	inits = integer(n_states)
+	inits[1] = Xo[1]
+	inits[K+1] = Xo[2]
+	inits[2*K+1] = Xo[3]
+	inits[3*K+1] = Xo[4]
+
+	o <- .C("gamma_beetles",  
+				as.integer(inits),
+				as.double(test_pars), 
+				as.integer(n_rates),
+				as.integer(n_states),
+				as.double(maxtime),
+				as.integer(samples), 
+				as.integer(reps), 
+				double(N), # 8  
+				double(N), # 9 
+				double(N), #10
+				double(N) )#11 
 
 	calc_moments <- function(j){
-		x <- matrix(o[[j]], samples, reps)
+		x <- matrix(o[[7+j]], samples, reps)
 		m <- sapply(1:samples, function(i) mean(x[i,]))
 		v <- sapply(1:samples, function(i) var(x[i,]))
 		list(m=m,v=v)
 	}
 	moments <- sapply(1:4, calc_moments)
 
-	list(E = o[[1]], L = o[[2]], P = o[[3]], A = o[[4]], mv=moments, parameters = parameters, Xo = Xo)
+	list(E = o[[8]], L = o[[9]], P = o[[10]], A = o[[11]], mv=moments, parameters = parameters, Xo = Xo)
 }
+
+
+
+
+
+
+
+
 
 # Pars = {E, L, P, A, b, ue, ul, up, ua, ae, al, ap, cle, cap, cae} 
 beetles_ibm <- function(Xo = c(100,0,0,0), 
