@@ -88,7 +88,7 @@ gamma_beetles_ibm <- function(Xo = c(100,0,0,0),
 	}
 	moments <- sapply(1:4, calc_moments)
 
-	list(E = o[[8]], L = o[[9]], P = o[[10]], A = o[[11]], mv=moments, parameters = parameters, Xo = Xo)
+	list(E = o[[8]], L = o[[9]], P = o[[10]], A = o[[11]], mv=moments, parameters = parameters, Xo = Xo, times = times)
 }
 
 
