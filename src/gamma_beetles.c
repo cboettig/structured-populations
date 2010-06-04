@@ -73,11 +73,7 @@ fixed_interval_fn(const double t, const int * states, const double * parameters,
 			rec->s3[j] += states[i] ;
 		rec->s4[j] += states[3*K] ;
 
-		printf("%g %d %d %d %d\n", t, 
-			rec->s1[j], 
-			rec->s2[j], 
-			rec->s3[j],
-			rec->s4[j]);
+//		printf("%g %d %d %d %d\n", t, rec->s1[j], rec->s2[j], rec->s3[j], rec->s4[j]);
 		++sample_index[0];
 	}
 };
