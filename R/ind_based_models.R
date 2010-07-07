@@ -60,6 +60,8 @@ gamma_beetles_ibm <- function(Xo = c(100,0,0,0),
 	n_states = 3*K+1;
 	max_time = 200;
 
+print(pars)
+
 	# start at beginning of each age class
 	inits = integer(n_states)
 	inits[1] = Xo[1]
@@ -88,7 +90,7 @@ gamma_beetles_ibm <- function(Xo = c(100,0,0,0),
 	}
 	moments <- sapply(1:4, calc_moments)
 
-	list(E = o[[8]], L = o[[9]], P = o[[10]], A = o[[11]], mv=moments, parameters = parameters, Xo = Xo, times = times)
+	list(E = o[[8]], L = o[[9]], P = o[[10]], A = o[[11]], mv=moments, parameters = parameters, Xo = o[[1]], times = times)
 }
 
 
