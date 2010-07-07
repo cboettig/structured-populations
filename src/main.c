@@ -5,6 +5,7 @@ int beetle(void);
 int ws(void);
 int meta(void);
 int hast(void);
+int ga(void);
 
 int main(void){
 
@@ -18,7 +19,8 @@ int main(void){
 //	beetle();
 //	crow();
 //	meta();
-	hast();	
+//	hast();	
+	ga();
 	return 0;
 }
 

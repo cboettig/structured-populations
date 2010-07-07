@@ -73,7 +73,7 @@ fixed_interval_fn(const double t, const int * states, const double * parameters,
 			rec->s3[j] += states[i] ;
 		rec->s4[j] += states[3*K] ;
 
-//		printf("%g %d %d %d %d\n", t, rec->s1[j], rec->s2[j], rec->s3[j], rec->s4[j]);
+//		printf("%d %g %d %d %d %d\n", j, t, rec->s1[j], rec->s2[j], rec->s3[j], rec->s4[j]);
 		++sample_index[0];
 	}
 };
@@ -131,7 +131,7 @@ int outcome(int * states, const double * parameters, int event){
 		++states[event+1];
 	} else if (event < 6*K+1){ /* deaths */
 		--states[event - 3*K ];
-		if( states[event - 3*K] < 0) printf("whoops! %d %d\n", event, event - 3*K);
+		if( states[event - 3*K] < 0) printf("whoops! negative population %d %d\n", event, event - 3*K);
 	} else if (event == 6*K+1){ /* birth */
 		++states[0];
 	} else { printf("error: event is: %d\n", event); }
@@ -226,10 +226,10 @@ void gamma_beetles(	int * inits,
 					double * max_time, 
 					int * n_samples, 
 					int * n_ensembles,
-					double * s1,
-					double * s2,
-					double * s3,
-					double * s4)
+					int * s1,
+					int * s2,
+					int * s3,
+					int * s4)
 {
 // Totals 6K+2 events
 // X[3K+1] = K egg classes, K larva classes, K pupa classes, adult class, 
@@ -238,7 +238,7 @@ void gamma_beetles(	int * inits,
 	record *  my_record = g_record_alloc(*n_samples, *n_ensembles, *max_time);
 	gillespie_sim(inits, parameters, *n_rates, *n_states, my_record, *max_time, *n_ensembles);
 	int i;
-	for(i = 0; i < *n_samples; i++){
+	for(i = 0; i < (*n_samples) * (*n_ensembles); i++){
 		s1[i] = my_record->s1[i];
 		s2[i] = my_record->s2[i];
 		s3[i] = my_record->s3[i];
@@ -263,14 +263,21 @@ int ga(void)
 //                      {ae,  al,  ap, ue ,   ul,   up , ua , b, K,  cle,  cae,  cap, Vol
 	double parameters[13] = {1.3, 0.1, 1.5, .00, .001, .00, .003, 5, K,  .2,   0.5, .100, 100};
 	
-	// outputs -- Doubles because the ensemble averaging will require it! 
-	double s1[50*2];
-	double s2[50*2];
-	double s3[50*2];
-	double s4[50*2];
+	// outputs -- Doubles because the ensemble averaging will require it!  -- Wait, we're not ensemble averaging! 
+	int s1[50*2];
+	int s2[50*2];
+	int s3[50*2];
+	int s4[50*2];
 
 
 	gamma_beetles(inits, parameters, &n_rates, &n_states, &max_time, &samples, &ensembles, s1, s2, s3, s4);
+
+	int i;
+	for(i = 0; i < 100; i++)
+	{
+//		printf("%d %d %d %d\n", s1[i], s2[i], s3[i], s4[i]);
+	}
+
 	free(inits);
 	return 0;
 }

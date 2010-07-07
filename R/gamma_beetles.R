@@ -1,3 +1,5 @@
+## Simulate beetle dynamics
+
 
 k <-10
 eggs <- 1:k	
@@ -69,17 +71,24 @@ gamma_example <- function(){
 #	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
 #						ae = .13*k, al = .01*k, ap = .15*k,
 #						cle = .2, cap = .1, cae = 5, V=volume)
+## 
 	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
 						ae = .1*k, al = .01*k, ap = .1*k,
 						cle = 1, cap = .4, cae = 1, V=volume)
 
 	times <- seq(0,400,length=100)
 	Xo <- numeric(adults)
-	Xo[1] <- 100
+	Xo[1] <- 250
+	Xo[11] <- 50
+	Xo[21] <- 10
+	Xo[31] <- 50
 #	Xo = rep(10, adults)
 
 	beetle_data <- linear_noise_approx	(Xo, times, beetle_pars, b_gamma, d_gamma, J_gamma, T_gamma, Omega=volume)
+	ibm <- gamma_beetles_ibm(Xo=c(Xo[1], Xo[11], Xo[21], Xo[31]), par=beetle_pars, time = times, reps = 100)
 
+
+	save(list=ls(), file = "gamma_beetles_data.Rdat")
 
 	# Collapse the pseudo-classes
 	data <- matrix(0, length(times), 8)
@@ -105,7 +114,11 @@ gamma_example <- function(){
 	}
 	legend("right", c("egg", "larva", "pupa", "adult"), 
 		lty=1, col=c("yellow", "yellowgreen", "lightgreen", "darkgreen") )
-
+	
+	points(times, ibm$mv[[1,1]], col="yellow")	
+	points(times, ibm$mv[[1,2]], col="yellowgreen")	
+	points(times, ibm$mv[[1,3]], col="lightgreen")	
+	points(times, ibm$mv[[1,4]], col="darkgreen")	
 
 
 
@@ -115,6 +128,11 @@ gamma_example <- function(){
 		lines(times, (data[,4+i]), col=cols[i], lwd=3)
 	}
 
+
+	points(beetle_data[,1], sqrt(ibm$mv[[2,1]]), col="yellow")	
+	points(beetle_data[,1], sqrt(ibm$mv[[2,2]]), col="yellowgreen")	
+	points(beetle_data[,1], sqrt(ibm$mv[[2,3]]), col="lightgreen")	
+	points(beetle_data[,1], sqrt(ibm$mv[[2,4]]), col="darkgreen")
 
 	dev.off()
 

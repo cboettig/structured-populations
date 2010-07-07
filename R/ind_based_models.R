@@ -75,10 +75,10 @@ gamma_beetles_ibm <- function(Xo = c(100,0,0,0),
 				as.double(maxtime),
 				as.integer(samples), 
 				as.integer(reps), 
-				double(N), # 8  
-				double(N), # 9 
-				double(N), #10
-				double(N) )#11 
+				integer(N), # 8  
+				integer(N), # 9 
+				integer(N), #10
+				integer(N) )#11 
 
 	calc_moments <- function(j){
 		x <- matrix(o[[7+j]], samples, reps)
