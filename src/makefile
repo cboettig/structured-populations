@@ -4,7 +4,7 @@
 CCP = g++
 CC = gcc
 C_OMP = -fopenmp 
-CFLAGS = -Wall -lgsl -lgslcblas -lm -O3 -fpic -g
+CFLAGS = -Wall -lgsl -lgslcblas -lm -O4 -fpic -funroll-loops -lgomp
 TRIBOL = tribolium.cpp kde.cpp 
 WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c main.c

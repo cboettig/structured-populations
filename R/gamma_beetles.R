@@ -68,15 +68,15 @@ gamma_example <- function(){
 
 
 	volume <- 100
-	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
-						ae = .13*k, al = .01*k, ap = .15*k,
-						cle = .2, cap = .1, cae = 5, V=volume)
+#	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = 0.01, 
+#						ae = .13*k, al = .01*k, ap = .15*k,
+#						cle = .2, cap = .1, cae = 5, V=volume)
 ## 
-#	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
-#						ae = .1*k, al = .01*k, ap = .1*k,
-#						cle = 1, cap = .4, cae = 1, V=volume)
+	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
+						ae = .1*k, al = .01*k, ap = .1*k,
+						cle = 1, cap = .4, cae = 1, V=volume)
 
-	times <- seq(0,4000,length=1000)
+	times <- seq(0,400,length=100)
 	Xo <- numeric(adults)
 	Xo[1] <- 200
 #	Xo[11] <- 50
@@ -88,7 +88,7 @@ gamma_example <- function(){
 	ibm <- gamma_beetles_ibm(Xo=c(Xo[1], Xo[11], Xo[21], Xo[31]), par=beetle_pars, time = times, reps = 100)
 
 
-	save(list=ls(), file = "gamma_beetles_data.Rdat")
+	save(list=ls(), file = "gamma_beetles_data2.Rdat")
 
 	# Collapse the pseudo-classes
 	data <- matrix(0, length(times), 8)
@@ -103,7 +103,7 @@ gamma_example <- function(){
 	data[,8] = beetle_data[,1+2*(3*k+1)]
 
 
-#	pdf("poisson_noise.pdf", 800, 800)
+	png("stable_nodes.png", 800, 800)
 	# Plot results
 	cols = c("yellow", "yellowgreen", "lightgreen", "darkgreen");
 	par(mfrow=c(2,1))

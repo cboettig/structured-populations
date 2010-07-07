@@ -73,7 +73,7 @@ fixed_interval_fn(const double t, const int * states, const double * parameters,
 			rec->s3[j] += states[i] ;
 		rec->s4[j] += states[3*K] ;
 
-//		printf("%d %g %d %d %d %d\n", j, t, rec->s1[j], rec->s2[j], rec->s3[j], rec->s4[j]);
+		//printf("%d | %g | %d %d %d %d\n", j, t, rec->s1[j], rec->s2[j], rec->s3[j], rec->s4[j]);
 		++sample_index[0];
 	}
 };
@@ -177,7 +177,6 @@ gillespie_sim(
     /* Dynamically allocated private arrays must be declared inside 
 	 * the parallel region.  */
 	#pragma omp parallel shared(rng, inits, parameters, my_record) 
-//		private(lambda, t, tmp, rep, i, check, sample_index)
 	{
 		/* The vector to store cumulative sum of rates */
 		double * rates_data = (double *) calloc (n_rates,sizeof(double) );
@@ -186,7 +185,7 @@ gillespie_sim(
 		double lambda, t, tmp;
 
 		/* Loop over ensembles, will be parallelized if compiled with -fopenmp */
-		#pragma omp for
+		#pragma omp for //private(lambda, t, tmp, rep, i, check, sample_index)
 		for(rep = 0; rep < ensembles; rep++){
 			reset_state(states, inits, n_states);	
 			t = 0; check=0; sample_index[0] = 0;
@@ -254,7 +253,7 @@ int ga(void)
 	const int K = 10;
 	int n_rates = 6*K+2;
 	int n_states = 3*K+1;
-	double max_time = 400;
+	double max_time = 4000;
 	int samples = 50;
 	int ensembles = 2;
 
