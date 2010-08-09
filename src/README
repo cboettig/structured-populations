@@ -1,0 +1,65 @@
+Population Dynamics Simulations
+===============================
+
+
+Source Files in Pop Dyn suite 
+-----------------------------
+tribolium.cpp -- Individual based beetle dynamics, exact age transitions.  Uses kde.cpp library, custom Gillespie library for birth/death only.  
+kde.cpp -- kernel density estimators, with kde.h
+
+
+beetles.c -- ELPA beetle dynamics by Gillespie simulation (exp. waiting times between stages)
+gamma_beetles.c -- ELPA model with linear chain trick, so ELP stages have k substages, making waiting times between stages gamma distributed
+
+crowley.c -- birth-death model, competition based birth for x indep process from death event for y.  
+			$ dx/dt = b_x x (K-x-y) - d_x x + c_x x y $
+			$ dy/dt = b_y y (K-x-y) - d_y y - c_y x y $
+metapop.c --  birth-death model + transitions:
+			$ dx/dt = b_x x (K-x-y) - d_x x + c x y $
+			$ dy/dt = b_y y (K-x-y) - d_y y - c x y $
+hastings.c -- equivalent to setting c_y = 0 in crowley model. (deprecated)
+
+
+gillespie.c -- Gillespie library. Uses gillespie.h 
+
+
+
+odeintegrators.c -- ODE integration library used by warning_signals
+pars.c -- used by warning signals 
+record.c -- recording rules for warning_signals
+odeinterators.c -- ode integration library to solve ODEs, used by warning_signals
+correlation.c -- Correlation function statistics, general library used by warning_signals
+
+
+
+main.c -- collect the executable versions for different programs for C-level compile only.  ws, correlation, tribol, beetle, crow, meta, hast, gs.  
+
+
+
+
+
+Warning Signals 
+-----------------
+
+A saddle-node bifurcation example, with substantial code for C-based calculation of the classic warning signals
+
+
+Crowley model
+-------------
+
+
+
+warning_signals.c
+odeintegrators.c
+
+gillespie.c, gillespie.h
+
+correlation.c
+record.c, record.h -- class for recording warning signals
+pars.c, pars.h -- class for warning signals parameters
+main.c
+
+tribolium.cpp
+kde.cpp  -- C consistent
+
+
