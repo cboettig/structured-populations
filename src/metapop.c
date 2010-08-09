@@ -17,32 +17,7 @@
  *
  */
 #include "gillespie.h"
-
-/** record class for Crowley model */
-typedef struct {
-	double t_step;
-	size_t N;
-	double * s1;
-	double * s2;
-} record;
-
-record* m_record_alloc(size_t N, size_t replicates, double maxtime)
-{
-	record* myrecord = (record*) malloc(sizeof(record));
-	myrecord->t_step = maxtime/N;
-	myrecord->N = N;
-	myrecord->s1 = (double*) calloc(replicates*(N+1), sizeof(double));
-	myrecord->s2 = (double*) calloc(replicates*(N+1), sizeof(double));
-	return myrecord;
-}
-
-void m_record_free(record * myrecord)
-{
-	free(myrecord->s1);
-	free(myrecord->s2);
-	free(myrecord);
-}
-
+#include "gillespie_recording.h"
 
 /** Execute all tasks that occur on fixed interval schedule  */
 void m_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
@@ -86,7 +61,7 @@ double dx(void * ss)
 double dy(void * ss)
 { 
 	const double * s = (double *) ss;
-	      /* x *  bx   +   cy*x*y	  */
+	      /* y *  by   */
 	return s[1]*s[5] ; 
 }
 
@@ -181,7 +156,7 @@ void metapop(double* s1, double* s2, double* inits, int* n_samples, int* reps, d
 	RESET reset_fn = &m_reset;
 	FIXED fixed_interval_fn = &m_fixed_interval;
 	
-	record * my_record = m_record_alloc(*n_samples, *reps, *maxtime);
+	record * my_record = record_alloc(*n_samples, *reps, *maxtime);
 	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, (size_t) *reps, reset_fn, fixed_interval_fn);
 
 	int i;
@@ -190,7 +165,7 @@ void metapop(double* s1, double* s2, double* inits, int* n_samples, int* reps, d
 		s1[i] = my_record->s1[i]; 
 		s2[i] = my_record->s2[i];
 	}
-	m_record_free(my_record);
+	record_free(my_record);
 
 /*
 	for(i=0; i< *n_samples; i++)

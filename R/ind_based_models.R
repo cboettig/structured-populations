@@ -2,6 +2,32 @@
 # @author: Carl Boettiger, <cboettig@gmail.com>
 # @section DESCRIPTION wrapper to the C code containing the gillespie simulation for individual-based models.  
 
+
+#	Pars = {n, e, a, K, h, i, Da,Dt} 
+# inits[8] = {572, .5, 160, 1000, 200, 0, 1, 100};
+
+saddle_node_ibm <- function(
+	Xo = c(500,4500), 
+	parameters=c(570, .5, 160, 1000, 200, 0, 1, 100),
+	times = seq(0,100,length=50), 
+	reps=1)
+{
+	samples <- length(times)
+	N <- reps*samples
+	maxtime <- max(times)
+	pars <- c(Xo, parameters)
+	o <- .C("saddle_node_direct", double(N), as.double(pars), as.integer(samples), as.integer(reps), as.double(maxtime) )
+
+	x1 = matrix(o[[1]], samples, reps)
+	m1 <- sapply(1:samples, function(i) mean(x1[i,]))
+	v1 <- sapply(1:samples, function(i) var(x1[i,]))
+
+	list(x1 = x1,  m1=m1, v1=v1, parameters = parameters, Xo = Xo)
+}
+
+
+
+
 # Pars = {x, y, bx, by, dx, dy, cx, cy, K} 
 crowley_ibm <- function(Xo = c(500,4500), 
 	parameters=c(0.11, .6, .1, .1, .1, 4, 10000), 

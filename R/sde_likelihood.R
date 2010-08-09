@@ -71,13 +71,18 @@ analytic_V <- function(Dt, pars){
 }
 
 # Parametrization dXt = alpha(theta - Xt)dt + sigma*dWt, alpha(t) = beta*t+alpha_0
-warning_model <- function(Dt, Xo, pars){
+warning_model <- function(Dt, Xo, pars, analytic=TRUE){
 	int <- pars$beta*Dt^2/2 + pars$alpha_0*Dt
 	Ex <- Xo * exp(-int) + pars$theta * (1 - exp(-int) )
-	Vx <- analytic_V(Dt, pars)
-	
+	if(analytic)
+		Vx <- analytic_V(Dt, pars)
+	else 
+		Vx <- numeric_V(Dt, pars)	
     return(list(Ex=Ex,Vx=Vx))
 }
+
+
+
 
 dcWarning <- function(x, Dt, x0, pars, log = FALSE){
   P <- warning_model(Dt, x0, pars)
@@ -92,5 +97,49 @@ warning.lik <- function(alpha_0, theta, sigma, beta){
   -sum( dcWarning(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
 }
 
+
+
+# time shift
+# pars <- list(alpha_1 = , alpha_2 = , theta = , sigma = , t_shift = )
+TwoRates <- function(Dt, Xo, pars){
+
+	gamma <- pars$alpha_1*min(Dt, pars$t_shift) + pars$alpha_2*max(Dt-pars$t_shift,0)
+
+	omega <- pars$theta*( max(0,exp(pars$alpha_2*Dt) - exp(pars$alpha_2*pars$t_shift)))  + 
+			 pars$theta*(exp(pars$alpha_1*min(Dt, pars$t_shift) ) - 1)
+
+
+	if(omega >= Inf){
+		message("assuming equilibrium...")
+		return(list(Ex=pars$theta, Vx=pars$sigma/pars$alpha_2) )
+	}
+
+	Ex <- exp(-gamma)*(Xo + omega) 
+
+	Vx <- exp(-2*gamma) * ( (pars$sigma)^2/(2*pars$alpha_2) * ( max(0, exp( 2*pars$alpha_2*Dt ) - exp(2*pars$alpha_2*pars$t_shift) ) ) +
+		  (pars$sigma)^2/(2*pars$alpha_1) * (exp(2*pars$alpha_1*min(Dt, pars$t_shift)) -1)) 
+				
+    return(list(Ex=Ex,Vx=Vx))
+}
+
+dcTwoRates <- function(x, Dt, x0, pars, log = FALSE){
+	P <- TwoRates(Dt, x0, pars)
+#	print(P$Vx)
+#	print(unlist(pars))
+	dnorm(x, mean=P$Ex, sd=sqrt(P$Vx), log=log)
+}
+
+TwoRates.lik <- function(alpha_1, alpha_2, theta, sigma, t_shift){
+	n<- length(X)
+	dt <- deltat(X)
+	pars <- list(alpha_1 = alpha_1, alpha_2 = alpha_2, theta = theta, sigma = sigma, t_shift=t_shift)
+	-sum( dcTwoRates(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
+
+}
+
+rcTwoRates <- function(n=1, Dt, x0, pars){
+		P <- TwoRates(Dt, x0, pars)
+		rnorm(n, mean=P$Ex, sd = sqrt(P$Vx)) 
+}
 
 

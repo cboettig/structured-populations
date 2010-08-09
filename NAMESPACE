@@ -1,5 +1,5 @@
 export(ensemble, beetle_sim, likelihood)
-export(	warning_signals,
+export(	warning_signals, plot.warning_signals,
 		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU,
 		linnoise, linear_noise_approx,
 		beetles_ibm, crowley_ibm, metapop_ibm, gamma_beetles_ibm,

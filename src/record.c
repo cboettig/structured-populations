@@ -1,6 +1,6 @@
 #include "record.h"
 
-record * record_alloc(size_t sampletime, double samplefreq, size_t maxtime)
+record * ws_record_alloc(size_t sampletime, double samplefreq, size_t maxtime)
 {
 	size_t windowsize = sampletime/samplefreq;
 	size_t length = maxtime/samplefreq;
@@ -21,7 +21,7 @@ record * record_alloc(size_t sampletime, double samplefreq, size_t maxtime)
 	return my_record;
 }
 
-void record_free(record * my_record)
+void ws_record_free(record * my_record)
 {
 	free(my_record->hist);
 	free(my_record->means);

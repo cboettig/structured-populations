@@ -4,23 +4,19 @@ int crow(void);
 int beetle(void);
 int ws(void);
 int meta(void);
-int hast(void);
 int ga(void);
+int sn(void);
 
 int main(void){
 
-	/* Test warning signals */
-//	ws();
-	/* Test correlation (for warning_signals) */
-//	correlation();
-	/* Test tribolium "main" */
-//	tribol();
-
-//	beetle();
-//	crow();
-//	meta();
-//	hast();	
-	ga();
+//	ws(); // warning_signals.c
+//	correlation(); // correlation.c
+//	tribol(); //tribol.cpp
+//	beetle(); //metapop.c
+//	crow(); //crowley.c
+//	meta(); //metapop.c
+//	ga(); //gamma_beetles
+	sn();
 	return 0;
 }
 

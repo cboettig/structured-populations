@@ -9,10 +9,17 @@ TRIBOL = tribolium.cpp kde.cpp
 WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c main.c
 BEETLES = beetles.c gillespie.c main.c
-FILES = metapop.c beetles.c crowley.c gillespie.c hastings.c gamma_beetles.c main.c
+META = metapop.c gillespie.c gillespie_recording.c main.c  
+SADDLENODE = saddle_node_direct.c gillespie.c gillespie_recording.c main.c
+
+FILES = metapop.c beetles.c crowley.c gillespie.c gillespie_recording.h gamma_beetles.c main.c
+
 
 build:
 	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(FILES)
+
+saddlenode:
+	$(CC) $(CFLAGS) $(C_OMP) -o saddlenode.exe $(SADDLENODE)
 
 warning: 
 	$(CC) $(CFLAGS) $(C_OMP) -o warning.exe $(WARNING)
@@ -25,6 +32,9 @@ beetles:
 
 tribol:
 	$(CCP) $(CFLAGS) $(C_OMP) -o tribol.exe $(TRIBOL)
+
+meta: 
+	$(CC) $(CFLAGS) $(C_OMP) -o meta.exe $(META)
 
 clean:
 	rm -f *.o *.so

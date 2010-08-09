@@ -139,7 +139,7 @@ void warning_signals(
 	FIXED fixed_interval_fn = &warning_fixed_interval;
 
 
-	record * my_record = record_alloc(*sample_time, *sample_freq, *max_time);
+	record * my_record = ws_record_alloc(*sample_time, *sample_freq, *max_time);
 	/** Allocate and intialize the parameters structure for the functions */
 	int No = 572;
 	int K = 1000;
@@ -189,7 +189,7 @@ void warning_signals(
 	}
 
 	free(my_pars);
-	record_free(my_record);
+	ws_record_free(my_record);
 }
 
 /* ws "main" function */

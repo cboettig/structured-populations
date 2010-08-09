@@ -18,6 +18,6 @@ typedef struct {
 	size_t maxtime;
 } record;
 
-record * record_alloc(size_t sampletime, double samplefreq, size_t maxtime);
-void record_free(record * my_record);
+record * ws_record_alloc(size_t sampletime, double samplefreq, size_t maxtime);
+void ws_record_free(record * my_record);
 
