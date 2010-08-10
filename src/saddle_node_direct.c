@@ -33,7 +33,7 @@ void sn_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 	if (t > s[5]*my_record->t_step) 
 	{
 		my_record->s1[(int) s[5]+rep*my_record->N] = s[0]; 
-		printf("%g %g %g\n", t, s[0], s[2]);
+//		printf("%g %g %g\n", t, s[0], s[2]);
 		s[5] += 1; //increment sample counter
 
 	/* increment the bifurcation parameter each sampletime after a certain wait */

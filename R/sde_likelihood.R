@@ -71,7 +71,7 @@ analytic_V <- function(Dt, pars){
 }
 
 # Parametrization dXt = alpha(theta - Xt)dt + sigma*dWt, alpha(t) = beta*t+alpha_0
-warning_model <- function(Dt, Xo, pars, analytic=TRUE){
+warning_model <- function(Dt, Xo, pars, analytic=FALSE){
 	int <- pars$beta*Dt^2/2 + pars$alpha_0*Dt
 	Ex <- Xo * exp(-int) + pars$theta * (1 - exp(-int) )
 	if(analytic)
@@ -82,12 +82,16 @@ warning_model <- function(Dt, Xo, pars, analytic=TRUE){
 }
 
 
-
-
 dcWarning <- function(x, Dt, x0, pars, log = FALSE){
   P <- warning_model(Dt, x0, pars)
   dnorm(x, mean=P$Ex, sd=sqrt(P$Vx), log=log)
 }
+
+rcWarning <- function(n=1, Dt, x0, pars){
+  P <- warning_model(Dt, x0, pars)
+  rnorm(n, mean=P$Ex, sd=sqrt(P$Vx))
+}
+
 
 
 warning.lik <- function(alpha_0, theta, sigma, beta){
@@ -138,8 +142,26 @@ TwoRates.lik <- function(alpha_1, alpha_2, theta, sigma, t_shift){
 }
 
 rcTwoRates <- function(n=1, Dt, x0, pars){
-		P <- TwoRates(Dt, x0, pars)
-		rnorm(n, mean=P$Ex, sd = sqrt(P$Vx)) 
+	P <- TwoRates(Dt, x0, pars)
+	rnorm(n, mean=P$Ex, sd = sqrt(P$Vx)) 
 }
+
+TwoRates.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+	delta_t <- (T-t0)/N
+	Y <- numeric(N)
+	for(i in 1:(N-1)){
+		Y[i+1] <- rcTwoRates(1, Dt=delta_t, Y[i], pars)
+	}
+	Y
+}
+warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+	delta_t <- (T-t0)/N
+	Y <- numeric(N)
+	for(i in 1:(N-1)){
+		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], pars)
+	}
+	Y
+}
+
 
 
