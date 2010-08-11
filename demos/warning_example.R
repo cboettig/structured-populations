@@ -24,7 +24,6 @@ setOU(Dt, Xo, theta=c(theta*alpha, alpha, sigma) )
 # Simulate an example dataset without warning signal 
 X1 <- sde.sim(model="OU", theta= c(theta*alpha,alpha,sigma), X0=Xo, N=2000, T=10) # can specify N & delta and will calc T, or T & N.  
 X2 <- warning.sim(T = 10, N=2000, X0=Xo, pars=pars)
-X3 <- TwoRates.sim(T=10, N=2000, X0=Xo, pars=pars2 )
 
 X<-ts(X3)
 
@@ -75,6 +74,14 @@ oupars <- c( mean(X)*100, 100, sd(X) )
 o <- optim( oupars, OU.likfn)
 o2 <- optim( c(o$par[2], o$par[1]/o$par[2], o$par[3], 0 ), warning.likfn)
 o3 <- optim( c(o$par[2], o$par[2], o$par[1]/o$par[2], o$par[3], max(time(X))/2 ), TwoRates.likfn)
+
+
+
+
+
+
+
+
 
 
 

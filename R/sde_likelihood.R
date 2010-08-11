@@ -102,6 +102,56 @@ warning.lik <- function(alpha_0, theta, sigma, beta){
 }
 
 
+warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+	delta_t <- (T-t0)/N
+	Y <- numeric(N)
+	for(i in 1:(N-1)){
+		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], pars)
+	}
+	Y
+}
+
+
+
+# pars = c(alpha_1, alpha_2, theta, sigma, t_shift)
+changePt.sim <- function(t0= 0, T = 1, X0 = 1, N = 100, pars ){
+	midpt <- floor(N/2)
+
+	if(pars$t_shift < T & pars$t_shift > t0){
+		part1 <- sde.sim(model="OU", theta= c(pars$theta*pars$alpha_1,pars$alpha_1,pars$sigma), X0=X0, N=midpt, t0=t0, T=pars$t_shift)
+		# note that returns start condition, which is the same as the previous interval end, so interval overlaps by this point. 
+		part2 <- sde.sim(model="OU", theta= c(pars$theta*pars$alpha_2,pars$alpha_2,pars$sigma), X0=part1[midpt+1], N=N-midpt, t0=pars$t_shift, T=T)
+		return( ts(c(part1, part2[2:length(part2)]), start=t0, end=T) )
+	} if(pars$t_shift > T) {
+		message("time of shift occurs after end of time interval requested, returning all regime 1")
+		return sde.sim(model="OU", theta= c(pars$theta*pars$alpha_1,pars$alpha_1,pars$sigma), X0=X0, N=N, T=T)
+	} else {
+		message("time of shift occurs before start of time interval requested, returning all regime 2")
+		return  sde.sim(model="OU", theta= c(pars$theta*pars$alpha_2,pars$alpha_2,pars$sigma), X0=X0, N=N, T=T)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+############## Depricated ######################
 
 # time shift
 # pars <- list(alpha_1 = , alpha_2 = , theta = , sigma = , t_shift = )
@@ -154,14 +204,4 @@ TwoRates.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
 	}
 	Y
 }
-warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
-	delta_t <- (T-t0)/N
-	Y <- numeric(N)
-	for(i in 1:(N-1)){
-		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], pars)
-	}
-	Y
-}
-
-
 
