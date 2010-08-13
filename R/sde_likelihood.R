@@ -62,6 +62,12 @@ OU.lik <- function(X, pars){
 }
 
 
+OU.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+	theta = c(theta1=pars['alpha']*pars['theta'], theta2=pars['alpha'], theta3=pars['sigma'])
+	sde.sim(model="OU", theta= theta, X0=X0, N=N, t0=t0, T=T) 
+}
+
+OU.fitML <- function(X, pars)
 
 ### Early Warning model -- linear change
 
