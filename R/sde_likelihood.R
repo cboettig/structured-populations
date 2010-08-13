@@ -152,9 +152,11 @@ changePt.sim <- function(t0= 0, T = 1, X0 = 1, N = 100, pars ){
 
 
 
-changePt.lik <- function(t_shift, model_A.lik, pars_A, model_B.lik = model_A.lik, pars_B = pars_A){
-	X(time(X) <= t_shift) 
-	X(time(X)>t_shift)
+changePt.lik <- function(X, pars){
+	t_shift <- pars[5]
+	pars_ou1 <- c(alpha=pars[1], theta=pars[3], sigma=pars[4])
+	pars_ou2 <- c(alpha=pars[2], theta=pars[3], sigma=pars[4])
+	OU.lik( X[time(X) <= t_shift], pars_ou1 ) + OU.lik( X(time(X)>t_shift), pars_ou2)
 }
 
 
