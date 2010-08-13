@@ -49,9 +49,9 @@ OU.lik <- function(X, pars){
 	  }
 	}
   # throw large -loglik in case parameters are negative
-  if( theta2 < 0 | theta3 < 0){
+  if( theta2 <= 0 | theta3 <= 0){
 	message("certain parameters cannot be negative")
-    out <- 1e12 
+	out <- 1e12
   # Actually compute the minus log likelihood
   } else {
     n <- length(X)
@@ -61,13 +61,40 @@ OU.lik <- function(X, pars){
   out
 }
 
+OU.likfn <- function(pars){
+			OU.lik(X, pars)
+}
+
 
 OU.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
-	theta = c(theta1=pars['alpha']*pars['theta'], theta2=pars['alpha'], theta3=pars['sigma'])
+	theta = c(theta1=pars$alpha*pars$theta, theta2=pars$alpha, theta3=pars$sigma)
 	sde.sim(model="OU", theta= theta, X0=X0, N=N, t0=t0, T=T) 
 }
 
-OU.fitML <- function(X, pars)
+OU.fitML <- function(X, pars, use_mle=FALSE){
+	if(use_mle){
+		OU.mle <- function(alpha, theta, sigma){
+			OU.lik(X, list(	alpha=alpha, 
+							theta=theta, 
+							sigma=sigma))
+		}
+		out <- mle(OU.mle, 
+			start=list(	alpha=pars$alpha,
+						theta=pars$theta,
+						sigma=pars$sigma), 
+			method="L-BFGS-B", 
+			lower=c(0,-Inf,0))
+	} else {
+		X <<- X
+		out <- suppressMessages(
+				optim(	pars, 
+						OU.likfn, 
+						method="L-BFGS-B", 
+						lower=c(0,-Inf,0)))
+
+	}
+	out
+}
 
 ### Early Warning model -- linear change
 
@@ -96,6 +123,7 @@ analytic_V <- function(Dt, pars){
 
 # Parametrization dXt = alpha(theta - Xt)dt + sigma*dWt, alpha(t) = beta*t+alpha_0
 warning_model <- function(Dt, Xo, pars, analytic=FALSE){
+	# Assumes pars is a list, as this is the format wanted by mle, optim
 	int <- pars$beta*Dt^2/2 + pars$alpha_0*Dt
 	Ex <- Xo * exp(-int) + pars$theta * (1 - exp(-int) )
 	if(analytic)
@@ -119,11 +147,22 @@ rcWarning <- function(n=1, Dt, x0, pars){
 
 
 warning.lik <- function(X, pars){
-  alpha_0 = pars[1]; theta = pars[2]; sigma=pars[3]; beta = pars[4]
+  if(is(pars, "numeric")){
+	  alpha_0 = pars[1]; theta = pars[2]; sigma=pars[3]; beta = pars[4]
+  } else if(is(pars, "list") ){
+	  alpha_0 = pars[[1]]; theta = pars[[2]]; sigma=pars[[3]]; beta = pars[[4]]
+  }
   n <- length(X)
   dt <- deltat(X)
+
+  if(alpha_0 < 0) return(1e12)
+  if(sigma < 0 ) return(1e12)
   pars = list(alpha_0=alpha_0, theta=theta, sigma=sigma, beta=beta)
   -sum( dcWarning(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
+}
+
+warning.likfn <- function(pars){
+			warning.lik(X, pars)
 }
 
 
@@ -136,34 +175,113 @@ warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
 	Y
 }
 
+warning.fitML <- function(X, pars, use_mle=FALSE){
 
+	if(use_mle){
+		warning.mle <- function(alpha_0, theta, sigma, beta){
+			warning.lik(X, 
+						list(alpha_0=alpha_0,
+							theta=theta, 
+							sigma=sigma, 
+							beta=beta) )
+		}
+		out <- mle( warning.mle, 
+					start=list(	alpha_0=pars$alpha_0, 
+								theta=pars$theta, 
+								sigma=pars$sigma, 
+								beta=pars$beta), 
+					method="L-BFGS-B", 
+					lower=c(0, -Inf, 0, -Inf))
+	} else {
+		X <<- X
+		out <- optim(	pars, 
+						warning.likfn, 
+						method="L"
+						#lower=c(0,-Inf,0,-Inf)
+						)
+	}
+	out
+}
+
+
+#### ChangePt function library
 
 # pars = c(alpha_1, alpha_2, theta, sigma, t_shift)
 changePt.sim <- function(t0= 0, T = 1, X0 = 1, N = 100, pars ){
-	midpt <- floor(N/2)
+	if(!is(pars, "list")) error("pars should be list format") 
 
+	delta_t <- (T-t0)/N
+	N1 <- floor( (pars$t_shift - t0)/delta_t)
 	if(pars$t_shift < T & pars$t_shift > t0){
-		part1 <- sde.sim(model="OU", theta= c(pars$theta*pars$alpha_1,pars$alpha_1,pars$sigma), X0=X0, N=midpt, t0=t0, T=pars$t_shift)
+		part1 <- sde.sim(	model="OU", 
+							theta= c(	pars$theta*pars$alpha_1,
+										pars$alpha_1,
+										pars$sigma), 
+							X0=X0, 
+							t0=t0,
+							N = N1,
+							T=pars$t_shift)
 		# note that returns start condition, which is the same as the previous interval end, so interval overlaps by this point. 
-		part2 <- sde.sim(model="OU", theta= c(pars$theta*pars$alpha_2,pars$alpha_2,pars$sigma), X0=part1[midpt+1], N=N-midpt, t0=pars$t_shift, T=T)
-		return( ts(c(part1, part2[2:length(part2)]), start=t0, end=T) )
-	} if(pars$t_shift > T) {
+		part2 <- sde.sim(	model="OU", 
+							theta= c(	pars$theta*pars$alpha_2,
+										pars$alpha_2,
+										pars$sigma), 
+							X0=part1[length(part1)], 
+							N = N-N1,
+							t0=pars$t_shift, 
+							T=T)
+		return( ts(
+					c(part1, part2[2:length(part2)]), 
+					start=t0, 
+					deltat=deltat(part1)   ))
+
+	## Evaluate and warn if t_shift is outside time interval
+	} else if(pars$t_shift > T) {
 		message("time of shift occurs after end of time interval requested, returning all regime 1")
-		return sde.sim(model="OU", theta= c(pars$theta*pars$alpha_1,pars$alpha_1,pars$sigma), X0=X0, N=N, T=T)
+		return( sde.sim(	model="OU", 
+							theta= c(pars$theta*pars$alpha_1,
+									pars$alpha_1,
+									pars$sigma), 
+							X0=X0, 
+							N=N, 
+							T=T  ))
 	} else {
 		message("time of shift occurs before start of time interval requested, returning all regime 2")
-		return  sde.sim(model="OU", theta= c(pars$theta*pars$alpha_2,pars$alpha_2,pars$sigma), X0=X0, N=N, T=T)
+		return(  sde.sim(	model="OU", 
+							theta= c(pars$theta*pars$alpha_2,
+									pars$alpha_2,
+									pars$sigma), 
+							X0=X0, 
+							N=N, 
+							T=T	))
 	}
 }
 
 
 
 changePt.lik <- function(X, pars){
+
+	if(is(pars, "list")){ 
+		tmp <- unlist(pars)
+		names(tmp) <- names(pars)
+		pars <- tmp
+	}
 	t_shift <- pars[5]
-	pars_ou1 <- c(alpha=pars[1], theta=pars[3], sigma=pars[4])
-	pars_ou2 <- c(alpha=pars[2], theta=pars[3], sigma=pars[4])
-	OU.lik( X[time(X) <= t_shift], pars_ou1 ) + OU.lik( X(time(X)>t_shift), pars_ou2)
+	pars_ou1 <- list(alpha=pars[1], theta=pars[3], sigma=pars[4])
+	pars_ou2 <- list(alpha=pars[2], theta=pars[3], sigma=pars[4])
+	OU.lik( X[time(X) <= t_shift], pars_ou1 ) + OU.lik( X[time(X)>t_shift], pars_ou2)
 }
+
+changePt.likfn <- function(pars){
+	changePt.lik(X, pars) 
+}
+
+changePt.fitML <- function(X,pars){
+	X <<- X
+	suppressMessages( optim(pars, changePt.likfn, method="L-BFGS-B", lower=c(0,0,-Inf,0,0)) )
+}
+
+
 
 
 
