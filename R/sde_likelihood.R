@@ -34,10 +34,25 @@ pcOU <- function(x, Dt, x0, theta, lower.tail = TRUE, log.p = FALSE){
 
 
 
-# sde likelihood fits exploration
-OU.lik <- function(theta1, theta2, theta3){
+# sde likelihood, should take X as an argument and pars as an argument
+OU.lik <- function(X, pars){
+	# Handle a bunch of cases for possible parameter specification...
+	if(is(pars, "numeric")){
+	  if(is.null(names(pars))){ theta1 <- pars[1]; theta2 <- pars[2]; theta3 <- pars[3] 
+	  } else if(names(pars)[1] == "theta1"){ theta1 <- pars["theta1"]; theta2 <- pars["theta2"]; theta3 <- pars["theta3"]
+	  } else if(names(pars)[1] == "alpha"){ theta1 <- pars["alpha"]*pars["theta"]; theta2 <- pars["alpha"]; theta3 <- pars["sigma"]
+	  }
+	} else if(is(pars, "list")){
+	  if(is.null(names(pars))){ theta1 <- pars[[1]]; theta2 <- pars[[2]]; theta3 <- pars[[3]] 
+	  } else if(names(pars)[1] == "theta1"){ theta1 <- pars$theta1; theta2 <- pars$theta2; theta3 <- pars$theta3 
+	  } else if(names(pars)[1] == "alpha"){ theta1 <- pars$alpha*pars$theta; theta2 <- pars$alpha; theta3 <- pars$sigma 
+	  }
+	}
+  # throw large -loglik in case parameters are negative
   if( theta2 < 0 | theta3 < 0){
+	message("certain parameters cannot be negative")
     out <- 1e12 
+  # Actually compute the minus log likelihood
   } else {
     n <- length(X)
     dt <- deltat(X)
@@ -46,6 +61,9 @@ OU.lik <- function(theta1, theta2, theta3){
   out
 }
 
+
+
+### Early Warning model -- linear change
 
 
 numeric_V <- function(Dt, pars){
@@ -94,7 +112,8 @@ rcWarning <- function(n=1, Dt, x0, pars){
 
 
 
-warning.lik <- function(alpha_0, theta, sigma, beta){
+warning.lik <- function(X, pars){
+  alpha_0 = pars[1]; theta = pars[2]; sigma=pars[3]; beta = pars[4]
   n <- length(X)
   dt <- deltat(X)
   pars = list(alpha_0=alpha_0, theta=theta, sigma=sigma, beta=beta)
@@ -133,13 +152,10 @@ changePt.sim <- function(t0= 0, T = 1, X0 = 1, N = 100, pars ){
 
 
 
-
-
-
-
-
-
-
+changePt.lik <- function(t_shift, model_A.lik, pars_A, model_B.lik = model_A.lik, pars_B = pars_A){
+	X(time(X) <= t_shift) 
+	X(time(X)>t_shift)
+}
 
 
 

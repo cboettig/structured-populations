@@ -1,25 +1,8 @@
 require(stochPop)
-theta <- 3
-alpha <- 2
-sigma <- 1
-alpha_0 <- 1
-beta <- 2
-alpha_2 <- .01
-t_shift <- 5
-pars = list(alpha_0=alpha, theta=theta, sigma=sigma, beta=beta)
-pars2 = list(alpha_1=alpha, alpha_2=alpha_2, theta=theta, sigma=sigma, t_shift=t_shift)
-
+pars = c(alpha_0=2, theta=3, sigma=1, beta=2)
+pars2 = c(alpha_1=2, alpha_2=.2, theta=3, sigma=1, t_shift=0.5)
 Dt <- 1
-Xo <- theta
-
-# Numeric and analytic approximations to the variance agree
-numeric_V(Dt, pars)
-analytic_V(Dt, pars)
-
-# Compare the probability density between the two models.  Should roughly agree with small beta,
-# and should agree exactly with very small beta.  
-warning_model(Dt, Xo, pars)
-setOU(Dt, Xo, theta=c(theta*alpha, alpha, sigma) )
+Xo <- 3
 
 # Simulate an example dataset without warning signal 
 X1 <- sde.sim(model="OU", theta= c(theta*alpha,alpha,sigma), X0=Xo, N=2000, T=10) # can specify N & delta and will calc T, or T & N.  
@@ -64,7 +47,13 @@ TwoRates.likfn <- function(x){
 o <- optim(c(alpha*theta, alpha, sigma), OU.likfn)
 o3 <- optim(c(alpha, alpha, theta, sigma, t_shift), TwoRates.likfn, method="L", lower=c(0,0,0,0,0))
 
+fit_ou
+fit _warning
+fit_TwoRates
 
+bootstrap <- function(fit_model, reps=100, cpu=2){
+
+}
 
 ## Example using the saddle-node simulation
 sn <- saddle_node_ibm()
