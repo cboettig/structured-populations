@@ -13,22 +13,24 @@ X2 <- warning.sim(T = 10, N=2000, X0=Xo, pars=pars_wa)
 X3 <-changePt.sim(T = 10, N=2000, X0=Xo, pars=pars_cpt)
 
 
-# Fit the models
-
-
+# Fit the models, even MLE call works happily with Nelder-Mead algorithm
 fit <- OU.fitML(X1, pars_ou) 
 fit2 <- warning.fitML(X2, pars_wa)
 fit3 <- changePt.fitML(X3, pars_cpt)
 
 
 
-## formatted directly for optim or mle call, which takes parameters to be optimized in named list as argument 
-
-
-
-
-o <- optim(c(alpha*theta, alpha, sigma), OU.likfn)
 bootstrap <- function(fit_model, reps=100, cpu=2){
+	require(snowfall)
+	if(cpu>1){
+		sfInit()
+	} else {
+		sfinit(parallel=TRUE, cpu=cpu)
+		sfLibrary(stochPop)
+		sfExportAll()
+	}
+
+	data <- sfSapply(1:reps, function(i) )
 
 }
 
@@ -36,9 +38,6 @@ bootstrap <- function(fit_model, reps=100, cpu=2){
 sn <- saddle_node_ibm()
 X <- ts(sn$x1)
 
-oupars <- c( mean(X)*100, 100, sd(X) )
-o <- optim( oupars, OU.likfn)
-o2 <- optim( c(o$par[2], o$par[1]/o$par[2], o$par[3], 0 ), warning.likfn)
 
 
 

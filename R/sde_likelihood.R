@@ -175,7 +175,15 @@ warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
 	Y
 }
 
-warning.fitML <- function(X, pars, use_mle=FALSE){
+warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead", 
+    "BFGS", "CG", "L-BFGS-B", "SANN")){
+
+	method <- match.arg(method)
+	if(method == "L-BFGS-B"){ 
+		lower <- c(0, -Inf, 0, -Inf) 
+	} else { 
+		lower = -Inf
+	}
 
 	if(use_mle){
 		warning.mle <- function(alpha_0, theta, sigma, beta){
@@ -190,15 +198,14 @@ warning.fitML <- function(X, pars, use_mle=FALSE){
 								theta=pars$theta, 
 								sigma=pars$sigma, 
 								beta=pars$beta), 
-					method="L-BFGS-B", 
-					lower=c(0, -Inf, 0, -Inf))
+					method=method, 
+					lower=lower)
 	} else {
 		X <<- X
 		out <- optim(	pars, 
 						warning.likfn, 
-						method="N"
-#						method="L-BFGS-B",
-#						lower=c(0,-Inf,0,-Inf)
+						method=method,
+						lower=lower
 						)
 	}
 	out
@@ -277,9 +284,19 @@ changePt.likfn <- function(pars){
 	changePt.lik(X, pars) 
 }
 
-changePt.fitML <- function(X,pars){
+changePt.fitML <- function(X,pars,method = c("Nelder-Mead", 
+    "BFGS", "CG", "L-BFGS-B", "SANN")){
+
+	method <- match.arg(method)
+	if(method == "L-BFGS-B"){ 
+		lower <- c(0, -Inf, 0, -Inf) 
+	} else { 
+		lower = -Inf
+	}
+
+
 	X <<- X
-	suppressMessages( optim(pars, changePt.likfn, method="L-BFGS-B", lower=c(0,0,-Inf,0,0)) )
+	suppressMessages( optim(pars, changePt.likfn, method=method, lower=lower) )
 }
 
 
