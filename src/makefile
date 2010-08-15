@@ -37,7 +37,7 @@ meta:
 	$(CC) $(CFLAGS) $(C_OMP) -o meta.exe $(META)
 
 clean:
-	rm -f *.o *.so
+	rm -f *.o 
 
 
 

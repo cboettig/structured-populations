@@ -196,8 +196,9 @@ warning.fitML <- function(X, pars, use_mle=FALSE){
 		X <<- X
 		out <- optim(	pars, 
 						warning.likfn, 
-						method="L"
-						#lower=c(0,-Inf,0,-Inf)
+						method="N"
+#						method="L-BFGS-B",
+#						lower=c(0,-Inf,0,-Inf)
 						)
 	}
 	out

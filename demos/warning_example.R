@@ -5,6 +5,8 @@ pars_cpt = list(alpha_1=2, alpha_2=.2, theta=3, sigma=1, t_shift=5)
 Dt <- 1
 Xo <- 3
 
+source("R/sde_likelihood.R")
+
 # Simulate an example dataset without warning signal 
 X1 <- OU.sim(T = 10, N=2000, X0=Xo, pars=pars_ou)
 X2 <- warning.sim(T = 10, N=2000, X0=Xo, pars=pars_wa)
