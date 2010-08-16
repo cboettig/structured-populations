@@ -66,32 +66,56 @@ OU.likfn <- function(pars){
 }
 
 
-OU.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+simulate.OU <- function(pars, t0 = 0, T = 1, X0 = 1, N = 100){
 	theta = c(theta1=pars$alpha*pars$theta, theta2=pars$alpha, theta3=pars$sigma)
 	sde.sim(model="OU", theta= theta, X0=X0, N=N, t0=t0, T=T) 
 }
 
-OU.fitML <- function(X, pars, use_mle=FALSE){
+update.OU <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
+"BFGS", "CG", "L-BFGS-B", "SANN")){
+
+	method <- match.arg(method)
+	if(method == "L-BFGS-B"){ 
+		lower <- c(0, -Inf, 0, -Inf) 
+	} else { 
+		lower = -Inf
+	}
+
+	if(!is.null(pars$data)) pars$data <- NULL #needs only parameters 
+
+
 	if(use_mle){
 		OU.mle <- function(alpha, theta, sigma){
 			OU.lik(X, list(	alpha=alpha, 
 							theta=theta, 
 							sigma=sigma))
 		}
-		out <- mle(OU.mle, 
+		fit_results <- mle(OU.mle, 
 			start=list(	alpha=pars$alpha,
 						theta=pars$theta,
 						sigma=pars$sigma), 
-			method="L-BFGS-B", 
-			lower=c(0,-Inf,0))
+			method=method, 
+			lower=lower)
 	} else {
 		X <<- X
-		out <- suppressMessages(
+		fit_results <- suppressMessages(
 				optim(	pars, 
 						OU.likfn, 
-						method="L-BFGS-B", 
-						lower=c(0,-Inf,0)))
+						method=method, 
+						lower=lower))
 
+	}
+
+	if(is(fit_results, "mle")){
+		out <- as.list(fit_results@coef)
+		out$loglik <- -fit_results@minuslogl
+		out$data <- X
+		class(out) <- class(pars)
+	} else {
+		out <- as.list(fit_results$par)
+		out$loglik <- -fit_results$value
+		out$data <- X
+		class(out) <- class(pars)
 	}
 	out
 }
@@ -166,7 +190,7 @@ warning.likfn <- function(pars){
 }
 
 
-warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
+simulate.warning <- function(pars, t0 = 0, T = 1, X0 = 1, N = 100){
 	delta_t <- (T-t0)/N
 	Y <- numeric(N)
 	for(i in 1:(N-1)){
@@ -175,7 +199,7 @@ warning.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
 	Y
 }
 
-warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead", 
+update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead", 
     "BFGS", "CG", "L-BFGS-B", "SANN")){
 
 	method <- match.arg(method)
@@ -185,6 +209,8 @@ warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead",
 		lower = -Inf
 	}
 
+	if(!is.null(pars$data)) pars$data <- NULL #needs only parameters 
+
 	if(use_mle){
 		warning.mle <- function(alpha_0, theta, sigma, beta){
 			warning.lik(X, 
@@ -193,7 +219,7 @@ warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead",
 							sigma=sigma, 
 							beta=beta) )
 		}
-		out <- mle( warning.mle, 
+		fit_results <- mle( warning.mle, 
 					start=list(	alpha_0=pars$alpha_0, 
 								theta=pars$theta, 
 								sigma=pars$sigma, 
@@ -202,11 +228,22 @@ warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead",
 					lower=lower)
 	} else {
 		X <<- X
-		out <- optim(	pars, 
+		fit_results <- optim( pars, 
 						warning.likfn, 
 						method=method,
 						lower=lower
 						)
+	}
+	if(is(fit_results, "mle")){
+		out <- as.list(fit_results@coef)
+		out$loglik <- -fit_results@minuslogl
+		out$data <- X
+		class(out) <- class(pars)
+	} else {
+		out <- as.list(fit_results$par)
+		out$loglik <- -fit_results$value
+		out$data <- X
+		class(out) <- class(pars)
 	}
 	out
 }
@@ -215,8 +252,8 @@ warning.fitML <- function(X, pars, use_mle=FALSE,method = c("Nelder-Mead",
 #### ChangePt function library
 
 # pars = c(alpha_1, alpha_2, theta, sigma, t_shift)
-changePt.sim <- function(t0= 0, T = 1, X0 = 1, N = 100, pars ){
-	if(!is(pars, "list")) error("pars should be list format") 
+simulate.changePt <- function(pars, t0= 0, T = 1, X0 = 1, N = 100){
+	if(!is(pars, "list")) message("pars should be list format") 
 
 	delta_t <- (T-t0)/N
 	N1 <- floor( (pars$t_shift - t0)/delta_t)
@@ -284,19 +321,26 @@ changePt.likfn <- function(pars){
 	changePt.lik(X, pars) 
 }
 
-changePt.fitML <- function(X,pars,method = c("Nelder-Mead", 
+update.changePt <- function(pars,X,method = c("Nelder-Mead", 
     "BFGS", "CG", "L-BFGS-B", "SANN")){
 
 	method <- match.arg(method)
 	if(method == "L-BFGS-B"){ 
-		lower <- c(0, -Inf, 0, -Inf) 
+		lower <- c(0, 0, -Inf, 0, -Inf) 
 	} else { 
 		lower = -Inf
 	}
 
 
 	X <<- X
-	suppressMessages( optim(pars, changePt.likfn, method=method, lower=lower) )
+	if(!is.null(pars$data)) pars$data <- NULL #needs only parameters 
+	fit_results <- suppressMessages( optim(pars, changePt.likfn, method=method, lower=lower) )
+
+	out <- as.list(fit_results$par)
+	out$loglik <- -fit_results$value
+	out$data <- X
+	class(out) <- class(pars)
+	out
 }
 
 
@@ -305,63 +349,21 @@ changePt.fitML <- function(X,pars,method = c("Nelder-Mead",
 
 
 
-
-
-
-
-
-
-############## Depricated ######################
-
-# time shift
-# pars <- list(alpha_1 = , alpha_2 = , theta = , sigma = , t_shift = )
-TwoRates <- function(Dt, Xo, pars){
-
-	gamma <- pars$alpha_1*min(Dt, pars$t_shift) + pars$alpha_2*max(Dt-pars$t_shift,0)
-
-	omega <- pars$theta*( max(0,exp(pars$alpha_2*Dt) - exp(pars$alpha_2*pars$t_shift)))  + 
-			 pars$theta*(exp(pars$alpha_1*min(Dt, pars$t_shift) ) - 1)
-
-
-	if(omega >= Inf){
-		message("assuming equilibrium...")
-		return(list(Ex=pars$theta, Vx=pars$sigma/pars$alpha_2) )
+bootstrap <- function(model, reps=4, cpu=2){
+	require(snowfall)
+	if(cpu>1){
+		sfInit()
+	} else {
+		sfinit(parallel=TRUE, cpu=cpu)
+		sfLibrary(stochPop)
+		sfExportAll()
 	}
 
-	Ex <- exp(-gamma)*(Xo + omega) 
+	data <- sfSapply(1:reps, function(i) simulate(model) )
 
-	Vx <- exp(-2*gamma) * ( (pars$sigma)^2/(2*pars$alpha_2) * ( max(0, exp( 2*pars$alpha_2*Dt ) - exp(2*pars$alpha_2*pars$t_shift) ) ) +
-		  (pars$sigma)^2/(2*pars$alpha_1) * (exp(2*pars$alpha_1*min(Dt, pars$t_shift)) -1)) 
-				
-    return(list(Ex=Ex,Vx=Vx))
+	fits <- sfSapply(1:reps, function(i) update(model, data[,i]) )
 }
 
-dcTwoRates <- function(x, Dt, x0, pars, log = FALSE){
-	P <- TwoRates(Dt, x0, pars)
-#	print(P$Vx)
-#	print(unlist(pars))
-	dnorm(x, mean=P$Ex, sd=sqrt(P$Vx), log=log)
-}
 
-TwoRates.lik <- function(alpha_1, alpha_2, theta, sigma, t_shift){
-	n<- length(X)
-	dt <- deltat(X)
-	pars <- list(alpha_1 = alpha_1, alpha_2 = alpha_2, theta = theta, sigma = sigma, t_shift=t_shift)
-	-sum( dcTwoRates(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
 
-}
-
-rcTwoRates <- function(n=1, Dt, x0, pars){
-	P <- TwoRates(Dt, x0, pars)
-	rnorm(n, mean=P$Ex, sd = sqrt(P$Vx)) 
-}
-
-TwoRates.sim <- function(t0 = 0, T = 1, X0 = 1, N = 100, pars ){
-	delta_t <- (T-t0)/N
-	Y <- numeric(N)
-	for(i in 1:(N-1)){
-		Y[i+1] <- rcTwoRates(1, Dt=delta_t, Y[i], pars)
-	}
-	Y
-}
 
