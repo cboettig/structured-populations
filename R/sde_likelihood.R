@@ -36,11 +36,16 @@ pcOU <- function(x, Dt, x0, theta, lower.tail = TRUE, log.p = FALSE){
 
 # sde likelihood, should take X as an argument and pars as an argument
 OU.lik <- function(X, pars){
+	if(length(X) == 0){ return(0)}
+
 	# Handle a bunch of cases for possible parameter specification...
 	if(is(pars, "numeric")){
-	  if(is.null(names(pars))){ theta1 <- pars[1]; theta2 <- pars[2]; theta3 <- pars[3] 
-	  } else if(names(pars)[1] == "theta1"){ theta1 <- pars["theta1"]; theta2 <- pars["theta2"]; theta3 <- pars["theta3"]
-	  } else if(names(pars)[1] == "alpha"){ theta1 <- pars["alpha"]*pars["theta"]; theta2 <- pars["alpha"]; theta3 <- pars["sigma"]
+	  if(is.null(names(pars))){ 
+		  theta1 <- pars[1]; theta2 <- pars[2]; theta3 <- pars[3] 
+	  } else if(names(pars)[1] == "theta1"){ 
+		  theta1 <- pars["theta1"]; theta2 <- pars["theta2"]; theta3 <- pars["theta3"]
+	  } else if(names(pars)[1] == "alpha"){ 
+		  theta1 <- pars["alpha"]*pars["theta"]; theta2 <- pars["alpha"]; theta3 <- pars["sigma"]
 	  }
 	} else if(is(pars, "list")){
 	  if(is.null(names(pars))){ theta1 <- pars[[1]]; theta2 <- pars[[2]]; theta3 <- pars[[3]] 
@@ -51,7 +56,7 @@ OU.lik <- function(X, pars){
   # throw large -loglik in case parameters are negative
   if( theta2 <= 0 | theta3 <= 0){
 	message("certain parameters cannot be negative")
-	out <- 1e12
+	out <- Inf
   # Actually compute the minus log likelihood
   } else {
     n <- length(X)
@@ -66,7 +71,13 @@ OU.likfn <- function(pars){
 }
 
 
-simulate.OU <- function(pars, t0 = 0, T = 1, X0 = 1, N = 100){
+simulate.OU <- function(pars, t0 = pars$t0, T = pars$T, X0 = pars$X0, N = pars$N){
+	if(is.null(t0)) t0 <- 0
+	if(is.null(T)) T <- 1
+	if(is.null(X0)) X0 <- 1
+	if(is.null(N)) N <- 100
+
+
 	theta = c(theta1=pars$alpha*pars$theta, theta2=pars$alpha, theta3=pars$sigma)
 	sde.sim(model="OU", theta= theta, X0=X0, N=N, t0=t0, T=T) 
 }
@@ -109,11 +120,19 @@ update.OU <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 	if(is(fit_results, "mle")){
 		out <- as.list(fit_results@coef)
 		out$loglik <- -fit_results@minuslogl
+		out$T <- time(X)[length(X)]
+		out$t0 <- time(X)[1]
+		out$X0 <- X[1]
+		out$N <- length(X)
 		out$data <- X
 		class(out) <- class(pars)
 	} else {
 		out <- as.list(fit_results$par)
 		out$loglik <- -fit_results$value
+		out$T <- time(X)[length(X)]
+		out$t0 <- time(X)[1]
+		out$X0 <- X[1]
+		out$N <- length(X)
 		out$data <- X
 		class(out) <- class(pars)
 	}
@@ -179,8 +198,8 @@ warning.lik <- function(X, pars){
   n <- length(X)
   dt <- deltat(X)
 
-  if(alpha_0 < 0) return(1e12)
-  if(sigma < 0 ) return(1e12)
+  if(alpha_0 < 0) return(Inf)
+  if(sigma < 0 ) return(Inf)
   pars = list(alpha_0=alpha_0, theta=theta, sigma=sigma, beta=beta)
   -sum( dcWarning(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
 }
@@ -190,7 +209,12 @@ warning.likfn <- function(pars){
 }
 
 
-simulate.warning <- function(pars, t0 = 0, T = 1, X0 = 1, N = 100){
+simulate.warning <- function(pars, t0 = pars$t0, T = pars$T, X0 = pars$X0, N = pars$N){
+	if(is.null(t0)) t0 <- 0
+	if(is.null(T)) T <- 1
+	if(is.null(X0)) X0 <- 1
+	if(is.null(N)) N <- 100
+
 	delta_t <- (T-t0)/N
 	Y <- numeric(N)
 	for(i in 1:(N-1)){
@@ -237,11 +261,19 @@ update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 	if(is(fit_results, "mle")){
 		out <- as.list(fit_results@coef)
 		out$loglik <- -fit_results@minuslogl
+		out$T <- time(X)[length(X)]
+		out$t0 <- time(X)[1]
+		out$X0 <- X[1]
+		out$N <- length(X)
 		out$data <- X
 		class(out) <- class(pars)
 	} else {
 		out <- as.list(fit_results$par)
 		out$loglik <- -fit_results$value
+		out$T <- time(X)[length(X)]
+		out$t0 <- time(X)[1]
+		out$X0 <- X[1]
+		out$N <- length(X)
 		out$data <- X
 		class(out) <- class(pars)
 	}
@@ -252,8 +284,14 @@ update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 #### ChangePt function library
 
 # pars = c(alpha_1, alpha_2, theta, sigma, t_shift)
-simulate.changePt <- function(pars, t0= 0, T = 1, X0 = 1, N = 100){
+simulate.changePt <- function(pars,  t0 = pars$t0, T = pars$T, X0 = pars$X0, N = pars$N){
 	if(!is(pars, "list")) message("pars should be list format") 
+
+	if(is.null(t0)) t0 <- 0
+	if(is.null(T)) T <- 1
+	if(is.null(X0)) X0 <- 1
+	if(is.null(N)) N <- 100
+
 
 	delta_t <- (T-t0)/N
 	N1 <- floor( (pars$t_shift - t0)/delta_t)
@@ -311,6 +349,9 @@ changePt.lik <- function(X, pars){
 		names(tmp) <- names(pars)
 		pars <- tmp
 	}
+# check done by OU.lik already
+#	if(pars[1] < 0 | pars[2] < 0 | pars[4] < 0 ){ return(Inf) }
+
 	t_shift <- pars[5]
 	pars_ou1 <- list(alpha=pars[1], theta=pars[3], sigma=pars[4])
 	pars_ou2 <- list(alpha=pars[2], theta=pars[3], sigma=pars[4])
@@ -338,6 +379,11 @@ update.changePt <- function(pars,X,method = c("Nelder-Mead",
 
 	out <- as.list(fit_results$par)
 	out$loglik <- -fit_results$value
+	out$T <- time(X)[length(X)]
+	out$t0 <- time(X)[1]
+	out$X0 <- X[1]
+	out$N <- length(X)
+
 	out$data <- X
 	class(out) <- class(pars)
 	out
@@ -349,21 +395,72 @@ update.changePt <- function(pars,X,method = c("Nelder-Mead",
 
 
 
-bootstrap <- function(model, reps=4, cpu=2){
+bootstrap <- function(model, observed = NULL, reps=4, cpu=2){
 	require(snowfall)
-	if(cpu>1){
+	if(cpu<2){
 		sfInit()
 	} else {
-		sfinit(parallel=TRUE, cpu=cpu)
+		sfInit(parallel=TRUE, cpu=cpu)
 		sfLibrary(stochPop)
 		sfExportAll()
 	}
+	
+	# if data not provided seperately, try and get it from model
+	if(is.null(observed)){
+		if(!is.null(model$data) ){
+			observed <- model$data
+		} else { warning("data not found") }
+	}
 
-	data <- sfSapply(1:reps, function(i) simulate(model) )
 
-	fits <- sfSapply(1:reps, function(i) update(model, data[,i]) )
+	data <- sfSapply(1:reps, 
+		function(i) simulate(model, T=model$T, N=model$N, X0=model$X0) )
+	fits <- sfSapply(1:reps, 
+		function(i) update(model, data[,i]) )
+	
 }
 
+
+plot_bootstrap <- function(object, parameter="all"){
+	if(parameter == "all"){
+		n_pars <- dim(object)[1]-4
+		par(mfrow=c(1,n_pars) )
+		for(i in 1:n_pars){
+			plot(density(unlist(object[i,])), xlab=rownames(object)[i], main="" )
+		}
+	} else { 
+		i <- pmatch(parameter, rownames(object))
+		plot(density(unlist(object[i,])), xlab=rownames(object)[i], main=""  )
+	}
+}
+
+
+bootstrapLR <- function(model_list, reps=4, cpu=2){
+	
+	n_models <- length(model_list)
+	data <- vector(mode="list", length=n_models)
+	fits <- vector(mode="list", length=n_models^2)
+
+	require(snowfall)
+	if(cpu<2){
+		sfInit()
+	} else {
+		sfInit(parallel=TRUE, cpu=cpu)
+		sfLibrary(stochPop)
+		sfExportAll()
+	}
+	for(j in 1:n_models){
+		data[[j]] <- sfSapply(1:reps, 
+					function(i) simulate(model_list[[j]]) 	)
+		}
+
+	for(j in 1:n_models){
+		for(k in 1:n_models){
+			fits[[j]] <- sfSapply(1:reps, 
+					function(i) update(model[[j]], data[[k]][,i]) )
+		}
+	}
+}
 
 
 
