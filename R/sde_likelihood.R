@@ -349,12 +349,13 @@ changePt.lik <- function(X, pars){
 		names(tmp) <- names(pars)
 		pars <- tmp
 	}
-# check done by OU.lik already
-#	if(pars[1] < 0 | pars[2] < 0 | pars[4] < 0 ){ return(Inf) }
 
 	t_shift <- pars[5]
 	pars_ou1 <- list(alpha=pars[1], theta=pars[3], sigma=pars[4])
 	pars_ou2 <- list(alpha=pars[2], theta=pars[3], sigma=pars[4])
+#	t_shift <- pars$t_shift
+#	pars_ou1 <- list(alpha=pars$alpha_1, theta=pars$theta, sigma=pars$sigma)
+#	pars_ou2 <- list(alpha=pars$alpha_2, theta=pars$theta, sigma=pars$sigma)
 	OU.lik( X[time(X) <= t_shift], pars_ou1 ) + OU.lik( X[time(X)>t_shift], pars_ou2)
 }
 
@@ -421,9 +422,16 @@ bootstrap <- function(model, observed = NULL, reps=4, cpu=2){
 }
 
 
-plot_bootstrap <- function(object, parameter="all"){
+plot_bootstrap <- function(object, parameter="all", model=1){
+## plot the model specified if given the full likelihood ratio bootstrap, rather than reboostrapping the model
+	if(!is(object, "matrix")){
+		n_models <- sqrt(length(object$bootstraps))
+		j <- model
+		object <- object$bootstraps[[(j-1)*n_models+j]]
+	}
+
 	if(parameter == "all"){
-		n_pars <- dim(object)[1]-4
+		n_pars <- dim(object)[1]-5
 		par(mfrow=c(1,n_pars) )
 		for(i in 1:n_pars){
 			plot(density(unlist(object[i,])), xlab=rownames(object)[i], main="" )
@@ -441,6 +449,14 @@ bootstrapLR <- function(model_list, reps=4, cpu=2){
 	data <- vector(mode="list", length=n_models)
 	fits <- vector(mode="list", length=n_models^2)
 
+	# Calculate the likelihood ratio for the model set
+	observed_LR_ratios <- matrix(NA, n_models, n_models)
+	for(j in 1:n_models){
+		for(k in 1:n_models){
+			observed_LR_ratios[j,k] <- 2*(model_list[[j]]$loglik - model_list[[k]]$loglik)
+		}
+	}
+	# Initialize parallel processing
 	require(snowfall)
 	if(cpu<2){
 		sfInit()
@@ -449,17 +465,49 @@ bootstrapLR <- function(model_list, reps=4, cpu=2){
 		sfLibrary(stochPop)
 		sfExportAll()
 	}
+
+	# simulate data from each model
 	for(j in 1:n_models){
 		data[[j]] <- sfSapply(1:reps, 
 					function(i) simulate(model_list[[j]]) 	)
-		}
-
+	}
+	# fit each model to eack dataset
 	for(j in 1:n_models){
 		for(k in 1:n_models){
-			fits[[j]] <- sfSapply(1:reps, 
-					function(i) update(model[[j]], data[[k]][,i]) )
+			fits[[(j-1)*n_models+k]] <- sfSapply(1:reps, 
+					function(i) update(model_list[[j]], data[[k]][,i]) )
 		}
-	}
+	} 
+# consider output of original model values, etc
+	out <- list(bootstraps = fits, observed_LR_ratio = observed_LR_ratios)
+	class(out) = "LR_bootstraps"
+	out
+}
+
+
+# add function to reconstruct the plots 
+
+
+# plot likelihood ratio of model i vs model j
+LRplot <- function(input, i, j, main=""){
+	object <- input$bootstraps
+	n_models <- sqrt(length(object))
+	# model i on dataset j
+	test <- object[[(i-1)*n_models+j]]
+	# model j on dataset j
+	null <- object[[(j-1)*n_models+j]]
+
+	test_l <- pmatch("loglik", rownames(test) )
+	null_l <- pmatch("loglik", rownames(null) )
+
+	lr <- 2*( unlist( test[test_l,] ) - unlist( null[null_l, ] ) )
+	
+	obs_lr <- input$observed_LR_ratio[i,j]
+	xlim = range(c(range(lr), obs_lr) )
+	hist(lr, border='white', col='lightblue', xlim=xlim, main = main)
+	abline(v=obs_lr , lwd=4, lty=3, col="darkblue")
+	text(.98*obs_lr, .5*par()$yaxp[2], paste("p = ", round(sum(lr > obs_lr)/length(lr), digits=4)), cex=1.5)
+
 }
 
 
