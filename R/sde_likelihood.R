@@ -165,25 +165,34 @@ analytic_V <- function(Dt, pars){
 }
 
 # Parametrization dXt = alpha(theta - Xt)dt + sigma*dWt, alpha(t) = beta*t+alpha_0
-warning_model <- function(Dt, Xo, pars, analytic=FALSE){
+warning_model <- function(Dt, Xo, t, pars, analytic=FALSE){
 	# Assumes pars is a list, as this is the format wanted by mle, optim
+    pars$alpha_0 <- pars$alpha_0 + pars$beta*t
 	int <- pars$beta*Dt^2/2 + pars$alpha_0*Dt
 	Ex <- Xo * exp(-int) + pars$theta * (1 - exp(-int) )
 	if(analytic)
-		Vx <- analytic_V(Dt, pars)
+		Vx <- sapply(1:length(t), function(i){
+						params <- pars
+						params$alpha_0 <- pars$alpha_0[i]
+						analytic_V(Dt, params)	
+					})
 	else 
-		Vx <- numeric_V(Dt, pars)	
+		Vx <- sapply(1:length(t), function(i){
+						params <- pars
+						params$alpha_0 <- pars$alpha_0[i]
+						numeric_V(Dt, params)	
+					})
     return(list(Ex=Ex,Vx=Vx))
 }
 
 
-dcWarning <- function(x, Dt, x0, pars, log = FALSE){
-  P <- warning_model(Dt, x0, pars)
+dcWarning <- function(x, Dt, x0, pars, t, log = FALSE){
+  P <- warning_model(Dt, x0, t, pars)
   dnorm(x, mean=P$Ex, sd=sqrt(P$Vx), log=log)
 }
 
-rcWarning <- function(n=1, Dt, x0, pars){
-  P <- warning_model(Dt, x0, pars)
+rcWarning <- function(n=1, Dt, x0, t, pars){
+  P <- warning_model(Dt, x0, t, pars)
   rnorm(n, mean=P$Ex, sd=sqrt(P$Vx))
 }
 
@@ -201,7 +210,7 @@ warning.lik <- function(X, pars){
   if(alpha_0 < 0) return(Inf)
   if(sigma < 0 ) return(Inf)
   pars = list(alpha_0=alpha_0, theta=theta, sigma=sigma, beta=beta)
-  -sum( dcWarning(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
+  -sum( dcWarning(X[2:n], dt, X[1:(n-1)], pars, t=time(X)[1:(n-1)], log=TRUE) )
 }
 
 warning.likfn <- function(pars){
@@ -217,10 +226,13 @@ simulate.warning <- function(pars, t0 = pars$t0, T = pars$T, X0 = pars$X0, N = p
 
 	delta_t <- (T-t0)/N
 	Y <- numeric(N)
+	Y[1] <- X0
 	for(i in 1:(N-1)){
-		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], pars)
+		t <- t0 + (i-1)*delta_t
+		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], t, pars)
 	}
 	Y
+	ts(Y, start=t0, end=T, deltat=delta_t)
 }
 
 update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead", 
