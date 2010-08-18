@@ -44,8 +44,8 @@ LRplot(model_boots, 2,3, main = "warning vs ChangePt" )
 dev.off()
 
 
-png("ou_boot",1600,400); plot_bootstrap(model_boots, model=1); dev.off()
-png("wa_boot",1600,400); plot_bootstrap(model_boots, model=2); dev.off()
-png("cpt_boot",1600,400); plot_bootstrap(model_boots, model=3); dev.off()
 
+png("ou_boot.png",1600,400); plot_bootstrap(model_boots, model=1); dev.off()
+png("wa_boot.png",1600,400); plot_bootstrap(model_boots, model=2); dev.off()
+png("cpt_boot.png",1600,400); plot_bootstrap(model_boots, model=3); dev.off()
 

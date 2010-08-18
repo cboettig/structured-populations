@@ -151,13 +151,15 @@ numeric_V <- function(Dt, pars){
 }
 
 analytic_V <- function(Dt, pars){
+	near_zero <- FALSE
 	upper_erf <- erf((pars$alpha +Dt*pars$beta)/sqrt(pars$beta) )
 	if( upper_erf != 1){ # check numerical stability of erf
-		Log_Vx <- log(pars$sigma^2 *  sqrt(pi) ) + pars$alpha_0^2/(pars$beta)  + log( ( upper_erf - erf(pars$alpha_0/(sqrt(pars$beta) ) ))/(2*sqrt(pars$beta) ))
+		Log_Vx <- log(pars$sigma^2 *  sqrt(pi) ) + pars$alpha_0^2/(pars$beta)  + 
+			log( ( upper_erf - erf(pars$alpha_0/(sqrt(pars$beta) ) ))/(2*sqrt(pars$beta) ))
 		class(Log_Vx) = "numeric"
 		Vx <- exp(Log_Vx)
 	} else {
-		warning("beta near zero, using approximation")
+		warning("beta too near zero, using approximation")
 		Vx <- pars$sigma^2*(1-exp(-2*pars$alpha*Dt))/(2*pars$alpha)
 
 	}
@@ -168,6 +170,12 @@ analytic_V <- function(Dt, pars){
 warning_model <- function(Dt, Xo, t, pars, analytic=FALSE){
 	# Assumes pars is a list, as this is the format wanted by mle, optim
     pars$alpha_0 <- pars$alpha_0 + pars$beta*t
+
+
+	# negative alpha set to near zero
+	pars$alpha_0[pars$alpha_0 < 0] <- 1e-10
+
+
 	int <- pars$beta*Dt^2/2 + pars$alpha_0*Dt
 	Ex <- Xo * exp(-int) + pars$theta * (1 - exp(-int) )
 	if(analytic)
@@ -327,8 +335,8 @@ simulate.changePt <- function(pars,  t0 = pars$t0, T = pars$T, X0 = pars$X0, N =
 							T=T)
 		return( ts(
 					c(part1, part2[2:length(part2)]), 
-					start=t0, 
-					deltat=deltat(part1)   ))
+					start=t0,
+					deltat=delta_t   ))
 
 	## Evaluate and warn if t_shift is outside time interval
 	} else if(pars$t_shift > T) {
@@ -368,7 +376,18 @@ changePt.lik <- function(X, pars){
 #	t_shift <- pars$t_shift
 #	pars_ou1 <- list(alpha=pars$alpha_1, theta=pars$theta, sigma=pars$sigma)
 #	pars_ou2 <- list(alpha=pars$alpha_2, theta=pars$theta, sigma=pars$sigma)
-	OU.lik( X[time(X) <= t_shift], pars_ou1 ) + OU.lik( X[time(X)>t_shift], pars_ou2)
+
+	if(sum(time(X) <= t_shift) == 0){
+		X1 <- numeric(0)
+	} else {
+		X1 <- ts(X[time(X) <= t_shift], start=start(X), deltat=deltat(X))
+	}
+	if(sum(time(X) > t_shift) == 0){
+		 X2 <- numeric(0)
+	} else {
+		X2 <- ts(X[time(X) > t_shift], start=t_shift, deltat=deltat(X))
+	}
+	OU.lik(X1, pars_ou1 ) + OU.lik(X2, pars_ou2)
 }
 
 changePt.likfn <- function(pars){
@@ -410,14 +429,15 @@ update.changePt <- function(pars,X,method = c("Nelder-Mead",
 
 bootstrap <- function(model, observed = NULL, reps=4, cpu=2){
 	require(snowfall)
-	if(cpu<2){
-		sfInit()
-	} else {
-		sfInit(parallel=TRUE, cpu=cpu)
-		sfLibrary(stochPop)
-		sfExportAll()
+	if(! sfIsRunning() ){
+		if(cpu<2){
+			sfInit()
+		} else {
+			sfInit(parallel=TRUE, cpu=cpu)
+			sfLibrary(stochPop)
+			sfExportAll()
+		}
 	}
-	
 	# if data not provided seperately, try and get it from model
 	if(is.null(observed)){
 		if(!is.null(model$data) ){
@@ -465,6 +485,7 @@ bootstrapLR <- function(model_list, reps=4, cpu=2){
 	observed_LR_ratios <- matrix(NA, n_models, n_models)
 	for(j in 1:n_models){
 		for(k in 1:n_models){
+			# 2*(test-null)
 			observed_LR_ratios[j,k] <- 2*(model_list[[j]]$loglik - model_list[[k]]$loglik)
 		}
 	}
@@ -501,7 +522,9 @@ bootstrapLR <- function(model_list, reps=4, cpu=2){
 
 
 # plot likelihood ratio of model i vs model j
-LRplot <- function(input, i, j, main=""){
+LRplot <-  function(input, test_index, null_index, main=""){
+	i<- test_index
+	j<- null_index
 	object <- input$bootstraps
 	n_models <- sqrt(length(object))
 	# model i on dataset j
@@ -519,6 +542,28 @@ LRplot <- function(input, i, j, main=""){
 	hist(lr, border='white', col='lightblue', xlim=xlim, main = main)
 	abline(v=obs_lr , lwd=4, lty=3, col="darkblue")
 	text(.98*obs_lr, .5*par()$yaxp[2], paste("p = ", round(sum(lr > obs_lr)/length(lr), digits=4)), cex=1.5)
+
+}
+
+
+
+LRtestplot <- function(input, test_index, null_index, main=""){
+	i<- test_index
+	j<- null_index
+	object <- input$bootstraps
+	n_models <- sqrt(length(object))
+	# model i on dataset j
+	test <- object[[(i-1)*n_models+j]]
+	# model j on dataset j
+	null <- object[[(j-1)*n_models+j]]
+
+	par(mfrow=c(1,2))
+	test_l <- pmatch("loglik", rownames(test) )
+	null_l <- pmatch("loglik", rownames(null) )
+
+	hist( unlist( test[test_l,] ))
+	hist( unlist( null[null_l, ] ) )
+	
 
 }
 
