@@ -546,26 +546,3 @@ LRplot <-  function(input, test_index, null_index, main=""){
 }
 
 
-
-LRtestplot <- function(input, test_index, null_index, main=""){
-	i<- test_index
-	j<- null_index
-	object <- input$bootstraps
-	n_models <- sqrt(length(object))
-	# model i on dataset j
-	test <- object[[(i-1)*n_models+j]]
-	# model j on dataset j
-	null <- object[[(j-1)*n_models+j]]
-
-	par(mfrow=c(1,2))
-	test_l <- pmatch("loglik", rownames(test) )
-	null_l <- pmatch("loglik", rownames(null) )
-
-	hist( unlist( test[test_l,] ))
-	hist( unlist( null[null_l, ] ) )
-	
-
-}
-
-
-

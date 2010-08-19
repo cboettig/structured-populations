@@ -25,24 +25,23 @@ Dt <- 1
 Xo <- 3
 
 # Fit the models, consider MLE call for OU & warning
-ou <- update.OU(pars = ou, X = X) 
-wa <- update.warning(wa, X = X)
-cpt <- update.changePt(cpt, X = X)
+ou <- update(ou, X = X) 
+wa <- update(wa, X = X)
+cpt <- update(cpt, X = X)
 model_list <- list(ou=ou, wa=wa, cpt=cpt)
-
 model_boots <- bootstrapLR(model_list, rep=reps, cpu=cpu)
+save(list=ls(), file= "warning_example2.Rdat") 
 
-
-#cpt_boot <- bootstrap(cpt, reps = reps, cpu=cpu)
-save(list=ls(), file= "warning_example.Rdat") 
 
 png("model_choice.png", 1600, 400)
-par(mfrow=c(1,3))
-LRplot(model_boots, 1,2, main= "OU vs warning")
-LRplot(model_boots, 1,3, main="OU vs ChangePt")
-LRplot(model_boots, 2,3, main = "warning vs ChangePt" )
+par(mfrow=c(2,3))
+LRplot(model_boots, test=2,null=1, main= "1 vs 2")
+LRplot(model_boots, test=3, null=1, main="1 vs 3")
+LRplot(model_boots, 3,2, main = "2 vs 3" )
+LRplot(model_boots, 1,2)
+LRplot(model_boots, 1,3)
+LRplot(model_boots, 2,3)
 dev.off()
-
 
 
 png("ou_boot.png",1600,400); plot_bootstrap(model_boots, model=1); dev.off()

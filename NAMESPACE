@@ -10,7 +10,7 @@ export(	warning_signals, plot.warning_signals,
 		beetles_example, 
 		b_beetles, d_beetles, J_beetles, T_beetles
 )
-export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR)
+export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot)
 
 useDynLib(stochPop)
 

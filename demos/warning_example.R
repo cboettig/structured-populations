@@ -1,5 +1,5 @@
 # Example using data simulated from the models themselves
-reps <- 100
+reps <- 10
 cpu <- 2
 
 require(stochPop)
@@ -11,37 +11,28 @@ class(wa) <- c("warning", "list")
 class(cpt) <- c("changePt", "list")
 Dt <- 1
 
-X <- simulate(cpt)
+X <- simulate(wa)
 plot(X)
-
-
 
 
 # Fit the models, consider MLE call for OU & warning
 ou <- update.OU(pars = ou, X = X) 
-#wa <- update.warning(wa, X = X)
+wa <- update.warning(wa, X = X)
 cpt <- update.changePt(cpt, X = X)
-#model_list <- list(ou=ou, wa=wa, cpt=cpt)
-model_list <- list(ou=ou, cpt=cpt)
+model_list <- list(ou=ou, wa=wa, cpt=cpt)
 
 model_boots <- bootstrapLR(model_list, rep=reps, cpu=cpu)
 
-par(mfrow=c(2,1))
-LRplot(model_boots, null=1,test=2)
-LRplot(model_boots, null=2,test=1)
-
-
-#cpt_boot <- bootstrap(cpt, reps = reps, cpu=cpu)
 save(list=ls(), file= "warning_example.Rdat") 
 
 png("model_choice.png", 1600, 400)
 par(mfrow=c(2,3))
-LRplot(model_boots, 1,2, main= "1 vs 2")
-LRplot(model_boots, 1,3, main="1 vs 3")
-LRplot(model_boots, 2,3, main = "2 vs 3" )
-LRplot(model_boots, 2,1)
-LRplot(model_boots, 3,1)
-LRplot(model_boots, 3,2)
+LRplot(model_boots, test=2,null=1, main= "1 vs 2")
+LRplot(model_boots, test=3, null=1, main="1 vs 3")
+LRplot(model_boots, 3,2, main = "2 vs 3" )
+LRplot(model_boots, 1,2)
+LRplot(model_boots, 1,3)
+LRplot(model_boots, 2,3)
 dev.off()
 
 
