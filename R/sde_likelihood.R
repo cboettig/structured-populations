@@ -113,13 +113,14 @@ update.OU <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 				optim(	pars, 
 						OU.likfn, 
 						method=method, 
-						lower=lower))
+						lower=lower, 
+						control=list(maxit=2000)))
 
 	}
 
 	if(is(fit_results, "mle")){
 		out <- as.list(fit_results@coef)
-		out$loglik <- -fit_results@minuslogl
+		out$loglik <- -fit_results@min
 		out$T <- time(X)[length(X)]
 		out$t0 <- time(X)[1]
 		out$X0 <- X[1]
@@ -275,12 +276,13 @@ update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 		fit_results <- optim( pars, 
 						warning.likfn, 
 						method=method,
-						lower=lower
+						lower=lower,
+						control=list(maxit=2000)
 						)
 	}
 	if(is(fit_results, "mle")){
 		out <- as.list(fit_results@coef)
-		out$loglik <- -fit_results@minuslogl
+		out$loglik <- -fit_results@min
 		out$T <- time(X)[length(X)]
 		out$t0 <- time(X)[1]
 		out$X0 <- X[1]
@@ -454,7 +456,7 @@ bootstrap <- function(model, observed = NULL, reps=4, cpu=2){
 }
 
 
-plot_bootstrap <- function(object, parameter="all", model=1){
+plot_bootstrap <- function(object, parameter="all", model=1, ...){
 ## plot the model specified if given the full likelihood ratio bootstrap, rather than reboostrapping the model
 	if(!is(object, "matrix")){
 		n_models <- sqrt(length(object$bootstraps))
@@ -463,14 +465,14 @@ plot_bootstrap <- function(object, parameter="all", model=1){
 	}
 
 	if(parameter == "all"){
-		n_pars <- dim(object)[1]-5
+		n_pars <- dim(object)[1]-6
 		par(mfrow=c(1,n_pars) )
 		for(i in 1:n_pars){
-			plot(density(unlist(object[i,])), xlab=rownames(object)[i], main="" )
+			plot(density(unlist(object[i,])), xlab=rownames(object)[i], main="", ... )
 		}
 	} else { 
 		i <- pmatch(parameter, rownames(object))
-		plot(density(unlist(object[i,])), xlab=rownames(object)[i], main=""  )
+		plot(density(unlist(object[i,])), xlab=rownames(object)[i], main="", ...  )
 	}
 }
 
@@ -522,7 +524,7 @@ bootstrapLR <- function(model_list, reps=4, cpu=2){
 
 
 # plot likelihood ratio of model i vs model j
-LRplot <-  function(input, test_index, null_index, main=""){
+LRplot <-  function(input, test_index, null_index, ...){
 	i<- test_index
 	j<- null_index
 	object <- input$bootstraps
@@ -539,7 +541,7 @@ LRplot <-  function(input, test_index, null_index, main=""){
 	
 	obs_lr <- input$observed_LR_ratio[i,j]
 	xlim = range(c(range(lr), obs_lr) )
-	hist(lr, border='white', col='lightblue', xlim=xlim, main = main)
+	hist(lr, border='white', col='lightblue', xlim=xlim, ...)
 	abline(v=obs_lr , lwd=4, lty=3, col="darkblue")
 	text(.98*obs_lr, .5*par()$yaxp[2], paste("p = ", round(sum(lr > obs_lr)/length(lr), digits=4)), cex=1.5)
 
