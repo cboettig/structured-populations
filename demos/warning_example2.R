@@ -1,15 +1,18 @@
 
 ## Example using the saddle-node simulation
 reps <- 100
-cpu <- 2
+cpu <- 16
 
-T<- 200
+T<- 2000
 require(stochPop)
 pars = c(Xo = 570, e = 0.5, a = 100, K = 1000, h = 200, 
-    i = 0, Da = .3, Dt = 0)
+    i = 0, Da = .03, Dt = 0)
 sn <- saddle_node_ibm(pars, times=seq(0,T, length=2000))
 X <- ts(sn$x1,start=0, end=T )
-plot(X)
+
+png("saddlenode_data.png")
+plot(X, cex.lab=2, cex.axis=2, lwd=3, xlab="time", ylab="pop")
+dev.off()
 
 theta <- mean(X)
 sigma <- sd(X)
