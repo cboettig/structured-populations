@@ -8,8 +8,12 @@ export(	warning_signals, plot.warning_signals,
 		metapop_example, 
 		b_meta, d_meta, J_meta, T_meta,
 		beetles_example, 
-		b_beetles, d_beetles, J_beetles, T_beetles
+		b_beetles, d_beetles, J_beetles, T_beetles,
+		plot_means, plot_stdev, plot_covar,
+		plot_stdev_div_means,
 )
+
+
 export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot)
 
 useDynLib(stochPop)
