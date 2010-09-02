@@ -1,5 +1,6 @@
 require(stochPop)
 source("../R/onestep_beetles.R")
+source("../R/plots.R")
 
 	volume <- 100
 	beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001, 
@@ -12,11 +13,9 @@ source("../R/onestep_beetles.R")
 
 #	ibm <- beetles_ibm(Xo=Xo, par=beetle_pars, time=times, reps=40)
 
-	plot_means(beetle_data)
+	plot_stdev(beetle_data_one)
+	plot_stdev(beetle_data, overlay=T)
 
-
-	plot_stdev(beetle_data)
-	plot_covar(beetle_data)
 
 
 
