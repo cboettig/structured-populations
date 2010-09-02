@@ -90,6 +90,7 @@ gamma_example <- function(){
 
 	save(list=ls(), file = "gamma_beetles_data2.Rdat")
 
+collapse_gamma_classes <- function(beetle_data, k){
 	# Collapse the pseudo-classes
 	data <- matrix(0, length(times), 8)
 	for( i in 1:3) {
@@ -101,6 +102,8 @@ gamma_example <- function(){
 		data[,4+i] = rowSums(beetle_data[,(vars_start+k*(i-1)):(vars_start+1+k*i)] )
 	}
 	data[,8] = beetle_data[,1+2*(3*k+1)]
+}
+
 
 
 	png("stable_nodes.png", 800, 800)

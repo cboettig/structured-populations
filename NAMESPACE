@@ -8,10 +8,11 @@ export(	warning_signals, plot.warning_signals,
 		metapop_example, 
 		b_meta, d_meta, J_meta, T_meta,
 		beetles_example, 
+		b_gamma, d_gamma, J_gamma, T_gamma,
 		b_beetles, d_beetles, J_beetles, T_beetles,
 		b_beetles_one, d_beetles_one, J_beetles_one, T_beetles_one,
-		plot_means, plot_stdev, plot_covar,
-		plot_stdev_div_means
+		plot_means, plot_stdev, plot_covar, plot_stdev_div_means,
+		collapse_gamma_classes
 )
 
 
