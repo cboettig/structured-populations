@@ -241,7 +241,7 @@ simulate.warning <- function(pars, t0 = pars$t0, T = pars$T, X0 = pars$X0, N = p
 		Y[i+1] <- rcWarning(1, Dt=delta_t, Y[i], t, pars)
 	}
 	Y
-	ts(Y, start=t0, end=T, deltat=delta_t)
+	ts(Y, start=t0, deltat=delta_t)
 }
 
 update.warning <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead", 

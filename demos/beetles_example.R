@@ -31,14 +31,14 @@ gamma_beetle_pars <- c(	b=5, ue= 0, ul = 0.001, up = 0, ua = .001,
 						cle = 1, cap = .4, cae = 1, V=volume)
 Xo <- numeric(adults)
 Xo[1] <- 100
-beetle_data_gamma <- linear_noise_approx(Xo, times, gamma_beetle_pars,
-					b_gamma, d_gamma, J_gamma, T_gamma, Omega=volume)
+#beetle_data_gamma <- linear_noise_approx(Xo, times, gamma_beetle_pars,
+#					b_gamma, d_gamma, J_gamma, T_gamma, Omega=volume)
 ibm_gamma <- gamma_beetles_ibm(Xo=c(Xo[1], Xo[11], Xo[21], Xo[31]),
-					par=beetle_pars, time = times, reps = 100)
+					par=gamma_beetle_pars, time = times, reps = 100)
 beetle_gamma <- collapse_gamma_classes(beetle_data_gamma, k)
 
 
-plot_stdev(beetle_gamma, ibm=ibm_gamma)
+plot_stdev(beetle_gamma, ibm_gamma)
 
 
 

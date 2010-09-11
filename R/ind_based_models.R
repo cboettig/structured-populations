@@ -29,7 +29,7 @@ saddle_node_ibm <- function(
 	m1 <- sapply(1:samples, function(i) mean(x1[i,]))
 	v1 <- sapply(1:samples, function(i) var(x1[i,]))
 
-	list(x1 = x1,  m1=m1, v1=v1, parameters = pars, Xo = pars[1])
+	list(x1 = x1,  m1=m1, v1=v1, parameters = pars, Xo = pars[1], time=times)
 }
 
 
