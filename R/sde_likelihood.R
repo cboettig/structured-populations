@@ -1,3 +1,6 @@
+################ Model definitions and functions ###################################
+#### Consider running a profiler and moving these into C code for speed ############
+
 # Parametrization dXt = (O1 - O2*Xt)dt + O3*dWt
 # Some useful functions from the sde library that are not exported:
 checkOU <- function(theta){
@@ -425,7 +428,7 @@ update.changePt <- function(pars,X,method = c("Nelder-Mead",
 
 
 
-
+####################  bootstrapping ##############
 
 
 
@@ -547,4 +550,53 @@ LRplot <-  function(input, test_index, null_index, ...){
 
 }
 
+
+########### Power Test ##############
+power_test <- function(null, test, nboot = 100, cpu = 2, threshold = .95, name_parameter = "beta", values_parameter = seq(0.00001, 100, length=10)){
+
+	## Gotta get templates for the models, do so by fitting some dummy data
+	
+	## are we in parallel?
+	if(cpu>1){ 	
+		sfInit(parallel=TRUE, cpu=cpu) 
+		sfLibrary(stochPop)
+		sfExportAll()
+	} else sfInit()
+
+	null_dist <- sfSapply(1:nboot, function(i){
+		data <- simulate(null)
+		null <- update(null, X=data)
+		test <- update(test, X=data)
+		-2*(null$loglik - test$loglik) 
+	})
+
+	## Actually do the bootstraps of the test model for each alpha
+	test_dist <- sfLapply(1:length(values_parameter), function(i){
+
+		test[paste(name_parameter)] <- values_parameter[i]
+
+		sfSapply(1:nboot, function(i){
+				data <- simulate(test)
+				null <- update(null, data)
+				test <- update(test, data)
+				-2*(null$loglik - test$loglik) 
+		})
+	})
+
+	## Power calculation
+	power <- sapply(1:length(values_parameter), function(i){
+		threshold_tail <- sort(null_dist)[ round(threshold*nboot) ]
+		sum(test_dist[[i]] > threshold_tail)/nboot
+	})
+
+	## format the output
+	output <- list(	null_dist=null_dist, test_dist=test_dist, power=power, 
+					name_parameter=name_parameter, values=values_parameter, 
+					nboot=nboot, threshold=threshold, null=null,test=test)
+	class(output) <- "power_test"
+	output
+}
+
+plot.power_test <- function(object){
+}
 

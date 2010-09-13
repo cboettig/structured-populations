@@ -61,3 +61,8 @@ dev.off()
 png("wa_boot.png",1600,400); plot_bootstrap(model_boots, model=2, cex.lab=2, cex.axis=2, lwd=3); dev.off()
 png("cpt_boot.png",1600,400); plot_bootstrap(model_boots, model=3, cex.lab=2, cex.axis=2, lwd=3); dev.off()
 
+
+pt <- power_test(ou, wa, nboot=nboot, cpu=cpu, values=c(.001, .o1, .5, seq(1,15, by=3)) )
+png("power.png")
+plot(pt$values, pt$power)
+dev.off()
