@@ -5,8 +5,8 @@ cpu <- 2
 
 
 # Simulate a dataset from the full individual, nonlinear model
-T<- 2000
-n_pts <- 501
+T<- 50
+n_pts <- 51
 require(stochPop)
 pars = c(Xo = 570, e = 0.5, a = 100, K = 1000, h = 200, 
     i = 0, Da = .03, Dt = 0)
@@ -39,7 +39,7 @@ cpt <- update(cpt, X = X)
 cpt <- update(cpt, X = X)
 model_list <- list(ou=ou, wa=wa, cpt=cpt)
 model_boots <- bootstrapLR(model_list, rep=reps, cpu=cpu)
-save(list=ls(), file= "warning_example2.Rdat") 
+save(list=ls(), file= "warning_example3.Rdat") 
 
 
 ## Plot the results of the model choice
@@ -62,7 +62,10 @@ png("wa_boot.png",1600,400); plot_bootstrap(model_boots, model=2, cex.lab=2, cex
 png("cpt_boot.png",1600,400); plot_bootstrap(model_boots, model=3, cex.lab=2, cex.axis=2, lwd=3); dev.off()
 
 
-pt <- power_test(ou, wa, nboot=nboot, cpu=cpu, values=c(.001, .o1, .5, seq(1,15, by=3)) )
+pt <- power_test(ou, wa, nboot=reps, cpu=cpu, values=c(.001, .o1, .5, seq(1,15, by=3)) )
+save(list=ls(), file= "warning_example3.Rdat") 
+
+
 png("power.png")
 plot(pt$values, pt$power)
 dev.off()

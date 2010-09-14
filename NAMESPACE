@@ -15,7 +15,7 @@ export(	warning_signals, plot.warning_signals,
 		collapse_gamma_classes)
 
 
-export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot)
+export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot, power_test)
 
 useDynLib(stochPop)
 
