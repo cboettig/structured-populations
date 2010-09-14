@@ -62,7 +62,7 @@ png("wa_boot.png",1600,400); plot_bootstrap(model_boots, model=2, cex.lab=2, cex
 png("cpt_boot.png",1600,400); plot_bootstrap(model_boots, model=3, cex.lab=2, cex.axis=2, lwd=3); dev.off()
 
 
-pt <- power_test(ou, wa, nboot=reps, cpu=cpu, values=c(.001, .o1, .5, seq(1,15, by=3)) )
+pt <- power_test(ou, wa, nboot=reps, cpu=cpu, values=c(.001, .01, .5, seq(1,15, by=3)) )
 save(list=ls(), file= "warning_example3.Rdat") 
 
 
