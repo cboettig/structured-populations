@@ -1,5 +1,5 @@
 # Example using data simulated from the models themselves
-reps <- 10
+reps <- 200
 cpu <- 2
 
 require(stochPop)
