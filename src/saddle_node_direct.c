@@ -33,7 +33,7 @@ void sn_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 	if (t > s[5]*my_record->t_step) 
 	{
 		my_record->s1[(int) s[5]+rep*my_record->N] = s[0]; 
-		printf("%g %g %g\n", t, s[0], s[2]);
+//		printf("%g %g %g\n", t, s[0], s[2]);
 		s[5] += 1; //increment sample counter
 
 	/* increment the bifurcation parameter each sampletime after a certain wait */
@@ -85,7 +85,7 @@ void saddle_node_direct(double* s1, double* inits, int* n_samples, int* reps, do
 	outcome[1] = &sn_death_out;
 
 	RESET reset_fn = &sn_reset;
-	FIXED fixed_interval_fn = &sn_fixed_interval;
+	FIXED fixed_interval;
 	
 	record * my_record = record_alloc(*n_samples, *reps, *maxtime);
 	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, (size_t) *reps, reset_fn, fixed_interval_fn);

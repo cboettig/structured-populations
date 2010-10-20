@@ -5,11 +5,11 @@ cpu <-2
 
 
 # Simulate a dataset from the full individual, nonlinear model
-T<- 50
+T<- 500
 n_pts <- 501
 require(stochPop)
 pars = c(Xo = 730, e = 0.5, a = 100, K = 1000, h = 200, 
-    i = 0, Da = 1, Dt = 0)
+    i = 0, Da = .17, Dt = 0)
 sn <- saddle_node_ibm(pars, times=seq(0,T, length=n_pts))
 X <- ts(sn$x1,start=sn$time[1], deltat=sn$time[2]-sn$time[1])
 
@@ -37,9 +37,11 @@ class(cpt) <- c("changePt", "list")
 ou <- update(ou, X = X) 
 ou <- update(ou, X = X) 
 wa <- update(wa, X = X)
-#wa <- update(wa, X = X)
+wa <- update(wa, X = X)
 cpt <- update(cpt, X = X)
 cpt <- update(cpt, X = X)
+
+print(c(ou$loglik, wa$loglik, cpt$loglik))
 
 
 #model_list <- list(ou=ou, wa=wa, cpt=cpt)
@@ -47,23 +49,12 @@ cpt <- update(cpt, X = X)
 
 
 ## Plot the results of the model choice
-png("model_choice.png", 1600, 400)
-par(mfrow=c(2,3))
-#par(mfrow=c(2,1))
-LRplot(model_boots, test=2,null=1, main= "1 vs 2")
-LRplot(model_boots, test=3, null=1, main="1 vs 3")
-LRplot(model_boots, 3,2, main = "2 vs 3" )
-LRplot(model_boots, 1,2)
-LRplot(model_boots, 1,3)
-LRplot(model_boots, 2,3)
-dev.off()
-
+#LRplot(model_boots, test=2,null=1, main= "1 vs 2")
 
 
 pt <- power_pair(wa, ou, nboot=reps, cpu=cpu)
+
 save(list=ls(), file="warning4.Rdat")
-
-
 ## And the bootstraps of the parameter estimates
 #png("ou_boot.png",1600,400); 
 #plot_bootstrap(model_boots, model=1, cex.lab=2, cex.axis=2, lwd=3); 
