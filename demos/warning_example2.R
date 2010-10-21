@@ -5,20 +5,20 @@ cpu <-2
 
 
 # Simulate a dataset from the full individual, nonlinear model
-T<- 500
-n_pts <- 501
+T<- 40*25
+n_pts <- 201
 require(stochPop)
 pars = c(Xo = 730, e = 0.5, a = 100, K = 1000, h = 200, 
     i = 0, Da = .17, Dt = 0)
 sn <- saddle_node_ibm(pars, times=seq(0,T, length=n_pts))
 X <- ts(sn$x1,start=sn$time[1], deltat=sn$time[2]-sn$time[1])
 
-par(mfrow=c(1,2))
 plot(X, cex.lab=2, cex.axis=2, lwd=3, xlab="time", ylab="pop")
 Y <- loess.smooth(time(X), X, evaluation=length(X))
 Y <- ts(Y$y, start=sn$time[1], deltat=sn$time[2]-sn$time[1])
-plot(X-Y)
-X <- X-Y
+Y <- X-Y
+#plot(X-Y)
+#X <- X-Y
 
 # Initialize some parameter estimates as initial guesses for fitting 
 theta <- mean(X)

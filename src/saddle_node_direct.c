@@ -1,5 +1,6 @@
 #include "gillespie.h"
 #include "gillespie_recording.h"
+
 /** outcomes functions can return a flag of 1 to break the time simulation (i.e. if extinction occurs)
  *  They take an argument of type pars and update the state directly via this structure.  Otherwise
  *  they should return 0 for success.  */
@@ -54,7 +55,7 @@ double sn_birth(void * ss)
 { 
 	const double * s = (double *) ss;
 	      /*           e K n^2/ (n^2 +h^2)  */
-	return gsl_pow_2(s[0])*s[1]*s[3] / ( gsl_pow_2(s[0]) + gsl_pow_2(s[4]) ); 
+	return gsl_pow_int(s[0], 5)*s[1]*s[3] / ( gsl_pow_int(s[0],5) + gsl_pow_int(s[4],5) ); 
 }
 
 
@@ -85,8 +86,8 @@ void saddle_node_direct(double* s1, double* inits, int* n_samples, int* reps, do
 	outcome[1] = &sn_death_out;
 
 	RESET reset_fn = &sn_reset;
-	FIXED fixed_interval;
-	
+	FIXED fixed_interval_fn = &sn_fixed_interval;	
+
 	record * my_record = record_alloc(*n_samples, *reps, *maxtime);
 	gillespie(rate_fn, outcome, n_event_types, inits, my_record, *maxtime, (size_t) *reps, reset_fn, fixed_interval_fn);
 
