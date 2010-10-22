@@ -1,14 +1,14 @@
 # saddle_analytics.R
-params <- c(K=1000, e=.5, h=200)
-p <- 5
-b <- function(x, params){ params["e"]*params["K"]*x^p/(x^p+params["h"]^p) }
+params <- c(K=500, e=1, h=200, p=15)
+b <- function(x, params){ params["e"]*params["K"]*x^params["p"]/(x^params["p"]+params["h"]^params["p"]) }
 d <- function(x, a, params){ params["e"]*x+a}
 
-lambda <- function(x, a, params){ p*params["e"]*params["K"]*x^(p-1)/(x^p+params["h"]^p) - p*params["e"]*params["K"]*x^(2*p-1)/(x^p+params["h"]^p)^2-params["e"] }
+lambda <- function(x, a, params){ params["p"]*params["e"]*params["K"]*x^(params["p"]-1)/(x^params["p"]+params["h"]^params["p"]) - pparams["p"]*params["e"]*params["K"]*x^(2*params["p"]-1)/(x^params["p"]+params["h"]^params["p"])^2-params["e"] }
 
 
 x <- seq(0, 1000, by=5)
-a<- 200
+a<- 240
+#par(mfrow=c(2,1))
 plot(x, b(x,params)-d(x,a, params), type="l", ylim=c(-150, 900))
 lines(x, b(x,params), lwd=4, lty=1, col="darkblue")
 lines(x, d(x,a, params), lwd=4, lty=1, col="darkred")
@@ -40,11 +40,24 @@ x <- 300:800
 plot(x, b(x,params)-d(x,174,params) )
 
 
-xhat_uni <- function(a){ 
-	f <- function(x){ b(x, params) - d(x, a, params) }
-	uniroot(f, c(200, 1000))$root
+
+
+
+# The canonical form of the bifurcation is second order,
+# dx/dt = x^2 + a
+# and involves a symmetric approach.  
+xhat_left <- function(a){ 
+	f <- function(x){ x^2+a }
+	uniroot(f, c(-100,0))$root
 }
-xhat_uni(100)
-plot(a, xhat_uni(a))
+xhat_right <- function(a){ 
+	f <- function(x){ x^2+a }
+	uniroot(f, c(0, 100))$root
+}
+
+a <- seq(-5,0,length=100)
+yl <- sapply(a, xhat_left)
+yr <- sapply(a, xhat_right)
+plot(c(a,a), c(yl,yr), pch=19, xlab="lambda", ylab="x_hat")
 
 
