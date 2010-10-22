@@ -1,6 +1,6 @@
 #include "gillespie.h"
 #include "gillespie_recording.h"
-
+#define S_LENGTH 9
 /** outcomes functions can return a flag of 1 to break the time simulation (i.e. if extinction occurs)
  *  They take an argument of type pars and update the state directly via this structure.  Otherwise
  *  they should return 0 for success.  */
@@ -42,8 +42,8 @@ void sn_fixed_interval(const double t, void * mypars, void * myrecord, int rep)
 	}
 }
 
-/*		   0 1 2 3 4 5  6   7 
- * Pars = {n,e,a,K,h,i, Da, Dt} */
+/*		   0 1 2 3 4 5  6   7 8 
+ * Pars = {n,e,a,K,h,i, Da, Dt, p} */
 double sn_death(void * ss)
 {
 	const double * s = (double *) ss;
@@ -55,7 +55,8 @@ double sn_birth(void * ss)
 { 
 	const double * s = (double *) ss;
 	      /*           e K n^2/ (n^2 +h^2)  */
-	return gsl_pow_int(s[0], 5)*s[1]*s[3] / ( gsl_pow_int(s[0],5) + gsl_pow_int(s[4],5) ); 
+		  int p = s[8];
+	return gsl_pow_int(s[0], p)*s[1]*s[3] / ( gsl_pow_int(s[0],p) + gsl_pow_int(s[4],p) ); 
 }
 
 
@@ -64,9 +65,9 @@ double sn_birth(void * ss)
 void * sn_reset(const void * inits)
 {
 	const double * ss = (const double *) inits;
-	double * s = (double *) calloc(8, sizeof(double));
+	double * s = (double *) calloc(S_LENGTH, sizeof(double));
 	int i;
-	for(i=0;i<8;i++) s[i] = ss[i];
+	for(i=0;i< S_LENGTH ;i++) s[i] = ss[i];
 	s[5] = 0; // sampling counter
 	return s;
 }
@@ -118,9 +119,9 @@ int sn(void)
 	double s1[n_samples*replicates];
 
 
-	//			0  1  2  3  4  5  6  7  
-	//	Pars = {n, e, a, K, h, i, Da,Dt} 
-	double c_inits[8] = {572, .5, 160, 1000, 200, 0, 1, 100};
+	//			0  1  2  3  4  5  6  7  8 
+	//	Pars = {n, e, a, K, h, i, Da,Dt,p  } 
+	double c_inits[9] = {572, .5, 160, 1000, 200, 0, 1, 100, 2.};
 
 	double maxtime = 150; 
 	int n = n_samples;

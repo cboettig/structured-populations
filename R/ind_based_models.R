@@ -15,7 +15,7 @@ saddle_node_ibm <- function(
 	# i is a place-holder for an internal counter, not real parameter
 	# Da is the rate of environmental degradation
 	# Dt is the time at which environmental degradation begins
-	pars=c("Xo" = 570, "e" = .5, "a" = 160, "K" = 1000, "h" = 200, "i" = 0, "Da" = 1, "Dt" = 100),
+	pars=c("Xo" = 570, "e" = .5, "a" = 160, "K" = 1000, "h" = 200, "i" = 0, "Da" = 1, "Dt" = 100, "p"=2),
 	times = seq(0,150,length=50), 
 	reps=1)
 {

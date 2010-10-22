@@ -1,5 +1,5 @@
 # saddle_analytics.R
-params <- c(K=500, e=1, h=200, p=15)
+params <- c(K=1000, e=.5, h=200, p=2)
 b <- function(x, params){ params["e"]*params["K"]*x^params["p"]/(x^params["p"]+params["h"]^params["p"]) }
 d <- function(x, a, params){ params["e"]*x+a}
 
@@ -7,7 +7,7 @@ lambda <- function(x, a, params){ params["p"]*params["e"]*params["K"]*x^(params[
 
 
 x <- seq(0, 1000, by=5)
-a<- 240
+a<- 100
 #par(mfrow=c(2,1))
 plot(x, b(x,params)-d(x,a, params), type="l", ylim=c(-150, 900))
 lines(x, b(x,params), lwd=4, lty=1, col="darkblue")
