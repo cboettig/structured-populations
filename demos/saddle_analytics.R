@@ -6,9 +6,6 @@ b <- function(x, params){ params["e"]*params["K"]*x^params["p"]/(x^params["p"]+p
 d <- function(x, a, params){ params["e"]*x+a}
 A<- seq(50,250, length=100)
 
-## "Constant Mean" Dynamics
-#d <- function(x, a, params) { a*(x-params["K"])+params["e"]*params["K"] }
-#A<- seq(1,0,length=100)
 
 x <- seq(0, 1300, by=5)
 
@@ -26,7 +23,7 @@ bifur <- function(){
 		lines(x, d(x,a, params), lwd=4, lty=1, col="darkred")
 		abline(h=0, lwd=4, lty=2, col="darkgrey")
 		crit_pts <- sort(xhat(a, params))
-		print(crit_pts)
+#		print(crit_pts)
 		if(length(crit_pts) == 1){
 			points(crit_pts, 0, pch=19, cex=1.5)
 		} else if(length(crit_pts > 1)){
@@ -40,14 +37,61 @@ require(animation)
 #saveMovie(bifur(), interval=.2, loop=0, outdir=getwd())
 
 ## shockwave flash animation:
-saveSWF(bifur(), interval=.2, dev="png", swfname="bifur.swf", height=300, width=300, outdir=getwd())
+saveSWF(bifur(), interval=.2, dev="png", swfname="bifur.swf", height=300, width=300)
+
+lambda <- function(x, a, params){ params["p"]*params["e"]*params["K"]*x^(params["p"]-1)/(x^params["p"]+params["h"]^params["p"]) - params["p"]*params["e"]*params["K"]*x^(2*params["p"]-1)/(x^params["p"]+params["h"]^params["p"])^2-params["e"] }
+
+
+crit_pts <- sapply(A, function(a){ xhat(a, params) })
+good_xhat <-sapply(1:length(crit_pts), function(i) max(crit_pts[[i]]) )
+alpha <- sapply(1:length(good_xhat), function(i) lambda(good_xhat[i], A[i], params))
+sigma_squared <- sapply(1:length(good_xhat), function(i) b(good_xhat[i], params)+d(good_xhat[i], A[i], params))
+
+png("model1.png", 1000, 1000)
+par(mfrow=c(2,2))
+plot(A, good_xhat, type="l", lwd=4,xlab="bifurcation parameter a", ylab="x hat", cex.lab=2, cex.axis=2 )
+plot(A, alpha, type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+plot(A, sigma_squared, type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+plot(A, -sigma_squared/(2*alpha), type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+dev.off()
+
+
+
+## "Constant Mean" Dynamics
+d <- function(x, a, params) { a*(x-params["K"])+params["e"]*params["K"] }
+A<- seq(1,0,length=100)
+saveSWF(bifur(), interval=.2, dev="png", swfname="bifur_mean_const.swf", height=300, width=300)
+
+
+lambda <- function(x, a, params){ params["p"]*params["e"]*params["K"]*x^(params["p"]-1)/(x^params["p"]+params["h"]^params["p"]) - params["p"]*params["e"]*params["K"]*x^(2*params["p"]-1)/(x^params["p"]+params["h"]^params["p"])^2-a }
+
+crit_pts <- sapply(A, function(a){ xhat(a, params) })
+good_xhat <-sapply(1:length(crit_pts), function(i) max(crit_pts[[i]]) )
+alpha <- sapply(1:length(good_xhat), function(i) lambda(good_xhat[i], A[i], params))
+sigma_squared <- sapply(1:length(good_xhat), function(i) b(good_xhat[i], params)+d(good_xhat[i], A[i], params))
+
+
+
+png("model2.png", 1000, 1000)
+par(mfrow=c(2,2))
+plot(A, good_xhat, type="l", lwd=4,xlab="bifurcation parameter a", ylab="x hat", cex.lab=2, cex.axis=2  )
+plot(A, alpha, type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+plot(A, sigma_squared, type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+plot(A, -sigma_squared/(2*alpha), type="l", lwd=4, xlab="bifurcation parameter a", cex.lab=2, cex.axis=2 )
+dev.off()
 
 
 
 
-# "Changing mean dynamics"
+## Note that updating function definition updates prior functions, so the above doesn't need to redefine bifur():
+f <- function(x){ x }
+g <- function(x) { 2*f(x) }
+f <- function(x) {2*x }
+g(2)
 
-lambda <- function(x, a, params){ params["p"]*params["e"]*params["K"]*x^(params["p"]-1)/(x^params["p"]+params["h"]^params["p"]) - pparams["p"]*params["e"]*params["K"]*x^(2*params["p"]-1)/(x^params["p"]+params["h"]^params["p"])^2-params["e"] }
+
+
+
 
 
 ## Uniroot.all makes the previous code here unnecssary 
