@@ -37,10 +37,25 @@ lorentzian <- function(w, alpha2, alpha1_p){ alpha2/(alpha1_p^2+w^2) }
 w = seq(-pi/dt, pi/dt, length=2*n_length)
 
 # Plot the Lorentzian and fft(C) 
-plot(w, lorentzian(w, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
+plot(w_p, lorentzian(w_p, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
 lines(w,dt*S_from_C)
-
 points(w_p, power)
+
+fit_pars <- c(a2="a2", a1p="a1p", sigma="sigma")
+power_pdf <- function(w, fit_pars){
+	sqrt(lorentzian(w, fit_pars["a2"], fit_pars["a1p"]) + 
+
+plot(power-lorentzian(w_p, a2, a1p))
+
+
+
+
+
+
+
+
+
+
 
 
 ### Shows that the inverse FFT of the Lorentzian is the ##
