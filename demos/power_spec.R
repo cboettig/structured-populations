@@ -4,19 +4,29 @@ require(sde)
 a1p <- 150
 a2 <- 2
 
-n <- (2^10)
+n <- 2^10
 d <- expression( -150*x )
 s <- expression( 2 )
-dt <- .001
+dt <- .01
 T <- n*dt
+reps<- 10
 
-X <- sde.sim(drift = d, sigma = s, N=(n-1), delta=dt)
-transform <- abs(fft(X@.Data))^2 / (2*pi*n*dt)
+X <- sde.sim(drift = d, sigma = s, N=(n-1), delta=dt, M=reps)
+
+# explicit conjugate transpose averaging, with or without replicates
+X_tilde <- matrix(fft(X))
+transform <- sapply(1:n, function(i) t(Conj(X_tilde[i,])) %*% X_tilde[i,]  ) / reps / (2*pi*dt*n)  ## should this be reps^2 ?
 power <- c(transform[(n/2+1):n], transform[1:(n/2)])
-w_p <- seq(-n*pi/T, n*pi/T, length=n)
+w_p <- seq(-pi/dt, pi/dt, length=n)
 plot(w_p, power)
 
 
+
+# no-replicate norm square
+transform <- abs(fft(X)^2) / (2*pi*n*dt)
+power <- c(transform[(n/2+1):n], transform[1:(n/2)])
+w_p <- seq(-pi/dt, pi/dt, length=n)
+plot(w_p, power)
 
 ### Shows that the FFT of the correlation function matches the ##
 ### Lorentzian function in the frequency domain				   ##
@@ -24,7 +34,7 @@ plot(w_p, power)
 # Define the Correlation function 
 C <- function(tau, alpha2, alpha1_p) alpha2/abs(2*alpha1_p)*exp(-abs(alpha1_p)*abs(tau))
 # Define the time domain
-time <- seq(-dt*n_length, dt*n_length, length=2*n_length)
+time <- seq(-dt*n, dt*n, length=2*n)
 
 # Fourrier Transform the Correlation function and reshape
 S_from_C <- abs(fft(C(time, a2, a1p)))
@@ -34,12 +44,16 @@ S_from_C <- c(S_from_C[(1+end/2):end], S_from_C[0:(end/2)] )
 # define the Lorentzian 
 lorentzian <- function(w, alpha2, alpha1_p){ alpha2/(alpha1_p^2+w^2) }
 # Define the frequency domain
-w = seq(-pi/dt, pi/dt, length=2*n_length)
+w = seq(-pi/dt, pi/dt, length=2*n)
 
 # Plot the Lorentzian and fft(C) 
 plot(w_p, lorentzian(w_p, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
 lines(w,dt*S_from_C)
 points(w_p, power)
+
+
+
+##### Try example with simpler simulations: AR(1) in (x), Euler version of OU in (y)
 
 n <- 2^12
 gamma <- 1
@@ -126,7 +140,7 @@ lines(time, C(time, a2, a1p)/dt^2)
 
 
 
-#w = seq(-pi*end/(delta*n_length),pi*end/(2*delta*n_length), length=end);
+#w = seq(-pi*end/(delta*n),pi*end/(2*delta*n), length=end);
 
 #smooth_pwr <- loess.smooth(w_p, power, evaluation=length(w_p), family="gaussian", span=.05)
 #lines(smooth_pwr)
