@@ -11,7 +11,7 @@ dt <- .001
 T <- n*dt
 
 X <- sde.sim(drift = d, sigma = s, N=(n-1), delta=dt)
-transform <- abs((fft(X@.Data))^2) /n^2
+transform <- abs(fft(X@.Data))^2 / (2*pi*n*dt)
 power <- c(transform[(n/2+1):n], transform[1:(n/2)])
 w_p <- seq(-n*pi/T, n*pi/T, length=n)
 plot(w_p, power)
@@ -41,13 +41,67 @@ plot(w_p, lorentzian(w_p, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
 lines(w,dt*S_from_C)
 points(w_p, power)
 
-fit_pars <- c(a2="a2", a1p="a1p", sigma="sigma")
+n <- 2^12
+gamma <- 1
+D <- .1
+dt <- 0.01
+S <- function(f) 2*D/(gamma^2+(2*pi*f)^2)
+## autocorr example
+x <- numeric(n)
+y<-x
+for(i in 2:n){
+	x[i] <- x[i-1]*.5 +sqrt(1-.5^2)* rnorm(1)
+	y[i] <- y[i-1]*(1-gamma*dt) +sqrt(2*D*dt)*rnorm(1)
+
+}
+fy <- abs(fft(y))^2/(2*pi*n*dt)
+fy <- c(fy[(n/2+1):n], fy[1:(n/2)])
+#  is nyquist freq, since sampled every unit t.  also means n = T
+nyquist <- dt/2
+omega <- seq(-2*pi*nyquist, 2*pi*nyquist, length=length(fy))
+plot(omega, fy)
+
+
+lines(omega, S(omega) )
+
+
+
+
+
+fx <- abs(fft(x))^2/(2*pi*n*dt)
+fx <- c(fx[(n/2+1):n], fx[1:(n/2)])
+#  is nyquist freq, since sampled every unit t.  also means n = T
+nyquist <- dt/2
+omega <- seq(-2*pi*nyquist, 2*pi*nyquist, length=length(fy))
+plot(omega, fx)
+
+lines(lorentzian(omega, 1, .5))
+
+
+
+
+sigma <- a2/(2*a1p)
+fit_pars <- c(a2=a2, a1p=a1p, sigma=sigma)
+
+f2 <- lorentzian(w_p, fit_pars["a2"], fit_pars["a1p"] )
+plot(power-f2)
+plot(power-f2 - fit_pars["sigma"]^2)
+
+f<- sqrt(f2)
+
+plot( (power-f2-fit_pars["sigma"]^2)/(2*fit_pars["sigma"]*f) )
+
+plot(f+rnorm(length(f), sd=sigma) )
+
+
+sigma <- 1
+fit_pars <- c(a2=a2, a1p=a1p, sigma=sigma)
 power_pdf <- function(w, fit_pars){
-	sqrt(lorentzian(w, fit_pars["a2"], fit_pars["a1p"]) + 
+	f <- sqrt(lorentzian(w, fit_pars["a2"], fit_pars["a1p"]))
+	f + dnorm(w, mean=0, sd=fit_pars["sigma"])
+}
 
-plot(power-lorentzian(w_p, a2, a1p))
-
-
+plot(w, power_pdf(w, fit_pars))
 
 
 
