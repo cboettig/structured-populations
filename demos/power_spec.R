@@ -1,29 +1,64 @@
 #power_spec.R
 require(sde)
 
-a1p <- 150
-a2 <- 2
+
+
+
+
+n<- 2^10
+dt<-1/8
+t <- seq(0,dt*(n-1), by=dt)
+X <- sin(5*t) + rnorm(n, .01)
+pwr <- abs(fft(dt*X))^2/(2*pi*dt*n)
+nyquist<-1/(2*dt)  # half the sampling frequency
+w <- nyquist*seq(0, 2*pi, length=n/2)
+plot(w, pwr[1:(n/2)], type="l")
+abline(v=5, col="red", lty=3)
+
+
+
+
+a1p <- 1
+a2 <- 1
 
 n <- 2^10
-d <- expression( -150*x )
-s <- expression( 2 )
-dt <- .01
+d <- expression( -1*x )
+s <- expression( 1 )
+dt <- 1
 T <- n*dt
-reps<- 10
+reps<- 100
 
 X <- sde.sim(drift = d, sigma = s, N=(n-1), delta=dt, M=reps)
+X <- matrix(X, nrow=n)
+pwr<- sapply(1:reps, function(i){
+	y <- abs( fft(dt*X[,i]) )^2/ (2*pi*dt*n)
+	y[1:(n/2)]
+})
+nyquist=.5/dt
+freq <- nyquist*seq(0,2*pi, length=n/2)
+plot(freq, rowMeans(pwr))
+lorentz <- function(w, alpha2, alpha1_p){ alpha2/((alpha1_p^2+w^2)) }
+lines(freq, lorentz(freq, a2, a1p), col="green")
+
+
+lines(freq, lorentzian(freq, a2, a1p), col="blue")
+
+
+
 
 # explicit conjugate transpose averaging, with or without replicates
-X_tilde <- matrix(fft(X))
-transform <- sapply(1:n, function(i) t(Conj(X_tilde[i,])) %*% X_tilde[i,]  ) / reps / (2*pi*dt*n)  ## should this be reps^2 ?
+X_tilde <- matrix(fft(X),nrow=reps)*dt  ## integrate times dt
+transform <- sapply(1:n, function(i) t(Conj(X_tilde[,i])) %*% X_tilde[,i]  ) / reps / (dt*n)  
 power <- c(transform[(n/2+1):n], transform[1:(n/2)])
 w_p <- seq(-pi/dt, pi/dt, length=n)
 plot(w_p, power)
+lines(w_p, pi*lorentzian(w_p, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
+
 
 
 
 # no-replicate norm square
-transform <- abs(fft(X)^2) / (2*pi*n*dt)
+transform <- abs(fft(dt*X)^2) / (2*pi*dt*n)
 power <- c(transform[(n/2+1):n], transform[1:(n/2)])
 w_p <- seq(-pi/dt, pi/dt, length=n)
 plot(w_p, power)
@@ -42,41 +77,48 @@ end <- length(S_from_C)
 S_from_C <- c(S_from_C[(1+end/2):end], S_from_C[0:(end/2)] )
 
 # define the Lorentzian 
-lorentzian <- function(w, alpha2, alpha1_p){ alpha2/(alpha1_p^2+w^2) }
+lorentzian <- function(w, alpha2, alpha1_p){ alpha1_p/(pi*(alpha1_p^2+w^2)) }
 # Define the frequency domain
 w = seq(-pi/dt, pi/dt, length=2*n)
 
 # Plot the Lorentzian and fft(C) 
+
 plot(w_p, lorentzian(w_p, a2, a1p), col="blue", lwd=3, type="l", lty=2 )
 lines(w,dt*S_from_C)
 points(w_p, power)
 
-
+l<-lorentzian(w_p, a2, a1p)
+test<-X_tilde/sqrt(2*pi*dt*n*sqrt(l))
+qqplot(test)
 
 ##### Try example with simpler simulations: AR(1) in (x), Euler version of OU in (y)
 
 n <- 2^12
-gamma <- 1
-D <- .1
-dt <- 0.01
-S <- function(f) 2*D/(gamma^2+(2*pi*f)^2)
+gamma <- 8
+D <- .3
+dt <- 0.05
+S <- function(w) 2*D/((gamma)^2+w^2)
 ## autocorr example
 x <- numeric(n)
 y<-x
-for(i in 2:n){
-	x[i] <- x[i-1]*.5 +sqrt(1-.5^2)* rnorm(1)
-	y[i] <- y[i-1]*(1-gamma*dt) +sqrt(2*D*dt)*rnorm(1)
 
+pwr <- sapply(1:10, function(j) {
+for(i in 2:n){
+#	x[i] <- x[i-1]*.5 +sqrt(1-.5^2)* rnorm(1)
+#	y[i] <- y[i-1]*(1-gamma*dt) +sqrt(2*D*dt)*rnorm(1)
+	y[i] <- y[i-1]*exp(-gamma*dt) + rnorm(1, mean=0, sd=sqrt( (D/gamma)*(1-exp(-2*gamma*dt)))) 
 }
-fy <- abs(fft(y))^2/(2*pi*n*dt)
+fy <- abs(fft(dt*y))^2/(2*pi*n*dt)
 fy <- c(fy[(n/2+1):n], fy[1:(n/2)])
+fy
+})
+
+fy <- rowMeans(pwr)
 #  is nyquist freq, since sampled every unit t.  also means n = T
-nyquist <- dt/2
+nyquist <- 1/(2*dt)
 omega <- seq(-2*pi*nyquist, 2*pi*nyquist, length=length(fy))
 plot(omega, fy)
-
-
-lines(omega, S(omega) )
+lines(omega, S(omega)/2 )
 
 
 
