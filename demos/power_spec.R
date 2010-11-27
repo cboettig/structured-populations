@@ -6,14 +6,14 @@ require(sde)
 
 
 n<- 2^10
-dt<-1/8
+dt<-1/2^2
 t <- seq(0,dt*(n-1), by=dt)
 X <- sin(5*t) + rnorm(n, .01)
 pwr <- abs(fft(dt*X))^2/(2*pi*dt*n)
 nyquist<-1/(2*dt)  # half the sampling frequency
 w <- nyquist*seq(0, 2*pi, length=n/2)
-plot(w, pwr[1:(n/2)], type="l")
-abline(v=5, col="red", lty=3)
+plot(w, pwr[1:(n/2)])
+abline(v=5)
 
 
 
@@ -118,7 +118,7 @@ fy <- rowMeans(pwr)
 nyquist <- 1/(2*dt)
 omega <- seq(-2*pi*nyquist, 2*pi*nyquist, length=length(fy))
 plot(omega, fy)
-lines(omega, S(omega)/2 )
+lines(omega, S(omega) )
 
 
 
