@@ -1,11 +1,11 @@
 # bifur_likelihood_ex.R
 
 source("../R/likelihood_bifur_models.R")
-pars = c(r=10, theta=3, beta=1)
-m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500)
+pars = c(r=5, theta=3, beta=1)
+m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=10)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
-m$pars <- c(r=11,theta=1.5,beta=1)
+m$pars <- c(r=51,theta=.5,beta=.1)
 
 out <- update.SN(m, X)
 print(out$pars)
@@ -24,17 +24,18 @@ axis(4)
 mtext("data",side=4,line=3)
 dev.off()
 
+# only first line of git commit will be used 
 gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)
-# only first line of git commit commandline return will be printed in flickr discription
 system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' saddle_node_fit.png'))
 system(paste('hpc-autotweets "', gitcom, ' done"'))
 
 
-A <- seq(1,10, by=.1)
+
+## Plot the likelihood surface 
+A <- seq(1,10, length=200)
 l <- sapply(A, function(a){	
 	pars['theta'] <- a
-	SN.lik(X, pars)
-})
+	SN.lik(X, pars)})
 png("likelihood_cross-section.png")
 plot(A, l, xlab="theta", ylab="-loglik")
 lines(A,l)
