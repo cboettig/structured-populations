@@ -78,7 +78,7 @@ update.SN <- function(m, X, method = c("Nelder-Mead",
 		optim(m$pars, SN.likfn, method=method)
 	#)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
-	t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output <- fit)
+	t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
 	class(out) <- c(m$model, "sdemodel")
 	out
 }

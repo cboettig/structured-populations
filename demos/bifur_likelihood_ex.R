@@ -2,7 +2,7 @@
 
 source("../R/likelihood_bifur_models.R")
 pars = c(r=5, theta=3, beta=1)
-m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=1)
+m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=100)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
 m$pars <- c(r=21,theta=.5,beta=.1)
@@ -14,9 +14,10 @@ print(out$pars)
 
 
 ## Figure 
-png("saddle_node_fit.png", width=400, height=400)
+png("saddle_node_fit.png")
 curve( -(x-pars['theta'])^2+pars['r'], 0, 10, ylim=c(-2, r+1), lwd=3, main="true vs estimated model", col="darkgray")
 curve( -(x-out$pars["theta"])^2+out$pars["r"], 0, 10, ylim=c(-2, r+1),add=T, col="red", lty=2, lwd=3)
+text(1,4, paste("N = ", m$N, " T = ", m$T))
 text(1, 3, paste("est: ", "r = ", as.character(round(out$pars[1],2)), "theta = ", as.character(round(out$pars[2],2)), "beta = ", as.character(round(out$pars[3],2))), pos=4)
 text(1, 2, paste("init: ", "r = ", as.character(m$pars[1]), "theta = ", as.character(m$pars[2]), "beta = ", as.character(m$pars[3])), pos=4)
 text(1, 1, paste("true: ", "r = ", as.character(pars[1]), "theta = ", as.character(pars[2]), "beta = ", as.character(pars[3])), pos=4)
@@ -31,6 +32,12 @@ dev.off()
 gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)
 system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' saddle_node_fit.png'))
 system(paste('hpc-autotweets "', gitcom, ' done"'))
+
+
+
+
+
+
 
 
 
