@@ -1,8 +1,8 @@
 # bifur_likelihood_ex.R
 
 source("../R/likelihood_bifur_models.R")
-pars = c(r=10, theta=3, beta=2)
-m <- init_sdemodel(pars =pars, Xo = 6.2, model="SN", N=200)
+pars = c(r=14, theta=3, beta=2)
+m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
 m$pars <- c(r=11,theta=1.5,beta=1)
