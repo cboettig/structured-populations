@@ -15,9 +15,10 @@ setSN <- function(Dt, Xo, pars){
 	)
 	}
 	times <- c(0, Dt)
-	out <- lsoda(y=c(Xo, 0), times=times, func=moments, parms=pars, jac=jacfn)
-	Ex <- out[2,2] # times are in rows, cols are time, par1, par2
-	Vx <- out[2,3]
+	out <- lapply(Xo, function(x0){lsoda(y=c(xhat=x0, sigma2=0), times=times, func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 	return(list(Ex=Ex, Vx=Vx))
 }
 
@@ -40,11 +41,11 @@ pcSN <- function(x, Dt, x0, pars, lower.tail = TRUE, log.p = FALSE){
 
 
 # sde likelihood, should take X as an argument and pars as an argument
-OU.lik <- function(X, pars){
+SN.lik <- function(X, pars){
 	if(length(X) == 0){ return(0)}
     n <- length(X)
     dt <- deltat(X)
-	out <- -sum( dcSN(X[2:n], dt, X[1:(n-1)], c(theta1, theta2, theta3), log=TRUE) )
+	out <- -sum( dcSN(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
 	out
 }
 
@@ -63,6 +64,21 @@ simulate.SN <- function(m){
 	}
 	ts(X, start=m$t0, deltat=delta_t)
 }
+
+update.sn <- function(m, X, method = c("Nelder-Mead", 
+    "BFGS", "CG", "L-BFGS-B", "SANN")){
+	method <- match.arg(method)
+	lower = -Inf
+	X <<- X
+	fit <- suppressMessages(
+		optim(m$pars, SN.likfn, method=method, lower=lower)
+	)
+	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
+	t0=time(X)[1], Xo <- X[1], data=X, N=length(X))
+	class(out) <- c(m$model, "sdemodel")
+	out
+}
+
 
 
 
