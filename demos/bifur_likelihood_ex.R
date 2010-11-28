@@ -24,7 +24,8 @@ axis(4)
 mtext("data",side=4,line=3)
 dev.off()
 
-system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', as.character(out$N), '"',  ' saddle_node_fit.png'))
+gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)
+system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' saddle_node_fit.png'))
 
 
 
