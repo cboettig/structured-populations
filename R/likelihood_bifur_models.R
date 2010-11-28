@@ -2,24 +2,27 @@
 require(odesolve)
 setSN <- function(Dt, Xo, pars){
 ## Names make it easy to read but slow execution.  For speed, can rewrite in C, see ?lsoda
-
-	Xo <- 1
-	pars <- c("r"=1, "theta"=0, "beta"=1)
-	Dt = 10
 	moments <- function(t,y,p){ 
-		yd1 <- pars["r"] - (y[1] - p["theta"])^2 
-		yd2 <- -2*(y[1] - p["theta"])*y[2] + p["beta"] 
+		yd1 <- p["r"] - (y[1] - p["theta"])^2 
+		yd2 <- -2*(y[1] - p["theta"])*y[2] +
+			p["beta"]*abs(p["r"] - (y[1] - p["theta"])^2)
 		list(c(yd1=yd1, yd2=yd2))
 	}
+	jacfn <- function(t,y,p){
+		c(
+		-2*(y[1]-p["theta"]), 0,
+		-2*y[2]+p["beta"]*abs(-2*(y[1]-p["theta"])), -2*(y[1] - p["theta"])
+	)
+	}
 	times <- c(0, Dt)
-	out <- lsoda( c(Xo, 0), times, moments, pars)
+	out <- lsoda(y=c(Xo, 0), times=times, func=moments, parms=pars, jac=jacfn)
 	Ex <- out[2,2] # times are in rows, cols are time, par1, par2
 	Vx <- out[2,3]
 	return(list(Ex=Ex, Vx=Vx))
 }
 
 rcSN <- function(n=1, Dt, x0, pars){
-  P <- setOU(Dt, x0, pars)
+  P <- setSN(Dt, x0, pars)
   rnorm(n, mean=P$Ex, sd = sqrt(P$Vx)) 
 }
 
@@ -29,7 +32,7 @@ dcSN <- function(x, Dt, x0, pars, log = FALSE){
   dnorm(x, mean=P$Ex, sd=sqrt(P$Vx), log=log)
 }
 
-pcOU <- function(x, Dt, x0, pars, lower.tail = TRUE, log.p = FALSE){ 
+pcSN <- function(x, Dt, x0, pars, lower.tail = TRUE, log.p = FALSE){ 
   P <- setSN(Dt, x0, pars)
   pnorm(x, mean=P$Ex, sd=sqrt(P$Vx),
 	lower.tail = lower.tail, log.p = log.p)
@@ -50,4 +53,29 @@ SN.likfn <- function(pars){
 }
 
 
+simulate.SN <- function(m){
+	X <- numeric(m$N)
+	X[1] <- m$Xo
+	delta_t <- (m$T-m$t0)/m$N
+	for(i in 1:(m$N-1) ){
+#		t <- m$t0 +(i-1)*delta_t ## absolute time doesn't matter on this fn
+		X[i+1] <- rcSN(1, Dt=delta_t, X[i], m$pars)
+	}
+	ts(X, start=m$t0, deltat=delta_t)
+}
 
+
+
+## Generic functions
+simulate.sdemodel <- function (m) {
+	if(m$model=="SN"){
+		sim <- simulate.SN(m)
+	}
+	sim
+}
+
+init_sdemodel <- function(pars, model, N=100, Xo=1, T=1, t0=0){
+	out <- list(Xo=Xo, t0=t0, T=T, pars=pars, N=N, model=model)
+	class(out) <- c(model, "sdemodel")
+	out
+}
