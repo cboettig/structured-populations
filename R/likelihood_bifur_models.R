@@ -1,6 +1,9 @@
 # set the value of the saddle node bifurcation. 
 require(odesolve)
 setSN <- function(Dt, Xo, pars){
+	p_tmp <- as.numeric(pars)
+	names(p_tmp) <- names(pars)
+	pars<-p_tmp
 ## Names make it easy to read but slow execution.  For speed, can rewrite in C, see ?lsoda
 	moments <- function(t,y,p){ 
 		yd1 <- p["r"] - (y[1] - p["theta"])^2 
@@ -45,6 +48,7 @@ SN.lik <- function(X, pars){
 	if(length(X) == 0){ return(0)}
     n <- length(X)
     dt <- deltat(X)
+	# returns the minus loglik
 	out <- -sum( dcSN(X[2:n], dt, X[1:(n-1)], pars, log=TRUE) )
 	out
 }
@@ -65,13 +69,12 @@ simulate.SN <- function(m){
 	ts(X, start=m$t0, deltat=delta_t)
 }
 
-update.sn <- function(m, X, method = c("Nelder-Mead", 
+update.SN <- function(m, X, method = c("Nelder-Mead", 
     "BFGS", "CG", "L-BFGS-B", "SANN")){
 	method <- match.arg(method)
-	lower = -Inf
 	X <<- X
 	fit <- suppressMessages(
-		optim(m$pars, SN.likfn, method=method, lower=lower)
+		optim(m$pars, SN.likfn, method=method)
 	)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
 	t0=time(X)[1], Xo <- X[1], data=X, N=length(X))
