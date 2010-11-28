@@ -1,11 +1,11 @@
 # bifur_likelihood_ex.R
 
 source("../R/likelihood_bifur_models.R")
-pars = c(r=5, theta=3, beta=1)
+pars = c(r=5, theta=3, beta=.1)
 m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=100)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
-m$pars <- c(r=21,theta=.5,beta=.1)
+m$pars <- c(r=21,theta=.5,beta=.01)
 
 out <- update.SN(m, X)
 print(out$pars)
@@ -36,20 +36,6 @@ system(paste('hpc-autotweets "', gitcom, ' done"'))
 
 
 
-
-ou_pars <- list(alpha=1, theta=1, sigma=1)
-ou <- update.OU(ou_pars, X)
-r <- ou$alpha^2/4
-theta <- ou$theta - ou$alpha/2
-beta <- ou$sigma^2/(2*ou$alpha*sqrt(r))
-
-
-
-linearmodel <- m
-linearmodel$pars <- c(r=r, theta=theta, beta=beta)
-print(SN.lik(X, linearmodel))
-linearfit <- update.SN(linearmodel, X)
-
 ## Plot the likelihood surface 
 A <- seq(1,10, length=200)
 l <- sapply(A, function(a){	
@@ -61,5 +47,17 @@ lines(A,l)
 dev.off()
 system('flickr_upload --tag="stochpop likelihood saddle-node" likelihood_cross-section.png')
 
+
+
+ou_pars <- list(alpha=1, theta=1, sigma=1)
+ou <- update.OU(ou_pars, X)
+r <- ou$alpha^2/4
+theta <- ou$theta - ou$alpha/2
+beta <- ou$sigma^2/(2*ou$alpha*sqrt(r))
+
+linearmodel <- m
+linearmodel$pars <- c(r=r, theta=theta, beta=beta)
+print(SN.lik(X, linearmodel$pars))
+#linearfit <- update.SN(linearmodel, X)
 
 
