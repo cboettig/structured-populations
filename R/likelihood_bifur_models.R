@@ -8,13 +8,13 @@ setSN <- function(Dt, Xo, pars){
 	moments <- function(t,y,p){ 
 		yd1 <- p["r"] - (y[1] - p["theta"])^2 
 		yd2 <- -2*(y[1] - p["theta"])*y[2] +
-			p["beta"]*abs(p["r"] - (y[1] - p["theta"])^2)
+			p["beta"]*abs(p["r"] + (y[1] - p["theta"])^2)
 		list(c(yd1=yd1, yd2=yd2))
 	}
 	jacfn <- function(t,y,p){
 		c(
 		-2*(y[1]-p["theta"]), 0,
-		-2*y[2]+p["beta"]*abs(-2*(y[1]-p["theta"])), -2*(y[1] - p["theta"])
+		-2*y[2]+p["beta"]*abs(2*(y[1]-p["theta"])), -2*(y[1] - p["theta"])
 	)
 	}
 	times <- c(0, Dt)
@@ -70,15 +70,28 @@ simulate.SN <- function(m){
 }
 
 update.SN <- function(m, X, method = c("Nelder-Mead", 
-    "BFGS", "CG", "L-BFGS-B", "SANN")){
+    "BFGS", "CG", "L-BFGS-B", "SANN"), use_mle=FALSE){
 	method <- match.arg(method)
-	X <<- X
-	fit <- 
-	#suppressMessages(
-		optim(m$pars, SN.likfn, method=method)
-	#)
-	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
-	t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
+	if(method == "L-BFGS-B"){ 
+		lower <- c(-Inf, -Inf, 0) 
+	} else { 
+		lower = -Inf
+	}
+
+	if(use_mle){
+		SN.mle <- function(r, theta, beta) SN.lik(X, list(r=r, theta=theta, beta=beta))
+		start <- list(r=m$pars['r'], theta=m$pars['theta'], beta=m$pars['beta'])
+		fit <- mle(SN.mle, start=start, method=method, lower=lower)
+	} else {
+		X <<- X
+		fit <- optim(m$pars, SN.likfn, method=method, lower=lower)
+	}
+	if(is(fit, "mle")){
+		out <- fit
+	} else {
+		out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
+		t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
+	}
 	class(out) <- c(m$model, "sdemodel")
 	out
 }
