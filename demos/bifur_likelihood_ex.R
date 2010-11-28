@@ -5,17 +5,20 @@ pars = c(r=5, theta=3, beta=1)
 m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=10)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
-m$pars <- c(r=51,theta=.5,beta=.1)
+m$pars <- c(r=21,theta=.5,beta=.1)
 
 out <- update.SN(m, X)
 print(out$pars)
 
 
+
+
 ## Figure 
 png("saddle_node_fit.png", width=400, height=400)
-curve( -(x-theta)^2+r, 0, 10, ylim=c(-2, r+1), lwd=3, main="true vs estimated model", col="darkgray")
+curve( -(x-pars['theta'])^2+pars['r'], 0, 10, ylim=c(-2, r+1), lwd=3, main="true vs estimated model", col="darkgray")
 curve( -(x-out$pars["theta"])^2+out$pars["r"], 0, 10, ylim=c(-2, r+1),add=T, col="red", lty=2, lwd=3)
 text(1, 2, paste("est: ", "r = ", as.character(round(out$pars[1],2)), "theta = ", as.character(round(out$pars[2],2)), "beta = ", as.character(round(out$pars[3],2))), pos=4)
+text(1, 1, paste("init: ", "r = ", as.character(m$pars[1]), "theta = ", as.character(m$pars[2]), "beta = ", as.character(m$pars[3])), pos=4)
 text(1, 1, paste("true: ", "r = ", as.character(pars[1]), "theta = ", as.character(pars[2]), "beta = ", as.character(pars[3])), pos=4)
 abline(h=0, lty=2)
 par(new=TRUE)

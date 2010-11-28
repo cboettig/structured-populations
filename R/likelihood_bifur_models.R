@@ -73,15 +73,24 @@ update.SN <- function(m, X, method = c("Nelder-Mead",
     "BFGS", "CG", "L-BFGS-B", "SANN")){
 	method <- match.arg(method)
 	X <<- X
-	fit <- suppressMessages(
+	fit <- 
+	#suppressMessages(
 		optim(m$pars, SN.likfn, method=method)
-	)
+	#)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
-	t0=time(X)[1], Xo <- X[1], data=X, N=length(X))
+	t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output <- out)
 	class(out) <- c(m$model, "sdemodel")
 	out
 }
 
+
+
+stableroot <- function(m){
+	p <- m$p
+	xhat <- sqrt(p['r']) + p['theta']
+	names(xhat) <- 'xhat'
+	xhat
+}
 
 
 
