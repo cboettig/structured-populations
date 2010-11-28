@@ -1,13 +1,13 @@
 # bifur_likelihood_ex.R
 
 source("../R/likelihood_bifur_models.R")
-pars = c(r=10, theta=3, beta=1)
-m <- init_sdemodel(pars =pars, Xo = 6.2, model="SN", N=200)
+pars = c(r=10, theta=3, beta=2)
+m <- init_sdemodel(pars =pars, Xo = 6.2, model="SN", N=500)
 X <- simulate.SN(m)
 # IC
-m$pars <- c(r=11,theta=4,beta=1)
+m$pars <- c(r=8,theta=2,beta=1)
 
-out <- update.SN(m, X, method="SANN")
+out <- update.SN(m, X)
 print(out$pars)
 
 
@@ -24,15 +24,18 @@ axis(4)
 mtext("data",side=4,line=3)
 dev.off()
 
-system('flickr_upload --tag="stochpop bifurcation" saddle_node_fit.png')
+system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', as.character(out$N), '"',  ' saddle_node_fit.png'))
 
-A <- seq(1,10, by=.4)
+
+
+A <- seq(1,10, by=.1)
 l <- sapply(A, function(a){	
 	pars['theta'] <- a
 	SN.lik(X, pars)
 })
-
-#png("likelihood_cross-section.png")
+png("likelihood_cross-section.png")
 plot(A, l, xlab="theta", ylab="-loglik")
 lines(A,l)
-#dev.off()
+dev.off()
+system('flickr_upload --tag="stochpop likelihood saddle-node" likelihood_cross-section.png')
+
