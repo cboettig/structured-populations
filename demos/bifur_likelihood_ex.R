@@ -4,7 +4,7 @@ source("../R/likelihood_bifur_models.R")
 pars = c(r=10, theta=3, beta=2)
 m <- init_sdemodel(pars =pars, Xo = 6.2, model="SN", N=500)
 X <- simulate.SN(m)
-# IC
+# set the initial search values (to be other than the true ones)
 m$pars <- c(r=8,theta=2,beta=1)
 
 out <- update.SN(m, X)
