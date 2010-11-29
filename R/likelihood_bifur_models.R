@@ -133,8 +133,8 @@ curve( -(x-pars['theta'])^2+pars['r'], xmin, xmax, ylim=c(-2, pars['r']+1), lwd=
 	}
 #text(1,4, paste("N = ", m$N, " T = ", m$T),pos=4)
 	text(1, 3, paste("est: ", "r = ", as.character(round(out$pars[1],2)), "theta = ", as.character(round(out$pars[2],2)), "beta = ", as.character(round(out$pars[3],2))), pos=4)
-	text(1, 2, paste("init: ", "r = ", as.character(m$pars[1]), "theta = ", as.character(m$pars[2]), "beta = ", as.character(m$pars[3])), pos=4)
-	text(1, 1, paste("true: ", "r = ", as.character(pars[1]), "theta = ", as.character(pars[2]), "beta = ", as.character(pars[3])), pos=4)
+	text(1, 2, paste("init: ", "r = ", as.character(round(m$pars[1],2)), "theta = ", as.character(round(m$pars[2],2)), "beta = ", as.character(round(m$pars[3],2))), pos=4)
+	text(1, 1, paste("true: ", "r = ", as.character(round(pars[1],2)), "theta = ", as.character(round(pars[2],2)), "beta = ", as.character(round(pars[3],2))), pos=4)
 	abline(h=0, lty=2)
 	par(new=TRUE)
 	plot(X@.Data, time(X),,type="l",col=rgb(0,0,1,.4),xlim=c(xmin,xmax), xaxt="n",yaxt="n",xlab="",ylab="")
