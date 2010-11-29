@@ -27,9 +27,11 @@ png("saddle_node_fit.png")
 plotcurves(m=m, out=out, oucurve=linearmodel, pars=pars, X=X)
 legend("topright", c("true", "quad est", "transform lin est"), col=c("darkgray", "red", "green"), lty=1 )
 dev.off()
+
+##social reporting
 gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)[[1]]
 system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' saddle_node_fit.png'))
-
+system(paste('hpc-autotweets " run ', gitcom, 'done "'))
 
 
 ## Plot the likelihood surface 
