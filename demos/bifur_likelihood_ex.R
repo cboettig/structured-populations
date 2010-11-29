@@ -3,12 +3,11 @@
 source("../R/likelihood_bifur_models.R")
 
 plotcurves <- function(m, out, pars, X, oucurve=NULL){ # m is the initial conditions model (input to update.SN), out the fit model (output of update.SN), pars the parameters used for the simulated data, X
-
-	xmin <- 0; xmax <- 5+stableroot(m)	
+	xmin <- 0; xmax <- 5+stableroot(out)	
 curve( -(x-pars['theta'])^2+pars['r'], xmin, xmax, ylim=c(-2, pars['r']+1), lwd=3, main="true vs estimated model", col="darkgray")
 	curve( -(x-out$pars["theta"])^2+out$pars["r"], xmin, xmax, add=T, col="red", lty=2, lwd=3)
 	if(!is.null(oucurve)){
-		curve( -(x-oucurve$pars["theta"])^2+oucurve$pars["r"], 0, 10,add=T, col="green", lty=2, lwd=3)
+		curve( -(x-oucurve$pars["theta"])^2+oucurve$pars["r"], xmin, xmax, add=T, col="green", lty=2, lwd=3)
 	}
 #text(1,4, paste("N = ", m$N, " T = ", m$T),pos=4)
 	text(1, 3, paste("est: ", "r = ", as.character(round(out$pars[1],2)), "theta = ", as.character(round(out$pars[2],2)), "beta = ", as.character(round(out$pars[3],2))), pos=4)
@@ -16,7 +15,7 @@ curve( -(x-pars['theta'])^2+pars['r'], xmin, xmax, ylim=c(-2, pars['r']+1), lwd=
 	text(1, 1, paste("true: ", "r = ", as.character(pars[1]), "theta = ", as.character(pars[2]), "beta = ", as.character(pars[3])), pos=4)
 	abline(h=0, lty=2)
 	par(new=TRUE)
-	plot(X@.Data, time(X),,type="l",col=rgb(0,0,1,.4),xlim=c(0,10), xaxt="n",yaxt="n",xlab="",ylab="")
+	plot(X@.Data, time(X),,type="l",col=rgb(0,0,1,.4),xlim=c(xmin,xmax), xaxt="n",yaxt="n",xlab="",ylab="")
 	axis(4)
 	mtext("data",side=4,line=3)
 }
@@ -42,7 +41,7 @@ plotcurves(m, out, pars, X)
 dev.off()
 
 # only first line of git commit will be used 
-gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)
+gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)[[1]]
 system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' saddle_node_fit.png'))
 system(paste('hpc-autotweets "', gitcom, ' done"'))
 
@@ -61,7 +60,7 @@ png("linear_fit.png")
 plotcurves(m=m, out=out, oucurve=linearmodel, pars=pars, X=X)
 legend("topright", c("true", "quad est", "transform lin est"), col=c("darkgray", "red", "green"), lty=1 )
 dev.off()
-gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)
+gitcom <- system('git commit -a -m "autocommit"', intern=TRUE)[[1]]
 system(paste('flickr_upload --tag="stochpop bifurcation"', '--description="', gitcom, '"',  ' linear_fit.png'))
 
 
