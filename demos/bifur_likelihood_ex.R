@@ -1,8 +1,11 @@
 # bifur_likelihood_ex.R
 source("../R/likelihood_bifur_models.R")
+source("../R/sde_likelihood.R")
+
+
 
 ## Set up a quadratic model and simulate a dataset 
-pars = c(r=5, theta=3, beta=.1)
+pars = c(r=5, theta=3, beta=.8)
 m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=100)
 X <- simulate.SN(m)
 
