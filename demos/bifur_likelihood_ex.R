@@ -3,8 +3,10 @@
 source("../R/likelihood_bifur_models.R")
 
 plotcurves <- function(m, out, pars, X, oucurve=NULL){ # m is the initial conditions model (input to update.SN), out the fit model (output of update.SN), pars the parameters used for the simulated data, X
-	curve( -(x-pars['theta'])^2+pars['r'], 0, 10, ylim=c(-2, r+1), lwd=3, main="true vs estimated model", col="darkgray")
-	curve( -(x-out$pars["theta"])^2+out$pars["r"], 0, 10,add=T, col="red", lty=2, lwd=3)
+
+	xmin <- 0; xmax <- 5+stableroot(m)	
+curve( -(x-pars['theta'])^2+pars['r'], xmin, xmax, ylim=c(-2, pars['r']+1), lwd=3, main="true vs estimated model", col="darkgray")
+	curve( -(x-out$pars["theta"])^2+out$pars["r"], xmin, xmax, add=T, col="red", lty=2, lwd=3)
 	if(!is.null(oucurve)){
 		curve( -(x-oucurve$pars["theta"])^2+oucurve$pars["r"], 0, 10,add=T, col="green", lty=2, lwd=3)
 	}
@@ -20,11 +22,16 @@ plotcurves <- function(m, out, pars, X, oucurve=NULL){ # m is the initial condit
 }
 
 
+
+
+
+
+
 pars = c(r=5, theta=3, beta=.1)
 m <- init_sdemodel(pars =pars, Xo = 8, model="SN", N=500, T=100)
 X <- simulate.SN(m)
 # set the initial search values (to be other than the true ones)
-m$pars <- c(r=21,theta=.5,beta=.01)
+m$pars <- c(r=21,theta=10,beta=.01)
 
 out <- update.SN(m, X)
 
