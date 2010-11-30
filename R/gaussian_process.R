@@ -46,13 +46,13 @@ simulate.gauss <- function(setmodel, pars, N=100, Xo = 1, T = 1, t0 = 0){
 	ts(X, start=t0, deltat=delta_t)
 }
 update.gauss <- function(setmodel, pars, X, method = c("Nelder-Mead", 
-					"BFGS", "CG", "L-BFGS-B", "SANN"), lower=-Inf){
+					"BFGS", "CG", "L-BFGS-B", "SANN"), ...){
 	method <- match.arg(method)
 	likfn <- function(pars) lik.gauss(X, pars, setmodel)
-	fit <- optim(pars, likfn, method=method, lower=lower)
+	fit <- optim(pars, likfn, method=method, ...)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
 		t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
-	class(out) <- c(m$model, "sdemodel")
+	class(out) <- "gauss"
 	out
 }
 

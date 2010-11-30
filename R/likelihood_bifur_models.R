@@ -12,7 +12,7 @@ setLSN <- function(Dt, Xo, t, pars){
 	moments <- function(t,y,p){ 
 		sqrtR <- sqrt(R(t,pars)) 
 		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
-		yd2 <- -2*sqrtR(t,pars)*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
+		yd2 <- -2*sqrtR*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
 		list(c(yd1=yd1, yd2=yd2))
 	}
 	jacfn <- function(t,y,p){
@@ -21,8 +21,10 @@ setLSN <- function(Dt, Xo, t, pars){
 		-2*sqrtR, 0,
 		0, -2*sqrtR
 	)}
-	times <- c(0, Dt)
-	out <- lapply(Xo, function(x0){lsoda(y=c(xhat=x0, sigma2=0), times=times, func=moments, parms=pars, jac=jacfn) 
+## The apply calls needed to work with vector inputs as Xo (whole timeseries)
+	times <- matrix(c(t, t+Dt), nrow=length(t))
+	out <- lapply(1:length(Xo), function(i){
+		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
 	})
 	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
 	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
