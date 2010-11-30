@@ -97,7 +97,7 @@ update.SN <- function(m, X, method = c("Nelder-Mead",
 }
 
 
-
+## stable root of the SN model
 stableroot <- function(m){
 	p <- m$p
 	xhat <- sqrt(p['r']) + p['theta']
@@ -106,20 +106,65 @@ stableroot <- function(m){
 }
 
 
+## the generic bifurcation parameter: here we assume linear model
+R <- function(t, pars){pars['Ro'] + pars['m']*t }
 
-## Generic functions
-simulate.sdemodel <- function (m) {
-	if(m$model=="SN"){
-		sim <- simulate.SN(m)
+###############  Linearized Saddle-Node (LSN) Model ##################
+# Will depend explicitly on t
+setLSN <- function(Dt, Xo, t, pars){
+	moments <- function(t,y,p){ 
+		sqrtR <- sqrt(R(t,pars)) 
+		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
+		yd2 <- -2*sqrtR(t,pars)*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
+		list(c(yd1=yd1, yd2=yd2))
 	}
-	sim
+	jacfn <- function(t,y,p){
+		sqrtR <- sqrt(R(t,pars)) 
+		c(
+		-2*sqrtR, 0,
+		0, -2*sqrtR
+	)}
+	times <- c(0, Dt)
+	out <- lapply(Xo, function(x0){lsoda(y=c(xhat=x0, sigma2=0), times=times, func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+	return(list(Ex=Ex, Vx=Vx))
 }
 
-init_sdemodel <- function(pars, model, N=100, Xo=1, T=1, t0=0){
-	out <- list(Xo=Xo, t0=t0, T=T, pars=pars, N=N, model=model)
-	class(out) <- c(model, "sdemodel")
-	out
+
+
+############## Linearized TransCritical (LTC) Model #################
+## sample pars for LTC: 
+# pars <- c(Ro=1, m=0, theta=1, sigma=1)
+
+## Will depend explicitly on t
+setLTC <- function(Dt, Xo, t, pars){
+	moments <- function(t,y,p){ 
+		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
+		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
+		list(c(yd1=yd1, yd2=yd2))
+	}
+	jacfn <- function(t,y,p){
+		c(
+		-R(t,pars), 0,
+		0, -R(t,pars)
+	)}
+	times <- matrix(c(t, t+Dt), nrow=length(t))
+	out <- lapply(1:length(Xo), function(i){
+		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+	return(list(Ex=Ex, Vx=Vx))
 }
+
+
+
+
+
+
+
 
 
 
