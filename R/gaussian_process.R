@@ -1,6 +1,11 @@
 #gaussian_process.R
 
 
+## Note that setmodel must have form:
+## set_a_gauss_model <- function(Dt, Xo, t, pars){
+## see the linearized models in likelihood_bifur_models
+
+
 init_gauss <- function(pars, setmodel, N=100, Xo=1, T=1, t0=0){
 # pars are model parameters
 # setmodel is a function returning Ex and Vx of the gaussian process
@@ -9,7 +14,7 @@ init_gauss <- function(pars, setmodel, N=100, Xo=1, T=1, t0=0){
 	out
 }
 rc.gauss <- function(setmodel, n=1, Dt, x0, t, pars){
-	P <- setmodel(Dt, Xo, t, pars)
+	P <- setmodel(Dt, x0, t, pars)
 	rnorm(n, mean=P$Ex, sd=sqrt(P$Vx))
 }
 dc.gauss  <- function(setmodel, x, Dt, x0, t, pars, log = FALSE){
@@ -33,21 +38,22 @@ lik.gauss <- function(X, pars, setmodel){
 simulate.gauss <- function(setmodel, pars, N=100, Xo = 1, T = 1, t0 = 0){
 	X <- numeric(N)
 	X[1] <- Xo
-	delta_t <- (T-t0)/m$N
+	delta_t <- (T-t0)/N
 	times <- seq(t0, T, by=delta_t)
 	for(i in 1:(N-1) ){
-#		t <- m$t0 +(i-1)*delta_t ## absolute time doesn't matter on this fn
 		X[i+1] <- rc.gauss(setmodel, 1, Dt=delta_t, x0=X[i], t=times[i+1], pars)
 	}
 	ts(X, start=t0, deltat=delta_t)
 }
-update.gauss <- function(pars, setmodel, X, method = c("Nelder-Mead", 
-					"BFGS", "CG", "L-BFGS-B", "SANN"),
-					use_mle=FALSE, lower=-Inf){
+update.gauss <- function(setmodel, pars, X, method = c("Nelder-Mead", 
+					"BFGS", "CG", "L-BFGS-B", "SANN"), lower=-Inf){
 	method <- match.arg(method)
-	gauss.mle <- function(pars) lik.gauss(X, pars, setmodel)
-	start <- as.list(pars)
-	fit <- mle(mle.gauss, start=pars, method=method, lower=lower)
+	likfn <- function(pars) lik.gauss(X, pars, setmodel)
+	fit <- optim(pars, likfn, method=method, lower=lower)
+	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
+		t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
+	class(out) <- c(m$model, "sdemodel")
+	out
 }
 
 

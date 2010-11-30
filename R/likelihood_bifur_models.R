@@ -1,5 +1,72 @@
 # set the value of the saddle node bifurcation. 
 require(odesolve)
+## The linearized bifurcation models below use the new gaussian_proccess library rather than rewrite rc, dc, pc, lik, sim, up, etc
+
+
+## the generic bifurcation parameter: here we assume linear model
+R <- function(t, pars){pars['Ro'] + pars['m']*t }
+
+###############  Linearized Saddle-Node (LSN) Model ##################
+# Will depend explicitly on t
+setLSN <- function(Dt, Xo, t, pars){
+	moments <- function(t,y,p){ 
+		sqrtR <- sqrt(R(t,pars)) 
+		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
+		yd2 <- -2*sqrtR(t,pars)*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
+		list(c(yd1=yd1, yd2=yd2))
+	}
+	jacfn <- function(t,y,p){
+		sqrtR <- sqrt(R(t,pars)) 
+		c(
+		-2*sqrtR, 0,
+		0, -2*sqrtR
+	)}
+	times <- c(0, Dt)
+	out <- lapply(Xo, function(x0){lsoda(y=c(xhat=x0, sigma2=0), times=times, func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+	return(list(Ex=Ex, Vx=Vx))
+}
+
+
+
+############## Linearized TransCritical (LTC) Model #################
+## sample pars for LTC: 
+# pars <- c(Ro=1, m=0, theta=1, sigma=1)
+
+## Will depend explicitly on t
+setLTC <- function(Dt, Xo, t, pars){
+	moments <- function(t,y,p){ 
+		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
+		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
+		list(c(yd1=yd1, yd2=yd2))
+	}
+	jacfn <- function(t,y,p){
+		c(
+		-R(t,pars), 0,
+		0, -R(t,pars)
+	)}
+	times <- matrix(c(t, t+Dt), nrow=length(t))
+	out <- lapply(1:length(Xo), function(i){
+		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+	return(list(Ex=Ex, Vx=Vx))
+}
+
+
+
+
+
+#############
+#############  Quadratic Saddle Node Bifurcation Model
+#############
+
+
+
+
 setSN <- function(Dt, Xo, pars){
 	p_tmp <- as.numeric(pars)
 	names(p_tmp) <- names(pars)
@@ -92,9 +159,19 @@ update.SN <- function(m, X, method = c("Nelder-Mead",
 		out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
 		t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
 	}
-	class(out) <- c(m$model, "sdemodel")
+	class(out) <- m$model
 	out
 }
+
+
+
+
+
+
+
+#############
+#############  Misc useful functions (plotting, etc)
+#############
 
 
 ## stable root of the SN model
@@ -106,69 +183,8 @@ stableroot <- function(m){
 }
 
 
-## the generic bifurcation parameter: here we assume linear model
-R <- function(t, pars){pars['Ro'] + pars['m']*t }
 
-###############  Linearized Saddle-Node (LSN) Model ##################
-# Will depend explicitly on t
-setLSN <- function(Dt, Xo, t, pars){
-	moments <- function(t,y,p){ 
-		sqrtR <- sqrt(R(t,pars)) 
-		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
-		yd2 <- -2*sqrtR(t,pars)*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
-		list(c(yd1=yd1, yd2=yd2))
-	}
-	jacfn <- function(t,y,p){
-		sqrtR <- sqrt(R(t,pars)) 
-		c(
-		-2*sqrtR, 0,
-		0, -2*sqrtR
-	)}
-	times <- c(0, Dt)
-	out <- lapply(Xo, function(x0){lsoda(y=c(xhat=x0, sigma2=0), times=times, func=moments, parms=pars, jac=jacfn) 
-	})
-	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
-	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
-	return(list(Ex=Ex, Vx=Vx))
-}
-
-
-
-############## Linearized TransCritical (LTC) Model #################
-## sample pars for LTC: 
-# pars <- c(Ro=1, m=0, theta=1, sigma=1)
-
-## Will depend explicitly on t
-setLTC <- function(Dt, Xo, t, pars){
-	moments <- function(t,y,p){ 
-		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
-		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
-		list(c(yd1=yd1, yd2=yd2))
-	}
-	jacfn <- function(t,y,p){
-		c(
-		-R(t,pars), 0,
-		0, -R(t,pars)
-	)}
-	times <- matrix(c(t, t+Dt), nrow=length(t))
-	out <- lapply(1:length(Xo), function(i){
-		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
-	})
-	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
-	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
-	return(list(Ex=Ex, Vx=Vx))
-}
-
-
-
-
-
-
-
-
-
-
-## Specify the plotting function,
+## Specify the plotting function for the quadratic curves,
 plotcurves <- function(m, out, pars, X, oucurve=NULL){ # m is the initial conditions model (input to update.SN), out the fit model (output of update.SN), pars the parameters used for the simulated data, X
 	xmin <- 0; xmax <- 5+stableroot(out)	
 curve( -(x-pars['theta'])^2+pars['r'], xmin, xmax, ylim=c(-2, pars['r']+1), lwd=3, main="true vs estimated model", col="darkgray")
