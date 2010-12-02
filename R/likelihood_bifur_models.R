@@ -2,13 +2,9 @@
 require(odesolve)
 ## The linearized bifurcation models below use the new gaussian_proccess library rather than rewrite rc, dc, pc, lik, sim, up, etc
 
-
-## the generic bifurcation parameter: here we assume linear model
-R <- function(t, pars){pars['Ro'] + pars['m']*t }
-
 ###############  Linearized Saddle-Node (LSN) Model ##################
 # Will depend explicitly on t
-setLSN <- function(Dt, Xo, t, pars){
+setLSN <- function(Dt, Xo, t, pars, R){
 	moments <- function(t,y,p){ 
 		sqrtR <- sqrt(R(t,pars)) 
 		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
@@ -38,7 +34,7 @@ setLSN <- function(Dt, Xo, t, pars){
 # pars <- c(Ro=1, m=0, theta=1, sigma=1)
 
 ## Will depend explicitly on t
-setLTC <- function(Dt, Xo, t, pars){
+setLTC <- function(Dt, Xo, t, pars, R){
 	moments <- function(t,y,p){ 
 		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
 		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
@@ -58,6 +54,15 @@ setLTC <- function(Dt, Xo, t, pars){
 	return(list(Ex=Ex, Vx=Vx))
 }
 
+
+## the generic bifurcation parameter: here we assume linear model
+R <- function(t, pars){pars['Ro'] + pars['m']*t }
+timedep_LTC <- function(Dt, Xo, t, pars) setLTC(Dt, Xo, t, pars, R)
+timedep_LSN <- function(Dt, Xo, t, pars) setLSN(Dt, Xo, t, pars, R)
+
+const_R <- function(t, pars) pars['Ro']
+const_LTC <- function(Dt, Xo, t, pars) setLTC(Dt, Xo, t, pars, const_R)
+const_LSN <- function(Dt, Xo, t, pars) setLSN(Dt, Xo, t, pars, const_R)
 
 
 

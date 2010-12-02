@@ -35,7 +35,7 @@ lik.gauss <- function(X, pars, setmodel){
 	out <- -sum( dc.gauss(setmodel, X[2:n], dt, X[1:(n-1)], t=time(X)[1:(n-1)], pars, log=TRUE) )
 	out
 }
-simulate.gauss <- function(setmodel, pars, N=100, Xo = 1, T = 1, t0 = 0){
+simulateGauss <- function(setmodel, pars, N=100, Xo = 1, T = 1, t0 = 0){
 	X <- numeric(N)
 	X[1] <- Xo
 	delta_t <- (T-t0)/N
@@ -45,17 +45,21 @@ simulate.gauss <- function(setmodel, pars, N=100, Xo = 1, T = 1, t0 = 0){
 	}
 	ts(X, start=t0, deltat=delta_t)
 }
-update.gauss <- function(setmodel, pars, X, method = c("Nelder-Mead", 
+updateGauss <- function(setmodel, pars, X, method = c("Nelder-Mead", 
 					"BFGS", "CG", "L-BFGS-B", "SANN"), ...){
 	method <- match.arg(method)
 	likfn <- function(pars) lik.gauss(X, pars, setmodel)
 	fit <- optim(pars, likfn, method=method, ...)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
-		t0=time(X)[1], Xo <- X[1], data=X, N=length(X), optim_output = fit)
+		t0=time(X)[1], Xo <- X[1], X=X, N=length(X), optim_output = fit, setmodel=setmodel)
 	class(out) <- "gauss"
 	out
 }
 
-
+### For montecarlotest method, need generics: 
+simulate.gauss <- function(m) simulateGauss(m$setmodel, pars=m$pars, N=m$N, Xo=m$X[1], T = m$T, t0=m$t0)
+update.gauss <- function(m, X, ...) updateGauss(setmodel=m$setmodel, pars=m$pars, X=X, ...)
+loglik.gauss <- function(m) m$loglik
+getParameters.gauss <- function(m) m$pars
 
 
