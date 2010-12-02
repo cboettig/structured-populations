@@ -1,0 +1,11 @@
+Package: warningsignals
+Title: Detection of Early Warning Signals of a Catastrophic Bifurcations 
+Version: 0.0-1
+Date: 2010-12-01
+Author: Carl Boettiger <cboettig@gmail.com>
+Maintainer: Carl Boettiger <cboettig@gmail.com>
+Description:
+Depends: snowfall, NORMT3, sde, Kendall, odesolve 
+URL: http://www.carlboettiger.info
+License: GPL (>= 2)
+
