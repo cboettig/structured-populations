@@ -5,8 +5,8 @@ require(pmc)
 require(odesolve)
 
 ## Simulate a dataset under slow linear change
-pars <- c(Ro=1, m= -0.09, theta=1, sigma=1)
-X <- simulateGauss(timedep_LTC, pars, N=500, T=10)
+pars <- c(Ro=50, m= -5*0.09, theta=1, sigma=1)
+X <- simulateGauss(timedep_LTC, pars, N=500, T=100)
 plot(X)
 
 ## fit both const and timedep models
@@ -22,6 +22,7 @@ out <- montecarlotest(const, timedep, cpu=16)
 save(list=ls(), file="lin_bifur_models.Rdat")
 
 png("lin_bifur_models.png")
+par(mfrow=c(1,2))
 plot(out)
 dev.off()
 
