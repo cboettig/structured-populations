@@ -5,7 +5,7 @@ require(pmc)
 require(odesolve)
 
 ## Simulate a dataset under slow linear change
-pars <- c(Ro=1, m= -0.01, theta=1, sigma=1)
+pars <- c(Ro=1, m= -0.09, theta=1, sigma=1)
 X <- simulateGauss(timedep_LTC, pars, N=500, T=10)
 plot(X)
 
