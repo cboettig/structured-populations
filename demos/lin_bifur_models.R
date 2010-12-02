@@ -2,6 +2,7 @@
 source("../R/likelihood_bifur_models.R")
 source("../R/gaussian_process.R")
 require(pmc)
+require(odesolve)
 
 ## Simulate a dataset under slow linear change
 pars <- c(Ro=1, m= -0.01, theta=1, sigma=1)
@@ -19,7 +20,7 @@ const <- updateGauss(const_LTC, start, X, control=list(maxit=1000))
 
 out <- montecarlotest(const, timedep, cpu=16)
 save(list=ls(), file="lin_bifur_models.Rdat")
-i
+
 png("lin_bifur_models.png")
 plot(out)
 dev.off()
