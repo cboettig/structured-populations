@@ -7,7 +7,6 @@ require(odesolve)
 ## Simulate a dataset under slow linear change
 pars <- c(Ro=50, m= -5*0.09, theta=1, sigma=1)
 X <- simulateGauss(timedep_LTC, pars, N=500, T=100)
-plot(X)
 
 ## fit both const and timedep models
 start <- c(Ro=.5, m=0, theta=.1, sigma=.1)
@@ -23,6 +22,7 @@ save(list=ls(), file="lin_bifur_models.Rdat")
 
 png("lin_bifur_models.png")
 par(mfrow=c(1,2))
+plot(X)
 plot(out)
 dev.off()
 
