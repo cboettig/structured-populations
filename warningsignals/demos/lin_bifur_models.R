@@ -27,7 +27,7 @@ plot(out)
 dev.off()
 
 
-gitcom <- system('git commit -a -m "autocommit warning signals"', intern=TRUE)[[1]]
+gitcom <- system('git log -n -1', intern=TRUE)[[1]]
 system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" lin_bifur_models.png', sep=""))
 system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done ', gitcom, '"', sep=""))
 
