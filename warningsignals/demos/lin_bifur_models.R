@@ -20,16 +20,18 @@ const <- updateGauss(const_LTC, start, X, control=list(maxit=1000))
 out <- montecarlotest(const, timedep, cpu=16)
 save(list=ls(), file="lin_bifur_models.Rdat")
 
-png("lin_bifur_models.png")
-par(mfrow=c(2,1))
+png("timeseries.png")
 plot(X)
+dev,off()
+
+png("lin_bifur_models.png")
 plot(out)
 dev.off()
 
-
+id <- 5
 gitcom <- system('git log -n -1', intern=TRUE)[[1]]
-system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" lin_bifur_models.png', sep=""))
-system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done ', gitcom, '"', sep=""))
+system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" lin_bifur_models.png timeseries.png', sep=""))
+system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done, id = ', id, gitcom, '"', sep=""))
 
 
 
