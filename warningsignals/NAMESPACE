@@ -1,0 +1,9 @@
+# functions in sde_likelihood.R
+export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot, power_test, power_pair)
+
+# functions in gaussian_processes.R
+export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGauss, simulateGauss, lik.gauss, pc.gauss, dc.gauss, rc.gauss, init_gauss)
+
+# functions in likelihood_bifur_models.R
+export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN)
+# doesn't export quadratic saddlenode functions
