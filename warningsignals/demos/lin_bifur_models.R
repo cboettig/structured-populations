@@ -32,10 +32,19 @@ data <- sfLapply(n,
 	id <- i 
 	gitcom <- system('git log -n -1', intern=TRUE)[[1]]
 	system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" lin_bifur_models.png timeseries.png', sep=""))
-	system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done, id = ', id, gitcom, '"', sep=""))
+	system(paste('hpc-autotweets "#stochpop iteration id = ', id, gitcom, '"', sep=""))
 
 	out
 })
+
+save(list=ls(), file="lin_bifur_models.Rdat")
+
+png("n_power_curve.png")
+plot(n, sapply(1:length(n), function(i) data[[i]]$power))
+dev.off()
+	gitcom <- system('git log -n -1', intern=TRUE)[[1]]
+	system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" n_power_curve.png', sep=""))
+	system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done, id = ', id, gitcom, '"', sep=""))
 
 
 
