@@ -8,9 +8,9 @@ require(warningsignals)
 #n <- seq(10,200, by=10)
 M <- seq(-5, 0, by=.5)
 
-#sfInit(parallel=TRUE, cpu=16)
-#sfLibrary(warningsignals)
-#sfExportAll()
+sfInit(parallel=TRUE, cpu=16)
+sfLibrary(warningsignals)
+sfExportAll()
 
 data <- lapply(M,
 

@@ -2,6 +2,7 @@
 export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot, power_test, power_pair)
 
 # functions in gaussian_processes.R
+# note that still needs the generics
 export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGauss, simulateGauss, lik.gauss, pc.gauss, dc.gauss, rc.gauss, init_gauss)
 
 # functions in likelihood_bifur_models.R
