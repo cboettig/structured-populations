@@ -36,7 +36,7 @@ data <- lapply(n,
 	id <- i 
 	gitcom <- system('git log -n -1', intern=TRUE)[[1]]
 	system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom, " id = ", id, '" lin_bifur_models.png timeseries.png', sep=""))
-	system(paste('hpc-autotweets "#stochpop iteration id = ', id, gitcom, '"', sep=""))
+	system(paste('hpc-autotweets "#stochpop n power iteration id = ', id, '"', sep=""))
 
 	out
 })
