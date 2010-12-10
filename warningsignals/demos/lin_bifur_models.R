@@ -5,18 +5,18 @@ require(warningsignals)
 
 ## Simulate a dataset under slow linear change
 
-n <- seq(10,200, by=10)
-#M <- seq(-5, 0, by=.5)
+#n <- seq(10,200, by=10)
+M <- seq(-5, 0, by=.5)
 
 #sfInit(parallel=TRUE, cpu=16)
 #sfLibrary(warningsignals)
 #sfExportAll()
 
-data <- lapply(n,
+data <- lapply(M,
 
 	function(i){
-	pars <- c(Ro=50, m= -5*.9, theta=1, sigma=1)
-	X <- simulateGauss(timedep_LTC, pars, N=i, T=10)
+	pars <- c(Ro=50, m= i, theta=1, sigma=1)
+	X <- simulateGauss(timedep_LTC, pars, N=100, T=10)
 
 	## fit both const and timedep models
 	start <- c(Ro=.5, m=0, theta=.1, sigma=.1)
