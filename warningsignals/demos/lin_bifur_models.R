@@ -15,7 +15,7 @@ data <- sfLapply(n,
 
 	function(i){
 	pars <- c(Ro=50, m= -5*.9, theta=1, sigma=1)
-	X <- simulateGauss(timedep_LTC, pars, N=N[i], T=10)
+	X <- simulateGauss(timedep_LTC, pars, N=i, T=10)
 
 	## fit both const and timedep models
 	start <- c(Ro=.5, m=0, theta=.1, sigma=.1)
