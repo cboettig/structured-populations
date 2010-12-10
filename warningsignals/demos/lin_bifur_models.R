@@ -8,6 +8,9 @@ require(odesolve)
 
 n <- seq(10,200, by=10)
 sfInit(parallel=TRUE, cpu=16)
+sfLibrary(pmc)
+sfExportAll()
+
 data <- sfLapply(n, 
 
 	function(i){
