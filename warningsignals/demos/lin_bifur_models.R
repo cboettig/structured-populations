@@ -2,8 +2,6 @@
 #source("/R/likelihood_bifur_models.R")
 #source("/R/gaussian_process.R")
 require(warningsignals)
-require(pmc)
-require(odesolve)
 
 ## Simulate a dataset under slow linear change
 
@@ -11,7 +9,7 @@ require(odesolve)
 M <- seq(-5, 0, by=.5)
 
 sfInit(parallel=TRUE, cpu=16)
-sfLibrary(pmc)
+sfLibrary(warningsignals)
 sfExportAll()
 data <- sfLapply(M,
 
