@@ -5,13 +5,14 @@ require(warningsignals)
 
 ## Simulate a dataset under slow linear change
 
-#n <- seq(10,200, by=10)
-M <- seq(-5, 0, by=.5)
+n <- seq(10,200, by=10)
+#M <- seq(-5, 0, by=.5)
 
-sfInit(parallel=TRUE, cpu=16)
-sfLibrary(warningsignals)
-sfExportAll()
-data <- sfLapply(M,
+#sfInit(parallel=TRUE, cpu=16)
+#sfLibrary(warningsignals)
+#sfExportAll()
+
+data <- lapply(n,
 
 	function(i){
 	pars <- c(Ro=50, m= i, theta=1, sigma=1)
