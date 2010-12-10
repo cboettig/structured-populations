@@ -1,6 +1,7 @@
 #lin_bifur_models.R
-source("../R/likelihood_bifur_models.R")
-source("../R/gaussian_process.R")
+#source("/R/likelihood_bifur_models.R")
+#source("/R/gaussian_process.R")
+require(warningsignals)
 require(pmc)
 require(odesolve)
 
