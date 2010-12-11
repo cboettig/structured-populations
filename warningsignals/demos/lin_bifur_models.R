@@ -9,7 +9,7 @@ tweet_errors(tags=tags)
 
 ## Simulate a dataset under slow linear change
 
-sfInit(parallel=TRUE, cpu=2)
+sfInit(parallel=TRUE, cpu=8)
 sfLibrary(warningsignals)
 sfExportAll()
 
