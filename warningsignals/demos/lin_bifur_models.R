@@ -23,7 +23,7 @@ sfExportAll()
 	const <- updateGauss(const_LSN, start, X, control=list(maxit=1000))
 
 	out <- montecarlotest(const, timedep, cpu=2, nboot=50)
-#	save(list=ls(), file="lin_bifur_models.Rdat")
+	save(list=ls(), file="lin_bifur_models.Rdat")
 
 	social_plot(plot(X), file="timeseries.png", tags=tags)
 	social_plot(plot(out), file="lin_bifur_models.png",tags=tags)
