@@ -1,4 +1,7 @@
-#power_spec.R
+# power_spec.R
+## Attempting to fit models by likelihood using the spectral-transform of the data.  
+## Rather hard, spectral transforms not aligning with theory yet
+
 require(sde)
 
 

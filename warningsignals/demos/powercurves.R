@@ -1,11 +1,15 @@
 #lin_bifur_models.R
-#source("/R/likelihood_bifur_models.R")
-#source("/R/gaussian_process.R")
 require(warningsignals)
+require(socialR)
+tags <- "warningsignals stochpop powercurves.R"
+tweet_errors(tags=tags)
 
 ## Simulate a dataset under slow linear change
 
+## n is the number of sample points
 #n <- seq(10,200, by=10)
+
+## M is a parameter for the rate of change in stability loss
 M <- seq(-4.9, 0, by=.5)
 
 sfInit(parallel=TRUE, cpu=16)
@@ -25,32 +29,15 @@ data <- lapply(M,
 	const <- updateGauss(const_LTC, start, X, control=list(maxit=1000))
 
 	out <- montecarlotest(const, timedep, cpu=16)
-#	save(list=ls(), file="lin_bifur_models.Rdat")
-	png("timeseries.png")
-	plot(X)
-	dev.off()
-	png("lin_bifur_models.png")
-	plot(out)
-	dev.off()
-
-	id <- i 
-	gitcom <- system('git log -n -1', intern=TRUE)[[1]]
-	system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom, " id = ", id, '" lin_bifur_models.png timeseries.png', sep=""))
-	system(paste('hpc-autotweets "#stochpop m power iteration id = ', id, '"', sep=""))
+	save(list=ls(), file="powercurves.Rdat")
+	social_plot(plot(out), file="powercurves.png", tags=tags, comment=paste("M = ", i))
 
 	out
 })
 
-save(list=ls(), file="lin_bifur_models.Rdat")
+save(list=ls(), file="powercurves.Rdat")
 
-png("n_power_curve.png")
-plot(n, sapply(1:length(n), function(i) data[[i]]$power))
-dev.off()
-	gitcom <- system('git log -n -1', intern=TRUE)[[1]]
-	system(paste('flickr_upload --tag="stochpop warningsignals" --description="', gitcom,  '" n_power_curve.png', sep=""))
-	system(paste('hpc-autotweets "@cboettig #stochpop warningsignals done, id = ', id, gitcom, '"', sep=""))
+social_plot(plot(M, sapply(1:length(M), function(i) data[[i]]$power)), file="powercurves.png")
 
 
-
-## Now just need an example where R(t) is constant, requires redefining LTC and LSN
 

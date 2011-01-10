@@ -1,4 +1,7 @@
-# saddle_analytics.R
+# logistic_analytics.R
+## Make animated plots of the bifurcations
+
+
 params <- c(K=1000, e=.5, c=1)
 b <- function(x, params){ x*params["c"]*(params["K"]-x)  }
 
