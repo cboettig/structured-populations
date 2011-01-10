@@ -70,7 +70,7 @@ social_plot(plot(n, sapply(1:length(n), function(i) LTC_n[[i]]$power)), file="po
 
 
 
-tags <- "warningsignals stochpop stability LTC powercurves.R"
+tags <- "warningsignals stochpop stability LSN powercurves.R"
 LSN_M <- lapply(M,
 
 	function(i){
@@ -95,7 +95,7 @@ social_plot(plot(M, sapply(1:length(M), function(i) LSN_M[[i]]$power)), file="po
 
 
 
-tags <- "warningsignals stochpop sample LTC powercurves.R"
+tags <- "warningsignals stochpop sample LSN powercurves.R"
 LSN_n <- lapply(n,
 
 	function(i){
