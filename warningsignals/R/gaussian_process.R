@@ -9,7 +9,7 @@
 init_gauss <- function(pars, setmodel, N=100, Xo=1, T=1, t0=0){
 # pars are model parameters
 # setmodel is a function returning Ex and Vx of the gaussian process
-	out <- list(Xo=Xo, t0=t0, T=T, pars=pars, N=N, setmodel=setmodel)
+	out <- list(Xo=Xo, t0=t0, T=T, pars=pars, N=N, setmodel=setmodel, k=length(pars))
 	class(out) <- "gauss"
 	out
 }
@@ -51,7 +51,7 @@ updateGauss <- function(setmodel, pars, X, method = c("Nelder-Mead",
 	likfn <- function(pars) lik.gauss(X, pars, setmodel)
 	fit <- optim(pars, likfn, method=method, ...)
 	out <- list(pars=fit$par, loglik=-fit$value, T=time(X)[length(X)],
-		t0=time(X)[1], Xo <- X[1], X=X, N=length(X), optim_output = fit, setmodel=setmodel)
+		t0=time(X)[1], Xo <- X[1], X=X, N=length(X), optim_output = fit, setmodel=setmodel, k=length(pars))
 	class(out) <- "gauss"
 	out
 }
