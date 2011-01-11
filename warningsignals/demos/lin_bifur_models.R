@@ -26,14 +26,13 @@ sfExportAll()
 
 
 
-	## Should use fixed parameters not those estimated from a simulation
-
+	## For a clean powercurve, should use fixed parameters not those estimated from a simulation
 #	const$pars <- c(Ro=.5, theta=1, sigma=1)
 #	timedep$pars <- c(
-	out <- montecarlotest(const, timedep, cpu=2, nboot=16)
-#	save(list=ls(), file="lin_bifur_models.Rdat")
 
+	out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+#	save(list=ls(), file="lin_bifur_models.Rdat")
 #	social_plot(plot(X), file="timeseries.png", tags=tags)
-#	social_plot(plot(out), file="lin_bifur_models.png",tags=tags)
+	social_plot(plot(out), file="lin_bifur_models.png",tags=tags)
 
 
