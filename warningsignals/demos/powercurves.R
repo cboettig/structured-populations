@@ -38,7 +38,7 @@ LTC_M <- lapply(M,
 })
 
 save(list=ls(), file="powercurves.Rdat")
-social_plot(plot(M, sapply(1:length(M), function(i) LTC_M[[i]]$power)), file="powercurves.png")
+social_plot(plot(M, sapply(1:length(M), function(i) LTC_M[[i]]$power)), file="powercurves.png", tags=tags)
 
 
 
@@ -64,7 +64,7 @@ LTC_n <- lapply(n,
 })
 
 save(list=ls(), file="powercurves.Rdat")
-social_plot(plot(n, sapply(1:length(n), function(i) LTC_n[[i]]$power)), file="powercurves.png")
+social_plot(plot(n, sapply(1:length(n), function(i) LTC_n[[i]]$power)), file="powercurves.png", tags=tags)
 
 
 
@@ -91,7 +91,7 @@ LSN_M <- lapply(M,
 })
 
 save(list=ls(), file="powercurves.Rdat")
-social_plot(plot(M, sapply(1:length(M), function(i) LSN_M[[i]]$power)), file="powercurves.png")
+social_plot(plot(M, sapply(1:length(M), function(i) LSN_M[[i]]$power)), file="powercurves.png", tags=tags)
 
 
 
@@ -116,7 +116,7 @@ LSN_n <- lapply(n,
 })
 
 save(list=ls(), file="powercurves.Rdat")
-social_plot(plot(n, sapply(1:length(n), function(i) LSN_n[[i]]$power)), file="powercurves.png")
+social_plot(plot(n, sapply(1:length(n), function(i) LSN_n[[i]]$power)), file="powercurves.png", tags=tags)
 
 
 
