@@ -11,6 +11,7 @@ tweet_errors(tags=tags)
 
 sfInit(parallel=TRUE, cpu=16)
 sfLibrary(warningsignals)
+sfLibrary(socialR)
 sfExportAll()
 
 	pars <- c(Ro=50, m= -.4, theta=1, sigma=1)
