@@ -8,3 +8,7 @@ export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGa
 # functions in likelihood_bifur_models.R
 export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN)
 # doesn't export quadratic saddlenode functions
+
+
+# indicators.R
+export(window_mean, window_var, window_skew, window_kurtosi)
