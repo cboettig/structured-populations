@@ -28,5 +28,13 @@ window_kurtosi <- function(X, windowsize=length(X)/2){
 }
 
 
+window_autocorr <- function(X, windowsize=length(X)/2){
+	sapply(0:(length(X)-windowsize), 
+		function(i){
+			a<- acf(X[(i+1):(i+windowsize)], lag.max=1) 
+			a$acf[2]
+		}
+	)
+}
 
 
