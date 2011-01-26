@@ -31,7 +31,7 @@ sfExportAll()
 #	const$pars <- c(Ro=.5, theta=1, sigma=1)
 #	timedep$pars <- c(
 
-	out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+	out <- montecarlotest(const, timedep, cpu=16, nboot=2000)
 #	save(list=ls(), file="lin_bifur_models.Rdat")
 #	social_plot(plot(X), file="timeseries.png", tags=tags)
 	social_plot(plot(out), file="lin_bifur_models.png",tags=tags)
