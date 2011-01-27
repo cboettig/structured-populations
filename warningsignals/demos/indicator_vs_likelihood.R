@@ -21,15 +21,15 @@ llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
 
 
 ## a quick labling function
+xshift <- function(xsteps){
+	deltax <- (par()$xaxp[2]-par()$xaxp[1])/5
+	par()$xaxp[1]+xsteps*deltax
+}
+yshift <- function(ysteps){
+	deltay <- (par()$yaxp[2]-par()$yaxp[1])/5
+	par()$yaxp[2]-ysteps*deltay
+}
 show_stats <- function(X, indicator){
-	xshift <- function(xsteps){
-		deltax <- (par()$xaxp[2]-par()$xaxp[1])/5
-		par()$xaxp[1]+xsteps*deltax
-	}
-	yshift <- function(ysteps){
-		deltay <- (par()$yaxp[2]-par()$yaxp[1])/5
-		par()$yaxp[2]-ysteps*deltay
-	}
 	w <- warning_stats(X, indicator)
 	text(xshift(1), yshift(1), paste("tau = ", round(w[1],2)), cex=1.5, col="red", font=2)
 	text(xshift(1), yshift(2), paste("p = ", format.pval(w[2])), cex=1.5, col="blue", font=2)
@@ -69,7 +69,15 @@ null_tau_dist <- sapply(1:nboot, function(i){
 	warning_stats(Y, window_var)
 })
 
-social_plot(plot(density(test_tau_dist[1,]), main="Kendall's Tau with and without warning"), file="taudist.png", tags=tags)
+plt <- function(){
+	plot(density(test_tau_dist[1,]), main="Kendall's Tau with (test) and without (null) destablizing", lwd=3, col="blue")
+	lines(density(null_tau_dist[1,]), col="red", lwd=3)
+	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
+	text(xshift(1), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
+	text(xshift(1), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
+}
+plt()
+social_plot(plt(), file="taudist.png", tags=tags)
 
 
 
