@@ -11,4 +11,4 @@ export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LS
 
 
 # indicators.R
-export(window_mean, window_var, window_skew, window_kurtosi)
+export(window_mean, window_var, window_skew, window_kurtosi, warning_stats)
