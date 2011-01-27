@@ -4,9 +4,20 @@ tags <- "warningsignals stochpop"
 require(warningsignals)
 
 ## Simulate a dataset under slow linear change
-pars <- c(Ro=50, m= -45, theta=1, sigma=1)
-warning <- simulateGauss(timedep_LTC, pars, N=500, T=1)
-no_warning <- simulateGauss(timedep_LTC, pars, N=500, T=1)
+pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
+warning <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
+no_warning <- simulateGauss(const_LTC, pars, N=500, T=100, Xo=100)
+
+# Likelihood Fits  
+timedep <- updateGauss(timedep_LTC, pars=c(Ro=5, m=0, theta=100, sigma=1), warning, control=list(maxit=1000))
+const <- updateGauss(const_LTC, pars, warning, control=list(maxit=1000))
+llik_warning <- 2*(loglik(timedep)-loglik(const))
+
+timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000))
+const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
+llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
+
+
 
 
 ## a quick labling function
@@ -43,9 +54,11 @@ plts <- function(){
 	show_stats(no_warning, window_autocorr)
 
 }
-plts()
+social_plot(plts(), file="indicators.png", tags=tags)
 
 
+
+## Look at the distribution of Taus
 test_tau_dist <- sapply(1:nboot, function(i){
 	X <- simulateGauss(timedep_LSN, pars, N=500, T=1, Xo=6)
 	warning_stats(X, window_var)
@@ -56,9 +69,7 @@ null_tau_dist <- sapply(1:nboot, function(i){
 	warning_stats(Y, window_var)
 })
 
-
-
-plot(density(test_tau_dist[1,]), main="Kendall's Tau wtih and without warning")
+social_plot(plot(density(test_tau_dist[1,]), main="Kendall's Tau with and without warning"), file="taudist.png", tags=tags)
 
 
 
