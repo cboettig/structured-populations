@@ -4,7 +4,7 @@ Version: 0.0-1
 Date: 2010-12-01
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
-Description:
+Description: Detection of early warning signals.  Dependecies: snowfall provides support for parallelization.  
 Depends: snowfall, NORMT3, sde, Kendall, odesolve, pmc, odesolve, psych 
 URL: http://www.carlboettiger.info
 License: GPL (>= 2)

@@ -38,3 +38,15 @@ window_autocorr <- function(X, windowsize=length(X)/2){
 }
 
 
+warning_stats <- function(X, indicator){
+	w <- length(X)/2
+	end <- length(X)
+	out <- Kendall(time(X)[w:end], indicator(X))
+#	p <- format.pval(out$sl)
+	p <- as.numeric(out$sl)
+	c(as.numeric(out$tau), p)
+}
+
+
+
+
