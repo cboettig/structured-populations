@@ -22,8 +22,6 @@ timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000
 const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
 
-out <- montecarlotest(const, timedep, cpu=16, nboot=16)
-social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
 ## a quick labling function
 xshift <- function(xsteps){
@@ -84,6 +82,9 @@ plt <- function(){
 plt()
 social_plot(plt(), file="taudist.png", tags=tags)
 
+save(list=ls(), file="indicator_vs_likelihood.R")
 
-
+out <- montecarlotest(const, timedep, cpu=8, nboot=8)
+save(list=ls(), file="indicator_vs_likelihood.R")
+social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
