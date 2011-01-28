@@ -1,7 +1,12 @@
 #indicator_vs_likelihood.R
 # edit stuff 
 tags <- "warningsignals stochpop"
+require(socialR)
 require(warningsignals)
+sfInit(parallel=TRUE, cpu=16)
+sfLibrary(warningsignals)
+sfExportAll()
+
 
 ## Simulate a dataset under slow linear change
 pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
@@ -17,8 +22,8 @@ timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000
 const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
 
-
-
+out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
 ## a quick labling function
 xshift <- function(xsteps){
