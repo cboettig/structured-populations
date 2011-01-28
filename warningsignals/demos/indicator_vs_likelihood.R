@@ -1,15 +1,17 @@
 #indicator_vs_likelihood.R
 # edit stuff 
 tags <- "warningsignals stochpop"
+nboot <- 16
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=16)
+sfInit(parallel=TRUE, cpu=2)
 sfLibrary(warningsignals)
+
+pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 sfExportAll()
 
 
 ## Simulate a dataset under slow linear change
-pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 warning <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
 no_warning <- simulateGauss(const_LTC, pars, N=500, T=100, Xo=100)
 
@@ -22,7 +24,7 @@ timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000
 const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
 
-out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+out <- montecarlotest(const, timedep, cpu=16, nboot=nboot)
 social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
 ## a quick labling function
@@ -64,18 +66,18 @@ social_plot(plts(), file="indicators.png", tags=tags)
 
 
 ## Look at the distribution of Taus
-test_tau_dist <- sapply(1:nboot, function(i){
-	X <- simulateGauss(timedep_LSN, pars, N=500, T=1, Xo=6)
+test_tau_dist <- sfSapply(1:nboot, function(i){
+	X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
 	warning_stats(X, window_var)
 })
 
-null_tau_dist <- sapply(1:nboot, function(i){
-	Y <- simulateGauss(const_LSN, pars, N=500, T=1, Xo=6)
+null_tau_dist <- sfSapply(1:nboot, function(i){
+	Y <- simulateGauss(const_LSN, pars, N=500, T=100, Xo=100)
 	warning_stats(Y, window_var)
 })
 
 plt <- function(){
-	plot(density(test_tau_dist[1,]), main="Kendall's Tau with (test) and without (null) destablizing", lwd=3, col="blue")
+	plot(density(test_tau_dist[1,]), main="Kendall's Tau with (test) and without (null) destablizing", lwd=3, col="blue", xlim=c(-1,1))
 	lines(density(null_tau_dist[1,]), col="red", lwd=3)
 	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
 	text(xshift(1), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
