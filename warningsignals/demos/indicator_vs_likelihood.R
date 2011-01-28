@@ -4,6 +4,7 @@ tags <- "warningsignals stochpop"
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
+nboot=160
 sfLibrary(warningsignals)
 sfExportAll()
 
@@ -84,7 +85,7 @@ social_plot(plt(), file="taudist.png", tags=tags)
 
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 
-out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+out <- montecarlotest(const, timedep, cpu=16, nboot=nboot)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
