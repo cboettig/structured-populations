@@ -82,9 +82,9 @@ plt <- function(){
 plt()
 social_plot(plt(), file="taudist.png", tags=tags)
 
-save(list=ls(), file="indicator_vs_likelihood.R")
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 
-out <- montecarlotest(const, timedep, cpu=8, nboot=8)
-save(list=ls(), file="indicator_vs_likelihood.R")
+out <- montecarlotest(const, timedep, cpu=16, nboot=16)
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
 
