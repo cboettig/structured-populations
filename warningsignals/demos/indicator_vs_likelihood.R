@@ -1,5 +1,4 @@
 #indicator_vs_likelihood.R
-# edit stuff 
 tags <- "warningsignals stochpop"
 nboot <- 160
 require(socialR)
@@ -26,8 +25,8 @@ plt <- function(){
 	plot(density(test_tau_dist[1,]), main="Kendall's Tau with (test) and without (null) destablizing", lwd=3, col="blue", xlim=c(-1,1))
 	lines(density(null_tau_dist[1,]), col="red", lwd=3)
 	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
-	text(xshift(1), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
-	text(xshift(1), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
+	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
+	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
 }
 plt()
 social_plot(plt(), file="taudist.png", tags=tags)
