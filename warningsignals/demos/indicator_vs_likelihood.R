@@ -33,18 +33,40 @@ test_tau_dist <- sfSapply(1:nboot, function(i){
 })
 
 null_tau_dist <- sfSapply(1:nboot, function(i){
-	Y <- simulateGauss(const_LSN, pars, N=500, T=100, Xo=100)
+	Y <- simulateGauss(const_LTC, pars, N=500, T=100, Xo=100)
 	warning_stats(Y, window_var)
 })
 
 plt <- function(){
-	plot(density(test_tau_dist[1,]), main="Kendall's Tau with (test) and without (null) destablizing", lwd=3, col="blue", xlim=c(-1,1))
+	plot(density(test_tau_dist[1,]), main="Kendall's Tau in Variance", lwd=3, col="blue", xlim=c(-1,1))
 	lines(density(null_tau_dist[1,]), col="red", lwd=3)
 	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
 	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
 	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
 }
-social_plot(plt(), file="taudist.png", tags=tags)
+social_plot(plt(), file="taudist_var.png", tags="warningsignals stochpop tau variance")
+
+
+## Look at the distribution of Taus on autocorrelation
+test_tau_dist <- sfSapply(1:nboot, function(i){
+	X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
+	warning_stats(X, window_autocorr)
+})
+
+null_tau_dist <- sfSapply(1:nboot, function(i){
+	Y <- simulateGauss(const_LTC, pars, N=500, T=100, Xo=100)
+	warning_stats(Y, window_autocorr)
+})
+
+plt <- function(){
+	plot(density(test_tau_dist[1,]), main="Kendall's Tau in Autocorrelation", lwd=3, col="blue", xlim=c(-1,1))
+	lines(density(null_tau_dist[1,]), col="red", lwd=3)
+	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
+	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
+	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
+}
+social_plot(plt(), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
+
 
 
 
