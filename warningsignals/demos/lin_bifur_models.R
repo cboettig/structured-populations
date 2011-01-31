@@ -21,13 +21,8 @@ pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
 	const <- updateGauss(const_LTC, start, X, control=list(maxit=1000))
 
 
-	## For a clean powercurve, should use fixed parameters not those estimated from a simulation
-#	const$pars <- c(Ro=.5, theta=1, sigma=1)
-#	timedep$pars <- c(
-
-	out <- montecarlotest(const, timedep, cpu=16, nboot=160)
+	out <- montecarlotest(const, timedep, cpu=16, nboot=16)
 	save(list=ls(), file="lin_bifur_models.Rdat")
-#	social_plot(plot(X), file="timeseries.png", tags=tags)
 	social_plot(plot(out), file="lin_bifur_models.png",tags=tags)
 
 

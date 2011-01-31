@@ -109,7 +109,7 @@ const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 
-out <- montecarlotest(const, timedep, cpu=16, nboot=nboot)
+out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignal stochpop LTC")
 
