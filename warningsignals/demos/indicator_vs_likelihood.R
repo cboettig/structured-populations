@@ -4,7 +4,9 @@ nboot <- 160
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
-nboot=160
+nboot=16
+
+
 sfLibrary(warningsignals)
 ## a quick labling function
 xshift <- function(xsteps){
@@ -98,14 +100,16 @@ social_plot(plts(), file="indicators.png", tags=tags)
 
 
 # Likelihood Fits to each data-set and their relative model comparison  
-timedep <- updateGauss(timedep_LTC, pars=c(Ro=5, m=0, theta=100, sigma=1), warning, control=list(maxit=1000))
+timedep <- updateGauss(timedep_LTC, pars, warning, control=list(maxit=1000))
 const <- updateGauss(const_LTC, pars, warning, control=list(maxit=1000))
 llik_warning <- 2*(loglik(timedep)-loglik(const))
 
 timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000))
 const_no <- updateGauss(const_LTC, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 
 out <- montecarlotest(const, timedep, cpu=16, nboot=nboot)
-social_plot(plot(out), file="test.png", tag="warningsignal stochpop")
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
+social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignal stochpop LTC")
 
