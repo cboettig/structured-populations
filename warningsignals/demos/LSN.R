@@ -4,7 +4,7 @@ nboot <- 16
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
-nboot=16
+nboot=160
 sfLibrary(warningsignals)
 
 
@@ -26,5 +26,5 @@ save(list=ls(), file="LSN.Rdat")
 
 out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="LSN.Rdat")
-social_plot(plot(out), file="LSN.png", tag="warningsignal stochpop LSN)
+social_plot(plot(out), file="LSN.png", tag="warningsignal stochpop LSN")
 

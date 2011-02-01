@@ -4,7 +4,7 @@ nboot <- 16
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
-nboot=16
+nboot=160
 sfLibrary(warningsignals)
 
 
