@@ -1,6 +1,6 @@
 #indicator_vs_likelihood.R
 tags <- "warningsignals stochpop"
-nboot <- 160
+nboot <- 1600
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
@@ -23,7 +23,7 @@ show_stats <- function(X, indicator){
 }
 
 
-pars <- c(Ro=5.0, m= -.01, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
 sfExportAll()
 
 
