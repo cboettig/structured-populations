@@ -24,7 +24,7 @@ show_stats <- function(X, indicator){
 }
 
 
-pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.01, theta=100, sigma=1)
 sfExportAll()
 
 
