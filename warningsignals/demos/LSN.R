@@ -22,9 +22,9 @@ llik_warning <- 2*(loglik(timedep)-loglik(const))
 timedep_no <- updateGauss(timedep_LSN, pars, no_warning, control=list(maxit=1000))
 const_no <- updateGauss(const_LSN, pars, no_warning, control=list(maxit=1000))
 llik_nowarning <- 2*(loglik(timedep_no)-loglik(const_no))
-save(list=ls(), file="test.Rdat")
+save(list=ls(), file="LSN.Rdat")
 
-out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
-save(list=ls(), file="test.Rdat")
-social_plot(plot(out), file="test.png", tag="warningsignal stochpop LSN")
+out <- montecarloLSN(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
+save(list=ls(), file="LSN.Rdat")
+social_plot(plot(out), file="LSN.png", tag="warningsignal stochpop LSN)
 
