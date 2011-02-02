@@ -1,9 +1,9 @@
 #indicator_vs_likelihood.R
 tags <- "warningsignals stochpop"
-nboot <- 1600
+nboot <- 160
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=16)
+sfInit(parallel=TRUE, cpu=8)
 
 
 sfLibrary(warningsignals)
@@ -45,6 +45,7 @@ plt <- function(){
 	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
 	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
 }
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt(), file="taudist_var.png", tags="warningsignals stochpop tau variance")
 
 
@@ -66,6 +67,7 @@ plt <- function(){
 	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
 	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
 }
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt(), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
 
 
@@ -95,6 +97,7 @@ plts <- function(){
 	show_stats(no_warning, window_autocorr)
 
 }
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plts(), file="indicators.png", tags=tags)
 
 
