@@ -2,10 +2,10 @@
 rm(list=ls()) ## start with clean workspace
 
 tags <- "warningsignals stochpop"
-nboot <- 160
+nboot <- 2
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=16)
+sfInit(parallel=TRUE, cpu=2)
 
 
 sfLibrary(warningsignals)
