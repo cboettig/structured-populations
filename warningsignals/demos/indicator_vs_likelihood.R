@@ -1,6 +1,6 @@
 #indicator_vs_likelihood.R
 tags <- "warningsignals stochpop"
-nboot <- 160
+nboot <- 16
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
@@ -96,7 +96,7 @@ null_tau_dist_acor <- sfSapply(1:nboot, function(i){
 	warning_stats(Y, window_autocorr)
 })
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
-social_plot(plt_tau(test_tau_dist_acorr, null_tau_dist_acorr, "Autocorrelation"), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
+social_plot(plt_tau(test_tau_dist_acor, null_tau_dist_acor, "Autocorrelation"), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
 
 
 ## Simulate some sample data under slow linear change and under no change.  
