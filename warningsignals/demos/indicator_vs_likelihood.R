@@ -84,13 +84,6 @@ save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
 
-<<<<<<< HEAD
-pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
-const_pars <- c(Ro=5.0, theta=100, sigma=1)
-sfExportAll()
-=======
->>>>>>> a7fac2ca7748bb96e88961e642f25ddb28f6cbb7
-
 ## Look at the distribution of Taus
 test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
