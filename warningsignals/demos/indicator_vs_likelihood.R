@@ -1,13 +1,10 @@
 #indicator_vs_likelihood.R
 rm(list=ls()) ## start with clean workspace
-
 tags <- "warningsignals stochpop"
 nboot <- 16
 require(socialR)
 require(warningsignals)
 sfInit(parallel=TRUE, cpu=16)
-
-
 sfLibrary(warningsignals)
 
 ############## Define a bunch of useful plotting functions etc #############################
