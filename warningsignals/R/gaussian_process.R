@@ -1,6 +1,7 @@
-#gaussian_process.R
+##gaussian_process.R
 
-
+## setmodel is a function handle returning Ex and Vx of the gaussian process
+## the possible setmodel functions are defined in likelihood_bifur_models.R
 ## Note that setmodel must have form:
 ## set_a_gauss_model <- function(Dt, Xo, t, pars){
 ## see the linearized models in likelihood_bifur_models
@@ -8,7 +9,6 @@
 
 init_gauss <- function(pars, setmodel, N=100, Xo=1, T=1, t0=0){
 # pars are model parameters
-# setmodel is a function returning Ex and Vx of the gaussian process
 	out <- list(Xo=Xo, t0=t0, T=T, pars=pars, N=N, setmodel=setmodel, k=length(pars))
 	class(out) <- "gauss"
 	out

@@ -24,6 +24,9 @@ setLSN <- function(Dt, Xo, t, pars, R){
 	})
 	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
 	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+
+	## Handle badly defined parameters by creating very low probability returns
+	if(pars['sigma'] < 0 ) Vx = Inf 
 	return(list(Ex=Ex, Vx=Vx))
 }
 
@@ -51,6 +54,9 @@ setLTC <- function(Dt, Xo, t, pars, R){
 	})
 	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
 	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+
+## Handle badly defined parameters by creating very low probability returns
+	if(pars['sigma'] < 0 ) Vx = Inf 
 	return(list(Ex=Ex, Vx=Vx))
 }
 
