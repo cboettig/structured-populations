@@ -2,10 +2,10 @@
 rm(list=ls()) ## start with clean workspace
 
 tags <- "warningsignals stochpop"
-nboot <- 2
+nboot <- 16
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=2)
+sfInit(parallel=TRUE, cpu=16)
 
 
 sfLibrary(warningsignals)
@@ -100,6 +100,7 @@ null_tau_dist_var <- sfSapply(1:nboot, function(i){
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_tau(test_tau_dist_var, null_tau_dist_var, "Variance"), file="taudist_var.png", tags="warningsignals stochpop tau variance")
 
+
 ## Look at the distribution of Taus on autocorrelation
 test_tau_dist_acor <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
@@ -113,7 +114,6 @@ save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_tau(test_tau_dist_acor, null_tau_dist_acor, "Autocorrelation"), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
 
 
-save(list=ls(), file="indicator_vs_likelihood.Rdat")
 ## MONTECARLO Non-parametric bootstrap using the exact values.  as noted above, in real data we would use the MLEs, which has the point-estimate problem.  
 out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
@@ -122,36 +122,5 @@ social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignal
 
 
 
-
-
-
-
-
-
-
-
-## Ideally we want these to be exact, not estimated. since starting with optimal values, they shouldn't have drifted away on expectation, but MLE is biased estimator (overestimates likelihood)
-## This is not of course possible with real data, which must just use the MLEs here.  
-timedep$par <- pars
-const$par <- const_pars
-## Note that loglik is just a lookup function, if we change pars we have to recalculate
-likfn <- function(model) lik.gauss(model$X, model$par, model$setmodel)
-llik_warning <- 2*(-likfn(timedep)+likfn(const))
-print(paste("with warning signal:", "LR of fit models ", llik_warning_fit, "LR of true models ", llik_warning))
-
-
-### just compare for random example that LR should be quite small when estimated from the null data
-timedep_no <- updateGauss(timedep_LTC, pars, no_warning, control=list(maxit=1000))
-const_no <- updateGauss(const_LTC, const_pars, no_warning, control=list(maxit=1000))
-llik_nowarning_fit <- 2*(loglik(timedep_no)-loglik(const_no))
-
-## using the exact models (m=0), (const R) should result in an log LR of 0
-timedep_no$par <- pars
-timedep_no$par['m'] = 0
-const_no$par <- const_pars
-llik_nowarning <- 2*(loglik(timedep)-loglik(const))
-print(paste("without warning signal:", "LR of fit models ", llik_nowarning_fit, "LR of true models ", llik_nowarning))
-
-save(list=ls(), file="indicator_vs_likelihood.Rdat")
 
 
