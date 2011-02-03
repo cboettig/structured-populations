@@ -38,6 +38,18 @@ null_tau_dist <- sfSapply(1:nboot, function(i){
 	warning_stats(Y, window_var)
 })
 
+err_rates <- function(null_dist, test_dist, p=.05){
+	sig <- null_dist[2,] < p
+	null_err <- sum(null_dist[1,sig] > 0)/length(null_dist[1,])
+	sig <- test_dist[2,] < p
+	test_err <- sum(test_dist[1,sig] < 0)/length(test_dist[1,])
+	c(null_err=null_err, test_err=test_err)
+}
+
+
+
+
+
 plt <- function(){
 	plot(density(test_tau_dist[1,]), main="Kendall's Tau in Variance", lwd=3, col="blue", xlim=c(-1,1))
 	lines(density(null_tau_dist[1,]), col="red", lwd=3)
