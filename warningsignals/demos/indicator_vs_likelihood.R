@@ -121,7 +121,7 @@ const$par <- const_pars
 llik_warning <- 2*(loglik(timedep)-loglik(const))
 print(paste("with warning signal:", "LR of fit models ", llik_warning_fit, "LR of true models ", llik_warning))
 
-
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
 ## MONTECARLO Non-parametric bootstrap using the exact values.  as noted above, in real data we would use the MLEs, which has the point-estimate problem.  
 out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
