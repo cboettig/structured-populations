@@ -34,7 +34,7 @@ err_rates <- function(null_dist, test_dist, p=.05){
 }
 
 plt_tau <- function(test_tau_dist, null_tau_dist, type){
-	plot(density(test_tau_dist[1,]), main=paste("Kendall's Tau in " type), lwd=3, col="blue", xlim=c(-1,1))
+	plot(density(test_tau_dist[1,]), main=paste("Kendall's Tau in ", type), lwd=3, col="blue", xlim=c(-1,1))
 	lines(density(null_tau_dist[1,]), col="red", lwd=3)
 	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
 	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
