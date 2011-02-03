@@ -68,21 +68,33 @@ plt_data <- function(warning, no_warning){
 
 
 ########################### Begin actual analysis ######################## 
-
-
-
-
 pars <- c(Ro=5.0, m= -.04, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 sfExportAll()
 
+## Some initial data: Simulate some sample data under slow linear change 
+X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
+
+## MLE fits to each data-set and their relative model comparison
+timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
+const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
+llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
+
+## Create some simulated data from these estimates
+warning <- simulate(timedep)
+no_warning <- simulate(const)
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
+social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
+
+
+
 ## Look at the distribution of Taus
 test_tau_dist_var <- sfSapply(1:nboot, function(i){
-	X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
+	X <- simulate(timedep)
 	warning_stats(X, window_var)
 })
 null_tau_dist_var <- sfSapply(1:nboot, function(i){
-	Y <- simulateGauss(const_LTC, const_pars, N=500, T=100, Xo=100)
+	Y <- simulateGauss(const)
 	warning_stats(Y, window_var)
 })
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
@@ -90,36 +102,16 @@ social_plot(plt_tau(test_tau_dist_var, null_tau_dist_var, "Variance"), file="tau
 
 ## Look at the distribution of Taus on autocorrelation
 test_tau_dist_acor <- sfSapply(1:nboot, function(i){
-	X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
+	X <- simulate(timedep)
 	warning_stats(X, window_autocorr)
 })
 null_tau_dist_acor <- sfSapply(1:nboot, function(i){
-	Y <- simulateGauss(const_LTC, const_pars, N=500, T=100, Xo=100)
+	Y <- simulateGauss(const)
 	warning_stats(Y, window_autocorr)
 })
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_tau(test_tau_dist_acor, null_tau_dist_acor, "Autocorrelation"), file="taudist_autcorr.png", tags="warningsignals stochpop tau autocorr")
 
-
-## Simulate some sample data under slow linear change and under no change.  
-warning <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
-no_warning <- simulateGauss(const_LTC, const_pars, N=500, T=100, Xo=100)
-
-
-save(list=ls(), file="indicator_vs_likelihood.Rdat")
-social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
-
-
-# Likelihood Fits to each data-set and their relative model comparison
-timedep <- updateGauss(timedep_LTC, pars, warning, control=list(maxit=1000))
-const <- updateGauss(const_LTC, const_pars, warning, control=list(maxit=1000))
-llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
-## Ideally we want these to be exact, not estimated. since starting with optimal values, they shouldn't have drifted away on expectation, but MLE is biased estimator (overestimates likelihood)
-## This is not of course possible with real data, which must just use the MLEs here.  
-timedep$par <- pars
-const$par <- const_pars
-llik_warning <- 2*(loglik(timedep)-loglik(const))
-print(paste("with warning signal:", "LR of fit models ", llik_warning_fit, "LR of true models ", llik_warning))
 
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 ## MONTECARLO Non-parametric bootstrap using the exact values.  as noted above, in real data we would use the MLEs, which has the point-estimate problem.  
@@ -127,6 +119,25 @@ out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignal stochpop LTC")
 
+
+
+
+
+
+
+
+
+
+
+
+## Ideally we want these to be exact, not estimated. since starting with optimal values, they shouldn't have drifted away on expectation, but MLE is biased estimator (overestimates likelihood)
+## This is not of course possible with real data, which must just use the MLEs here.  
+timedep$par <- pars
+const$par <- const_pars
+## Note that loglik is just a lookup function, if we change pars we have to recalculate
+likfn <- function(model) lik.gauss(model$X, model$par, model$setmodel)
+llik_warning <- 2*(-likfn(timedep)+likfn(const))
+print(paste("with warning signal:", "LR of fit models ", llik_warning_fit, "LR of true models ", llik_warning))
 
 
 ### just compare for random example that LR should be quite small when estimated from the null data
