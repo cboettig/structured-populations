@@ -64,7 +64,7 @@ plt_data <- function(warning, no_warning){
 
 
 ########################### Begin actual analysis ######################## 
-pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.03, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 
 ## Some initial data: Simulate some sample data under slow linear change 
@@ -83,8 +83,8 @@ llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
 warning <- simulate(timedep)
 no_warning <- simulate(const)
 
-#save(list=ls(), file="indicator_vs_likelihood.Rdat")
-#social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
+save(list=ls(), file="indicator_vs_likelihood.Rdat")
+social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
 
 sfInit(parallel=TRUE, cpu=cpu)
