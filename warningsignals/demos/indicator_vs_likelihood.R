@@ -1,7 +1,7 @@
 #indicator_vs_likelihood.R
 rm(list=ls()) ## start with clean workspace
 tags <- "warningsignals stochpop"
-nboot <- 16
+nboot <- 160
 cpu <- 16
 require(socialR)
 require(warningsignals)
@@ -75,9 +75,9 @@ timedep <- init_gauss(pars, timedep_LTC, N=500, T=100, Xo=100)
 const <- init_gauss(pars, const_LTC, N=500, T=100, Xo=100)
 
 ## MLE fits to each data-set and their relative model comparison
-#timedep <-update(timedep, X, control=list(maxit=1000)) 
-#const <- update(const, X, control=list(maxit=1000))  
-#llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
+timedep <-update(timedep, X, control=list(maxit=1000)) 
+const <- update(const, X, control=list(maxit=1000))  
+llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
 
 ## Create some simulated data from these estimates
 warning <- simulate(timedep)
