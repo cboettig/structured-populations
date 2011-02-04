@@ -1,8 +1,8 @@
 #indicator_vs_likelihood.R
 rm(list=ls()) ## start with clean workspace
 tags <- "warningsignals stochpop"
-nboot <- 160
-cpu <- 8
+nboot <- 2
+cpu <- 2
 require(socialR)
 require(warningsignals)
 
@@ -96,11 +96,11 @@ test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	warning_stats(X, window_var)
 })
 
-
 null_tau_dist_var <- sfSapply(1:nboot, function(i){
-	Y <- simulateGauss(const)
+	Y <- simulate(const)
 	warning_stats(Y, window_var)
 })
+
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_tau(test_tau_dist_var, null_tau_dist_var, "Variance"), file="taudist_var.png", tags="warningsignals stochpop tau variance")
 
@@ -111,7 +111,7 @@ test_tau_dist_acor <- sfSapply(1:nboot, function(i){
 	warning_stats(X, window_autocorr)
 })
 null_tau_dist_acor <- sfSapply(1:nboot, function(i){
-	Y <- simulateGauss(const)
+	Y <- simulate(const)
 	warning_stats(Y, window_autocorr)
 })
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
