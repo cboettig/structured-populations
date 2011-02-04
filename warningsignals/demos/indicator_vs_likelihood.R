@@ -2,11 +2,9 @@
 rm(list=ls()) ## start with clean workspace
 tags <- "warningsignals stochpop"
 nboot <- 16
+cpu <- 2
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=16)
-sfLibrary(warningsignals)
-sfExportAll()
 
 ############## Define a bunch of useful plotting functions etc #############################
 
@@ -89,8 +87,9 @@ no_warning <- simulate(const)
 #social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
 
+sfInit(parallel=TRUE, cpu=cpu)
+sfLibrary(warningsignals)
 sfExportAll()
-
 ## Look at the distribution of Taus
 test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
@@ -120,7 +119,7 @@ social_plot(plt_tau(test_tau_dist_acor, null_tau_dist_acor, "Autocorrelation"), 
 
 
 ## MONTECARLO Non-parametric bootstrap using the exact values.  as noted above, in real data we would use the MLEs, which has the point-estimate problem.  
-out <- montecarlotest(const, timedep, cpu=16, nboot=nboot, GetParNames=FALSE)
+out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignal stochpop LTC")
 
