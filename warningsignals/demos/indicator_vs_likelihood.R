@@ -64,7 +64,7 @@ plt_data <- function(warning, no_warning){
 
 
 ########################### Begin actual analysis ######################## 
-pars <- c(Ro=5.0, m= -.04, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.02, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 
 ## Some initial data: Simulate some sample data under slow linear change 
