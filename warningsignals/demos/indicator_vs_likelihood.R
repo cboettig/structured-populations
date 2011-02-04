@@ -72,9 +72,13 @@ const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
 X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
 
+# initialize two models
+timedep <- init_gauss(pars, timedep_LTC, N=500, T=100, Xo=100)
+const <- init_gauss(pars, const_LTC, N=500, T=100, Xo=100)
+
 ## MLE fits to each data-set and their relative model comparison
-timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
-const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
+timedep <-update(timedep, X, control=list(maxit=1000)) # updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
+const <- update(const, X, control=list(maxit=1000))  #updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
 llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
 
 ## Create some simulated data from these estimates
