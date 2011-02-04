@@ -67,7 +67,6 @@ plt_data <- function(warning, no_warning){
 ########################### Begin actual analysis ######################## 
 pars <- c(Ro=5.0, m= -.04, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
-sfExportAll()
 
 ## Some initial data: Simulate some sample data under slow linear change 
 X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
@@ -83,7 +82,7 @@ no_warning <- simulate(const)
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
-
+sfExportAll()
 ## Look at the distribution of Taus
 test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
