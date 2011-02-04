@@ -4,6 +4,9 @@ tags <- "warningsignals stochpop"
 nboot <- 16
 require(socialR)
 require(warningsignals)
+sfInit(parallel=TRUE, cpu=16)
+sfLibrary(warningsignals)
+sfExportAll()
 
 ############## Define a bunch of useful plotting functions etc #############################
 
@@ -81,10 +84,8 @@ save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
 
-
-sfInit(parallel=TRUE, cpu=16)
-sfLibrary(warningsignals)
 sfExportAll()
+
 ## Look at the distribution of Taus
 test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
