@@ -77,15 +77,16 @@ timedep <- init_gauss(pars, timedep_LTC, N=500, T=100, Xo=100)
 const <- init_gauss(pars, const_LTC, N=500, T=100, Xo=100)
 
 ## MLE fits to each data-set and their relative model comparison
-timedep <-update(timedep, X, control=list(maxit=1000)) # updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
-const <- update(const, X, control=list(maxit=1000))  #updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
-llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
+#timedep <-update(timedep, X, control=list(maxit=1000)) 
+#const <- update(const, X, control=list(maxit=1000))  
+#llik_warning_fit <- 2*(loglik(timedep)-loglik(const))
 
 ## Create some simulated data from these estimates
 warning <- simulate(timedep)
 no_warning <- simulate(const)
-save(list=ls(), file="indicator_vs_likelihood.Rdat")
-social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
+
+#save(list=ls(), file="indicator_vs_likelihood.Rdat")
+#social_plot(plt_data(warning, no_warning), file="indicators.png", tags=tags)
 
 
 sfExportAll()
@@ -95,6 +96,8 @@ test_tau_dist_var <- sfSapply(1:nboot, function(i){
 	X <- simulate(timedep)
 	warning_stats(X, window_var)
 })
+
+
 null_tau_dist_var <- sfSapply(1:nboot, function(i){
 	Y <- simulateGauss(const)
 	warning_stats(Y, window_var)
