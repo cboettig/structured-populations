@@ -1,0 +1,6 @@
+    * Chasing down data from Scheffer. Climate data reuses the CaCO3 from Dakos.
+    * Chasing down data from Dakos 
+
+   1. Fig. 1 M Cariaco Basin, data file: ftp://ftp.ncdc.noaa.gov/pub/data/paleo/contributions_by_author/hughen2000/cariaco2000_pc56_greyscale.txt
+   2. Vostok http://www.ncdc.noaa.gov/paleo/metadata/noaa-icecore-2453.html deuterium ftp://ftp.ncdc.noaa.gov/pub/data/paleo/icecore/antarctica/vostok/deutnat.txt
+   3. CaCO3 data Tropical Pacific core 1218 ftp://ftp.ncdc.noaa.gov/pub/data/paleo/contributions_by_author/tripati2005/tripati2005.txt
