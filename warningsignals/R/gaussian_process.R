@@ -40,7 +40,7 @@ lik.gauss <- function(X, pars, setmodel){
 		to <- time(X)[1:(n-1)]
 		out <- -sum( dc.gauss(setmodel, X[2:n], X[1:(n-1)], to=to, t1=to+dt, pars, log=TRUE) )
 	} else {
-		if(dim(X) != 2) stop("Must specify X as a ts object or matrix with time in col 1 and data in col 2 ")
+#		if(length(X) != 2) stop("Must specify X as a ts object or matrix with time in col 1 and data in col 2 ")
 	    n <- length(X[,1])
 		times <- X[,1]
 		Y <- X[,2] ## data values in second column

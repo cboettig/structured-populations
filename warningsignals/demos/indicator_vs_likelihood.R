@@ -72,7 +72,7 @@ X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
 
 # initialize two models
 timedep <- init_gauss(pars, timedep_LTC, N=500, T=100, Xo=100)
-const <- init_gauss(pars, const_LTC, N=500, T=100, Xo=100)
+const <- init_gauss(const_pars, const_LTC, N=500, T=100, Xo=100)
 
 ## MLE fits to each data-set and their relative model comparison
 #timedep <-update(timedep, X, control=list(maxit=1000)) 
