@@ -1,10 +1,10 @@
 #indicator_vs_likelihood.R
 tags <- "warningsignals stochpop"
 nboot <- 16
+cpu <- 2
 require(socialR)
 require(warningsignals)
-sfInit(parallel=TRUE, cpu=16)
-nboot=160
+sfInit(parallel=TRUE, cpu=cpu)
 sfLibrary(warningsignals)
 
 
