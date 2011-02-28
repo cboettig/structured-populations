@@ -1,8 +1,10 @@
 cpu <- 16
 nboot <- 160
+require(warningsignals)
+require(socialR)
 
 # CaCO3 record
-caco3 <- read.table("caco3.txt")
+caco3 <- read.table("../data/caco3.txt")
 caco3 <- data.frame("MYYrs"=-caco3$V1, "CaCO3"=caco3$V2)
 g_ca <- caco3$MYYrs > -39 & caco3$MYYrs < -32  # Data with collapse (for plot)
 p_ca <- caco3$MYYrs > -39 & caco3$MYYrs < -34  # Data used in warning signal
@@ -22,8 +24,8 @@ sfInit(parallel=TRUE, cpu=cpu)
 sfLibrary(warningsignals)
 sfExportAll()
 out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-save(list=ls(), file="dakos.Rdat")
-social_plot(plot(out), file="dakos.png", tag="warningsignal stochpop LTC climatedata CaCO3")
+save(list=ls(), file="CaCO3.Rdat")
+social_plot(plot(out), file="CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
 
 
 
