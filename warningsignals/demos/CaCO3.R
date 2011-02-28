@@ -1,3 +1,6 @@
+cpu <- 16
+nboot <- 160
+
 # CaCO3 record
 caco3 <- read.table("caco3.txt")
 caco3 <- data.frame("MYYrs"=-caco3$V1, "CaCO3"=caco3$V2)
