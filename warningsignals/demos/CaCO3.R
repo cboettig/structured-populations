@@ -1,5 +1,5 @@
 cpu <- 16
-nboot <- 160
+nboot <- 16
 require(warningsignals)
 require(socialR)
 
@@ -25,12 +25,9 @@ const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
 timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
 
-
-print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
 sfInit(parallel=TRUE, cpu=cpu)
 sfLibrary(warningsignals)
 sfExportAll()
-
 # Tau approach comparison
 tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
 tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
