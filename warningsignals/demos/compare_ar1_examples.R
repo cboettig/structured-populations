@@ -34,9 +34,9 @@ plt <- function(){
 	lines(smooth, col="darkgray", lwd=3) # smoothing function
 	w<-round(length(X_ts)/2)
 	time_window <- time(X_ts)[w:length(X_ts)]
-	plot(time_window, window_ar.ols(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
+	plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
 	abline(v=time_window[1], lty="dashed")
-	show_stats(X_ts, window_ar.ols)
+	show_stats(X_ts, window_autocorr)
 }
 
 social_plot(plt(), tag="stochpop warningsignals CaCO3", file="compare_ar1_examples.png")
