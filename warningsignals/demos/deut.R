@@ -22,15 +22,17 @@ g4 <- which(-deut$V2 > -385300 & -deut$V2 < -324600)
 p4 <- which(-deut$V2 > -385300 & -deut$V2 < -334100)
 glaciationIV   <- data.frame("time"=-deut$V2[p4], "data"=deut$V3[p4])
 
+
 glaciation <- list(glaciationI, glaciationII, glaciationIII, glaciationIV)
 for(i in 1:4){
 	X <- glaciation[[i]]
+	X <- data.frame("time"=rev(X[,1] - min(X[,1])), "data"=rev(X[,2]))
 	require(limma)
 	X <-avereps(X, ID=X[,1])
-	pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 	const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
-	timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
+	pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 	const <- updateGauss(const_LTC, pars, X, control=list(maxit=1000))
+	timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
 	print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
 	sfInit(parallel=TRUE, cpu=cpu)
