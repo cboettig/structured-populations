@@ -1,6 +1,6 @@
 require(socialR)
 require(warningsignals)
-tags<-"warningsignal stochpop LTC climatedata deut"
+tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
 nboot <- 160
 
@@ -21,23 +21,45 @@ g4 <- which(-deut$V2 > -385300 & -deut$V2 < -324600)
 p4 <- which(-deut$V2 > -385300 & -deut$V2 < -334100)
 glaciationIV   <- data.frame("time"=-deut$V2[p4], "data"=deut$V3[p4])
 
-
+# Data in original time units
 glaciation <- list(glaciationI, glaciationII, glaciationIII, glaciationIV)
+
+# Data in time since start, with replicates averaged out
+data <- vector("list", 4)
 for(i in 1:4){
 	X <- glaciation[[i]]
 	X <- data.frame("time"=rev(X[,1] - min(X[,1])), "data"=rev(X[,2]))
 	require(limma)
 	X <-avereps(X, ID=X[,1])
+	data[[i]] <- X
+}
+
+
+for(i in 1:4){
+	social_plot(plt_kendalls_data(X[[i]]), tag=tags)
+}
+
+
+# Fit models
+models <- vector("list", 4)
+for(i in 1:4){
+	X <- data[[i]]
 	const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 	pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 	const <- updateGauss(const_LTC, pars, X, control=list(maxit=1000))
 	timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
 	print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
+	models[[i]] <- list(X, const_pars, pars, const, timedep, llik_warning)
+}
+
+
 	sfInit(parallel=TRUE, cpu=cpu)
 	sfLibrary(warningsignals)
 	sfExportAll()
 
+for(i in 1:4){
+	const <- models[[i]]$const; timedep <- models[[i]]$timedep;
 	out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
 	save(list=ls(), file="deut.Rdat")
 	social_plot(plot(out), file="LTC_deut.png", tag=tags)

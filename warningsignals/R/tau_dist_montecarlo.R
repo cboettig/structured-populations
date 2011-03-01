@@ -38,18 +38,53 @@ plt_data <- function(warning, no_warning){
 	plot(warning, main="Stability loss (LTC model)")
 	plot(no_warning, main="No stability loss (const eval)")
 #	plot(R(time(X), pars), col="red")
-	plot(window_var(warning), type="l", main="Variance", xlab="Time")
-	show_stats(warning, window_var)
 
-	plot(window_var(no_warning), type="l", main="Variance", xlab="Time")
-	show_stats(no_warning, window_var)
+	if(is(warning, "ts")){
+		plot(window_var(warning), type="l", main="Variance", xlab="Time")
+		show_stats(warning, window_var)
 
-	plot(window_autocorr(warning), type="l", main="Autocorrelation", xlab="Time")
-	show_stats(warning, window_autocorr)
+		plot(window_var(no_warning), type="l", main="Variance", xlab="Time")
+		show_stats(no_warning, window_var)
 
-	plot(window_autocorr(no_warning), type="l", main="Autocorrelation", xlab="Time")
-	show_stats(no_warning, window_autocorr)
+		plot(window_autocorr(warning), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(warning, window_autocorr)
 
+		plot(window_autocorr(no_warning), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(no_warning, window_autocorr)
+	} else {
+		plot(window_var(warning[,2]), type="l", main="Variance", xlab="Time")
+		show_stats(warning, window_var)
+
+		plot(window_var(no_warning[,2]), type="l", main="Variance", xlab="Time")
+		show_stats(no_warning, window_var)
+
+		plot(window_autocorr(warning[,2]), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(warning, window_autocorr)
+
+		plot(window_autocorr(no_warning[,2]), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(no_warning, window_autocorr)
+	} 
+}
+
+## Plot data for a single input set  
+plt_kendalls_data <- function(warning){
+	par(mfrow=c(3,1))
+	plot(warning)
+#	plot(R(time(X), pars), col="red")
+
+	if(is(warning, "ts")){
+		plot(window_var(warning), type="l", main="Variance", xlab="Time")
+		show_stats(warning, window_var)
+
+		plot(window_autocorr(warning), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(warning, window_autocorr)
+	} else {
+		plot(window_var(warning[,2]), type="l", main="Variance", xlab="Time")
+		show_stats(warning, window_var)
+
+		plot(window_autocorr(warning[,2]), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(warning, window_autocorr)
+	} 
 }
 
 
@@ -93,6 +128,10 @@ plot.tau_dist_montecarlo <- function(out, show_sample=FALSE){
 	}
 }
 
-
-
+plot_sample <- function(const,timedep){
+		## Creates some simulated data from these estimates and show example performance
+		no_warning <- simulate(const)
+		warning <- simulate(timedep)
+		plt_data(warning, no_warning)
+}
 
