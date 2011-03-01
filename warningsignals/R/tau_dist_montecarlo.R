@@ -77,7 +77,7 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 }
 
 plot.tau_dist_montecarlo <- function(out, show_sample=FALSE){
-	if(show_samples){ 
+	if(show_sample){ 
 		## Createis some simulated data from these estimates and show example performance
 		warning <- simulate(out$timedep)
 		no_warning <- simulate(out$const)
