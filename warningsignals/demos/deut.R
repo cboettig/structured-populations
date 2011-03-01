@@ -4,9 +4,8 @@ tags<-"warningsignal stochpop LTC climatedata deut"
 cpu <- 16
 nboot <- 160
 
-
 # data from: 
-deut <- read.table("deutnat.txt")
+deut <- read.table("../data/deutnat.txt")
 
 # divisions from: Dakos et. al.
 g1 <- which(-deut$V2 > -58800 & -deut$V2 < -12000)
