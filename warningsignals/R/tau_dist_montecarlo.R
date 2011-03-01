@@ -67,7 +67,7 @@ plt_data <- function(warning, no_warning){
 }
 
 ## Plot data for a single input set  
-plt_kendalls_data <- function(warning){
+plot_kendalls <- function(warning){
 	par(mfrow=c(3,1))
 	plot(warning)
 #	plot(R(time(X), pars), col="red")

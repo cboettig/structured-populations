@@ -2,7 +2,7 @@ require(socialR)
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
-nboot <- 160
+nboot <- 16
 
 # data from: 
 deut <- read.table("../data/deutnat.txt")
@@ -36,7 +36,7 @@ for(i in 1:4){
 
 
 for(i in 1:4){
-	social_plot(plt_kendalls_data(X[[i]]), tag=tags)
+	social_plot(plot_kendalls(X[[i]]), tag=tags)
 }
 
 
