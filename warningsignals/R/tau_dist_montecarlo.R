@@ -56,9 +56,15 @@ plt_data <- function(warning, no_warning){
 tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation"), nboot=200, cpu=2){
 	print( llik_warning_fit <- 2*(loglik(timedep)-loglik(const)) )
 
-	sfInit(parallel=TRUE, cpu=cpu)
-	sfLibrary(warningsignals)
-	sfExportAll()
+
+	if(cpu>1 & !sfIsRunning()){ 	
+		sfInit(parallel=TRUE, cpu=cpu)
+		sfLibrary(warningsignals)
+		sfExportAll()
+	} else if(cpu<2 & !sfIsRunning()){  sfInit()
+	} else { }
+
+
 ## Look at the distribution of Taus
 	test_tau_dist <- sfSapply(1:nboot, function(i){
 		X <- simulate(timedep)
