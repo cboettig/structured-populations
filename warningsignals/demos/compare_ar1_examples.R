@@ -39,4 +39,4 @@ show_stats(X_ts, window_ar.ols)
 abline(v=time_window[1], lty="dashed")
 }
 
-social_plot(plt, tag="stochpop warningsignals CaCO3", file="compare_ar1_examples.png")
+social_plot(plt(), tag="stochpop warningsignals CaCO3", file="compare_ar1_examples.png")
