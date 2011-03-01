@@ -37,12 +37,22 @@ window_autocorr <- function(X, windowsize=length(X)/2){
 	)
 }
 
+window_ar.ols <- function(X, windowsize=length(X)/2, demean=FALSE){
+	sapply(0:(length(X)-windowsize), 
+		function(i){
+			a<-ar.ols(X[(i+1):(i+windowsize)], demean=demean)
+			a$ar[1]
+		}
+	)
+}
+
+
 warning_stats <- function(X, indicator){
 	if(is(X,"ts")){
 		w <- length(X)/2
 		end <- length(X)
 #		out <- Kendall(time(X)[w:end], indicator(X))
-		cor.test(time(X)[w:end], indicator(X), method="kendall")
+		out <- cor.test(time(X)[w:end], indicator(X), method="kendall")
 	} else {
 		w <- length(X[,1])/2
 		end <- length(X[,1])
