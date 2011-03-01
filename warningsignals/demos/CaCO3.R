@@ -1,5 +1,5 @@
 cpu <- 16
-nboot <- 16
+nboot <- 1600
 require(warningsignals)
 require(socialR)
 
@@ -25,9 +25,6 @@ const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
 timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
 
-sfInit(parallel=TRUE, cpu=cpu)
-sfLibrary(warningsignals)
-sfExportAll()
 # Tau approach comparison
 tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
 tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
@@ -37,9 +34,9 @@ social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop
 social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor CaCO3")
 
 ## MonteCarlo Cox's delta approach
-#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-#save(list=ls(), file="CaCO3.Rdat")
-#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
+out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+save(list=ls(), file="CaCO3.Rdat")
+social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
 
 
 
