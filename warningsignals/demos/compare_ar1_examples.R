@@ -28,15 +28,20 @@ start<-Z$x[1]; end<-Z$x[length(Z$x)]
 X_ts <- ts(Z$y, start=start, end=end, frequency=length(Z$y)/(end-start))
 
 plt <- function(){
-par(mfrow=c(2,1))
-w<-round(length(X_ts)/2)
-time_window <- time(X_ts)[w:length(X_ts)]
-plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
-show_stats(X_ts, window_autocorr, ypos=0)
-abline(v=time_window[1], lty="dashed")
-plot(time_window, window_ar.ols(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
-show_stats(X_ts, window_ar.ols)
-abline(v=time_window[1], lty="dashed")
+	par(mfrow=c(2,1))
+	plot(X, type="o", col="blue", pch='.', cex=3) # Raw data
+	points(Y, col="red", pch='.', cex=3) # Interpolated data
+	lines(smooth, col="darkgray", lwd=3) # smoothing function
+	w<-round(length(X_ts)/2)
+	time_window <- time(X_ts)[w:length(X_ts)]
+	plot(time_window, window_ar.ols(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
+	abline(v=time_window[1], lty="dashed")
+	show_stats(X_ts, window_ar.ols)
 }
 
 social_plot(plt(), tag="stochpop warningsignals CaCO3", file="compare_ar1_examples.png")
+
+
+
+
+
