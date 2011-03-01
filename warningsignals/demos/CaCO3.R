@@ -6,8 +6,8 @@ require(socialR)
 # CaCO3 record
 caco3 <- read.table("../data/caco3.txt")
 caco3 <- data.frame("MYYrs"=-caco3$V1, "CaCO3"=caco3$V2)
-g_ca <- caco3$MYYrs > -39 & caco3$MYYrs < -32  # Data with collapse (for plot)
-p_ca <- caco3$MYYrs > -39 & caco3$MYYrs < -34  # Data used in warning signal
+g_ca <- caco3$MYYrs >= -39 & caco3$MYYrs =< -32  # Data with collapse (for plot)
+p_ca <- caco3$MYYrs >= -39 & caco3$MYYrs =< -34  # Data used in warning signal
 X <- data.frame("time"=caco3$MYYrs[p_ca], "data"=caco3$CaCO3[p_ca])
 # Rather annoying to have time backwards and negative, lets reverse this.
 X <- data.frame("time"=rev(X[,1] - min(X[,1])), "data"=rev(X[,2]))
@@ -33,12 +33,13 @@ save(list=ls(), file="CaCO3.Rdat")
 social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var CaCO3")
 social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor CaCO3")
 
+# plot example data
+social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
+
 ## MonteCarlo Cox's delta approach
-out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-save(list=ls(), file="CaCO3.Rdat")
-social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
-
-
+#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+#save(list=ls(), file="CaCO3.Rdat")
+#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3")
 
 
 
