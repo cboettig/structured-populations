@@ -2,17 +2,20 @@
 
 ## a quick labling function
 xshift <- function(xsteps){
-	deltax <- (par()$xaxp[2]-par()$xaxp[1])/5
+	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
 	par()$xaxp[1]+xsteps*deltax
 }
 yshift <- function(ysteps){
-	deltay <- (par()$yaxp[2]-par()$yaxp[1])/5
-	par()$yaxp[2]-ysteps*deltay
+	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
+	par()$yaxp[1]+ysteps*deltay
 }
-show_stats <- function(X, indicator){
+show_stats <- function(X, indicator, xpos=20, ypos=-10){
 	w <- warning_stats(X, indicator)
-	text(xshift(1), yshift(1), paste("tau = ", round(w[1],2)), cex=1.5, col="red", font=2)
-	text(xshift(1), yshift(2), paste("p = ", format.pval(w[2])), cex=1.5, col="blue", font=2)
+	text(xshift(xpos), yshift(ypos), 
+		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+			list(val=round(w[1],2),pval=format.pval(w[2]))
+		 )
+	)
 }
 ## Type I & II error rates for the distribution of the test statistic
 err_rates <- function(null_dist, test_dist, p=.05){

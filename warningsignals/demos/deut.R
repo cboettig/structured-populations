@@ -36,7 +36,7 @@ for(i in 1:4){
 
 
 for(i in 1:4){
-	social_plot(plot_kendalls(X[[i]]), tag=tags)
+	social_plot(plot_kendalls(data[[i]]), tag=tags)
 }
 
 

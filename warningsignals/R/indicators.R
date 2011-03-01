@@ -37,20 +37,21 @@ window_autocorr <- function(X, windowsize=length(X)/2){
 	)
 }
 
-
 warning_stats <- function(X, indicator){
 	if(is(X,"ts")){
 		w <- length(X)/2
 		end <- length(X)
-		out <- Kendall(time(X)[w:end], indicator(X))
+#		out <- Kendall(time(X)[w:end], indicator(X))
+		cor.test(time(X)[w:end], indicator(X), method="kendall")
 	} else {
 		w <- length(X[,1])/2
 		end <- length(X[,1])
-		out <- Kendall(X[w:end,1], indicator(X[,2]))
+#		out <- Kendall(X[w:end,1], indicator(X[,2]))
+		out <- cor.test(X[w:end,1], indicator(X[,2]), method="kendall")
 	}
-#	p <- format.pval(out$sl)
-	p <- as.numeric(out$sl)
-	c(as.numeric(out$tau), p)
+#	p <- as.numeric(out$sl)
+#	c(as.numeric(out$tau), p)
+	c(out$estimate, out$p.value)
 }
 
 
