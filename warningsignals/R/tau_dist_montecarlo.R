@@ -70,7 +70,7 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 		warning_stats(Y, window_var)
 	})
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
-		signal=signal, X=X, llik_warning_fit=llik_warning_fit, show_sample=show_sample,
+		signal=signal, X=X, llik_warning_fit=llik_warning_fit,
 		const=const, timedep=timedep)
 	class(out) <- "tau_dist_montecarlo"
 	out
