@@ -30,9 +30,19 @@ print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
 sfInit(parallel=TRUE, cpu=cpu)
 sfLibrary(warningsignals)
 sfExportAll()
-out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+
+# Tau approach comparison
+tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
+tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
+
 save(list=ls(), file="CaCO3.Rdat")
-social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
+social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var CaCO3")
+social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor CaCO3")
+
+## MonteCarlo Cox's delta approach
+#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+#save(list=ls(), file="CaCO3.Rdat")
+#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignal stochpop LTC climatedata CaCO3")
 
 
 

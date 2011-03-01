@@ -17,8 +17,8 @@ const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
 timedep <-updateGauss(timedep_LTC, pars, X, control=list(maxit=1000)) 
 
 # Tau approach comparison
-tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance")
-tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation")
+tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
+tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
 
 save(list=ls(), file="indicator_vs_likelihood.Rdat")
 social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var")
