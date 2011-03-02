@@ -27,11 +27,11 @@ err_rates <- function(null_dist, test_dist, p=.05){
 }
 
 plt_tau <- function(test_tau_dist, null_tau_dist, type){
-	plot(density(test_tau_dist[1,]), main=paste("Kendall's Tau in ", type), lwd=3, col="blue", xlim=c(-1,1))
-	lines(density(null_tau_dist[1,]), col="red", lwd=3)
-	legend("topright", c("test", "null"), lwd=3, col=c("blue", "red"))
-	text(xshift(2), yshift(1.5), paste("frac test p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="blue")
-	text(xshift(2), yshift(1), paste("frac null p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), cex=1.5, font=2, col="red")
+	plot(density(test_tau_dist[1,]), main=paste("Kendall's Tau in ", type), lwd=3, col="red", xlim=c(-1,1))
+	lines(density(null_tau_dist[1,]), col="blue", lwd=3)
+	legend("topright", c("test", "null"), lwd=3, col=c("red", "blue"))
+	text(xshift(2), yshift(0), paste("fraction of test with p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])) )
+	text(xshift(2), yshift(10), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])) )
 }
 
 
@@ -106,12 +106,12 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 ## Look at the distribution of Taus
 	test_tau_dist <- sfSapply(1:nboot, function(i){
 		X <- simulate(timedep)
-		warning_stats(X, window_var)
+		warning_stats(X, window_var)[1]
 	})
 
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
-		warning_stats(Y, window_var)
+		warning_stats(Y, window_var)[1]
 	})
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
 		signal=signal, X=X, llik_warning_fit=llik_warning_fit,

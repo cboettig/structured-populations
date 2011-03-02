@@ -1,3 +1,4 @@
+tags="warningsignals stochpop tau acor CaCO3"
 cpu <- 16
 nboot <- 160
 require(warningsignals)
@@ -34,12 +35,17 @@ plot(X, type="o", col="blue", pch='.', cex=3) # Raw data
 points(Y, col="red", pch='.', cex=3) # Interpolated data
 lines(smooth, col="darkgray", lwd=3) # smoothing function
 
-w<-round(length(X_ts)/2)
-time_window <- time(X_ts)[w:length(X_ts)]
-plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
-abline(v=time_window[1], lty="dashed")
-show_stats(X_ts, window_autocorr)
+
+## Make a Dakos-style plot
+plot_dakos <- function(X_ts){
+	w<-round(length(X_ts)/2)
+	time_window <- time(X_ts)[w:length(X_ts)]
+	plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
+	abline(v=time_window[1], lty="dashed")
+	show_stats(X_ts, window_autocorr)
 ## Should have ability label axis in original MYrs BP units
+}
+social_plot(plot_dakos(), file="plot_dakos.png", tag=tags)
 
 
 X <- X_ts
@@ -64,16 +70,16 @@ tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot
 tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
 
 save(list=ls(), file="CaCO3.Rdat")
-social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var CaCO3", mention="cboettig")
-social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor CaCO3")
+social_plot(plot(tau_var), file="taudist_var.png", tags=paste(tags, "tau var"), mention="cboettig")
+social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor"))
 
 # plot example data
-social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
+#social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
 
 ## MonteCarlo Cox's delta approach
-out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-save(list=ls(), file="CaCO3.Rdat")
-social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3")
+#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+#save(list=ls(), file="CaCO3.Rdat")
+#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3", mention="cboettig")
 
 
 
