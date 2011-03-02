@@ -45,7 +45,7 @@ plot_dakos <- function(X_ts){
 	show_stats(X_ts, window_autocorr)
 ## Should have ability label axis in original MYrs BP units
 }
-social_plot(plot_dakos(), file="plot_dakos.png", tag=tags)
+social_plot(plot_dakos(X_ts), file="plot_dakos.png", tag=tags)
 
 
 X <- X_ts
