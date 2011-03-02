@@ -9,7 +9,7 @@ yshift <- function(ysteps){
 	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
 	par()$yaxp[1]+ysteps*deltay
 }
-show_stats <- function(X, indicator, xpos=20, ypos=-10){
+show_stats <- function(X, indicator, xpos=20, ypos=0){
 	w <- warning_stats(X, indicator)
 	text(xshift(xpos), yshift(ypos), 
 		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 

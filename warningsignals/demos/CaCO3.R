@@ -36,13 +36,15 @@ lines(smooth, col="darkgray", lwd=3) # smoothing function
 
 w<-round(length(X_ts)/2)
 time_window <- time(X_ts)[w:length(X_ts)]
-plot(time_window, window_ar.ols(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
+plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
 abline(v=time_window[1], lty="dashed")
-show_stats(X_ts, window_ar.ols)
+show_stats(X_ts, window_autocorr)
 ## Should have ability label axis in original MYrs BP units
 
-pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
-const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
+
+X <- X_ts
+pars <- c(Ro=5.0, m= -.04, theta=mean(X), sigma=sd(X)*5*2)
+const_pars <- c(Ro=5.0, theta=mean(X), sigma=sd(X)*5*2)
 
 ## Fit a linearized transcritical bifurcation model
 #const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
@@ -51,7 +53,6 @@ const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 ## Fit the linearized saddle-node bifurcation model
 const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
 timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
-
 
 print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
 sfInit(parallel=TRUE, cpu=cpu)
@@ -63,16 +64,16 @@ tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot
 tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
 
 save(list=ls(), file="CaCO3.Rdat")
-social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var CaCO3")
+social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var CaCO3", mention="cboettig")
 social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor CaCO3")
 
 # plot example data
 social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
 
 ## MonteCarlo Cox's delta approach
-#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-#save(list=ls(), file="CaCO3.Rdat")
-#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3")
+out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+save(list=ls(), file="CaCO3.Rdat")
+social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3")
 
 
 
