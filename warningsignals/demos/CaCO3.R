@@ -30,14 +30,14 @@ Z$y <- Y$y-smooth$y
 start<-Z$x[1]; end<-Z$x[length(Z$x)]
 X_ts <- ts(Z$y, start=start, end=end, frequency=length(Z$y)/(end-start))
 
-par(mfrow=c(2,1))
-plot(X, type="o", col="blue", pch='.', cex=3) # Raw data
-points(Y, col="red", pch='.', cex=3) # Interpolated data
-lines(smooth, col="darkgray", lwd=3) # smoothing function
 
 
 ## Make a Dakos-style plot
 plot_dakos <- function(X_ts){
+	par(mfrow=c(2,1))
+	plot(X, type="o", col="blue", pch='.', cex=3) # Raw data
+	points(Y, col="red", pch='.', cex=3) # Interpolated data
+	lines(smooth, col="darkgray", lwd=3) # smoothing function
 	w<-round(length(X_ts)/2)
 	time_window <- time(X_ts)[w:length(X_ts)]
 	plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
