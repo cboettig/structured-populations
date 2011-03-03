@@ -71,15 +71,15 @@ tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nbo
 
 save(list=ls(), file="CaCO3.Rdat")
 social_plot(plot(tau_var), file="taudist_var.png", tags=paste(tags, "tau var"), mention="cboettig")
-social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor"))
+social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor"), comment="Using interpolated and detrended data")
 
 # plot example data
 #social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
 
 ## MonteCarlo Cox's delta approach
-#out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
-#save(list=ls(), file="CaCO3.Rdat")
-#social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3", mention="cboettig")
+out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+save(list=ls(), file="CaCO3.Rdat")
+social_plot(plot(out), file="LTC_CaCO3.png", tag="warningsignals stochpop LTC climatedata CaCO3", mention="cboettig", comment="Using interpolated and detrended data")
 
 
 
