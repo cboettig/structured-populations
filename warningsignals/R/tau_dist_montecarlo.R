@@ -106,12 +106,12 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 ## Look at the distribution of Taus
 	test_tau_dist <- sfSapply(1:nboot, function(i){
 		X <- simulate(timedep)
-		warning_stats(X, window_var)[1]
+		warning_stats(X, window_var)
 	})
-
+## check that this is returning a matrix, not vector
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
-		warning_stats(Y, window_var)[1]
+		warning_stats(Y, window_var)
 	})
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
 		signal=signal, X=X, llik_warning_fit=llik_warning_fit,
