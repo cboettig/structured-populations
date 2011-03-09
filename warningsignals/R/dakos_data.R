@@ -25,7 +25,7 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL){
 	} else { Y <- X }
 ## smooth the interopated data.  windowsize default?
 	if(detrend){
-		smooth <- ksmooth(Y$x, Y$y, bandwidth=.2)
+		smooth <- ksmooth(Y$x, Y$y)
 		Z <- Y
 		Z$y <- Y$y-smooth$y
 	} else { Z <- Y }
