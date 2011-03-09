@@ -20,7 +20,7 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL){
 ## Time is linearly interpolated for even spacing in the Dakos approach
 	if(interpolate){ 
 		if(is.null(n)) n <- length(X[,1]) 
-		Y<- approx(X[,1], X[,2], n=482) 
+		Y<- approx(X[,1], X[,2], n=n) 
 	} else { Y <- X }
 ## smooth the interopated data.  windowsize default?
 	if(detrend){
@@ -31,7 +31,7 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL){
 ## Transform into a timeseries
 	start<-Z$x[1]; end<-Z$x[length(Z$x)]
 	X_ts <- ts(Z$y, start=start, end=end, frequency=length(Z$y)/(end-start))
-	out <- list(X_ts, Z, Y, X)
+	out <- list(X_ts=X_ts, Z=Z, Y=Y, X=X)
 	class(out) <- "dakos"
 	out
 }
