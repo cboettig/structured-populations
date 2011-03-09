@@ -1,4 +1,4 @@
-tags="warningsignals stochpop tau acor CaCO3"
+tags="warningsignals stochpop CaCO3"
 cpu <- 16
 nboot <- 160
 require(warningsignals)
@@ -15,40 +15,13 @@ p_ca <- caco3$MYYrs >= -39 & caco3$MYYrs < -34  # Data used in warning signal
 X <- data.frame("time"=caco3$MYYrs[p_ca], "data"=caco3$CaCO3[p_ca])
 # Rather annoying to have time backwards and negative, lets reverse this.
 X <- data.frame("time"=rev(X[,1] - min(X[,1])), "data"=rev(X[,2]))
-## Also annoying that there are replicate values, luckily a quick averaging call will remove them. 
-require(limma)
-X <-avereps(X, ID=X[,1])
-## Time is linearly interpolated for even spacing in the Dakos approach
-Y<- approx(X[,1], X[,2], n=482)
-
-## smooth the interopated data.  windowsize default?
-smooth <- ksmooth(Y$x, Y$y, bandwidth=.2)
-Z <- Y
-Z$y <- Y$y-smooth$y
-
-## Transform into a timeseries
-start<-Z$x[1]; end<-Z$x[length(Z$x)]
-X_ts <- ts(Z$y, start=start, end=end, frequency=length(Z$y)/(end-start))
 
 
-
-## Make a Dakos-style plot
-plot_dakos <- function(X_ts){
-	par(mfrow=c(2,1))
-	plot(X, type="o", col="blue", pch='.', cex=3) # Raw data
-	points(Y, col="red", pch='.', cex=3) # Interpolated data
-	lines(smooth, col="darkgray", lwd=3) # smoothing function
-	w<-round(length(X_ts)/2)
-	time_window <- time(X_ts)[w:length(X_ts)]
-	plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
-	abline(v=time_window[1], lty="dashed")
-	show_stats(X_ts, window_autocorr)
-## Should have ability label axis in original MYrs BP units
-}
-social_plot(plot_dakos(X_ts), file="plot_dakos.png", tag=tags)
+dat <- dakos_data_processing(X)
+social_plot(plot.dakos(dat), file="plot_dakos.png", tag=tags)
 
 
-X <- X_ts
+X <- dat$X_ts
 pars <- c(Ro=5.0, m= -.04, theta=mean(X), sigma=sd(X)*5*2)
 const_pars <- c(Ro=5.0, theta=mean(X), sigma=sd(X)*5*2)
 
@@ -74,7 +47,7 @@ social_plot(plot(tau_var), file="taudist_var.png", tags=paste(tags, "tau var"), 
 social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor"))
 
 # plot example data
-#social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau ")
+social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau CaCO3")
 
 ## MonteCarlo Cox's delta approach
 #out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
