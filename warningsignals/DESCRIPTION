@@ -4,7 +4,7 @@ Version: 0.0-1
 Date: 2010-12-01
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
-Description: Detection of early warning signals.  Dependecies: snowfall provides support for parallelization.  Not all the below packages will always be needed.  Kendall can be replaced with a base package.  limma is for avereps function only.  snowfall for parallel computing. gauss class is modeled after sde objects, but doesn't depend on them.  odesolve is no longer called (only for analytic comparison).  pmc provides the monte carlo code, should eventually be ported locally to avoid phylogenetic dependencies?  
+Description: Detection of early warning signals.  Dependecies: snowfall provides support for parallelization.  Not all the below packages will always be needed.  Kendall can be replaced with a base package.  limma is for avereps function only.  snowfall for parallel computing. gauss class is modeled after sde objects, but doesn't depend on them.  odesolve is required for calculating the moments of the time-dependent models.  pmc provides the monte carlo code, should eventually be ported locally to avoid phylogenetic dependencies?  
 Depends: snowfall, NORMT3, sde, Kendall, odesolve, pmc, psych, limma 
 URL: http://www.carlboettiger.info
 License: GPL (>= 2)

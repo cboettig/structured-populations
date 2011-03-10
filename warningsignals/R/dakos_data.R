@@ -1,5 +1,5 @@
 
-dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL){
+dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL, bw=NULL){
 ## Description: mimics the data processing of Dakos et al 2008 PNAS.  
 ##				Linearly interpolaes evenly spaced data & subtracts a Gaussian smoothed 
 ##              kernel, and turns into a timeseries (ts) object if interpolated to even spacing
@@ -25,7 +25,7 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL){
 	} else { Y <- X }
 ## smooth the interopated data.  windowsize default?
 	if(detrend){
-		bw = bw.nrd(Y$x)
+		if(is.null(bw)) bw <- bw.nrd(Y$x)
 		smooth <- ksmooth(Y$x, Y$y, bandwidth=bw, n.points=length(Y$x), x.points=Y$x)
 		Z <- Y
 		Z$y <- Y$y-smooth$y

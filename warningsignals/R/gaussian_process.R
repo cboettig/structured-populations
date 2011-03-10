@@ -31,21 +31,22 @@ pc.gauss  <- function(setmodel, x, x0, to, t1, pars, lower.tail = TRUE, log.p = 
 
 
 ### Time can be specified directly in X as ts object or as the first column of X, and data in the second column
-lik.gauss <- function(X, pars, setmodel){
+lik.gauss <- function(X, pars, setmodel, log=TRUE){
+## Returns minus log likelihood
 	if(length(X) == 0){ return(0)}
 	if(is(X,"ts")){
 	    n <- length(X)
 		dt <- deltat(X)
 		# returns the minus loglik
 		to <- time(X)[1:(n-1)]
-		out <- -sum( dc.gauss(setmodel, X[2:n], X[1:(n-1)], to=to, t1=to+dt, pars, log=TRUE) )
+		out <- -sum( dc.gauss(setmodel, X[2:n], X[1:(n-1)], to=to, t1=to+dt, pars, log=log) )
 	} else {
 #		if(length(X) != 2) stop("Must specify X as a ts object or matrix with time in col 1 and data in col 2 ")
 	    n <- length(X[,1])
 		times <- X[,1]
 		Y <- X[,2] ## data values in second column
 		
-		out <- -sum( dc.gauss(setmodel, Y[2:n], Y[1:(n-1)], to=times[1:(n-1)], t1=times[2:n], pars, log=TRUE) )
+		out <- -sum( dc.gauss(setmodel, Y[2:n], Y[1:(n-1)], to=times[1:(n-1)], t1=times[2:n], pars, log=log) )
 	}
 	out
 }
@@ -100,5 +101,5 @@ update.gauss <- function(m, X, ...) updateGauss(setmodel=m$setmodel, pars=m$pars
 loglik.gauss <- function(m) m$loglik
 getParameters.gauss <- function(m) m$pars
 # update the loglik (calculation rather than lookup)
-loglik_calc.gauss <- function(m) loglik.gauss(m$X, m$pars, m$setmodel)
+loglik_calc.gauss <- function(m) -lik.gauss(m$X, m$pars, m$setmodel)
 

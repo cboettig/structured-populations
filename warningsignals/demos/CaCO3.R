@@ -22,16 +22,16 @@ social_plot(plot.dakos(dat), file="plot_dakos.png", tag=tags)
 
 
 X <- dat$X_ts
-pars <- c(Ro=5.0, m= -.04, theta=mean(X), sigma=sd(X)*5*2)
 const_pars <- c(Ro=5.0, theta=mean(X), sigma=sd(X)*5*2)
-
 ## Fit a linearized transcritical bifurcation model
-#const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
-#timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
+const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
+pars <- c(Ro=as.numeric(const$pars["Ro"]), m= as.numeric(const$pars["Ro"]*max(time(X))), theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
+timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
 ## Fit the linearized saddle-node bifurcation model
-const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
-timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
+#const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
+#pars <- c(Ro=as.numeric(const$pars["Ro"]), m= as.numeric(const$pars["Ro"]*max(time(X))), theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
+#timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
 
 print(llik_warning <- 2*(loglik(timedep)-loglik(const)))
 sfInit(parallel=TRUE, cpu=cpu)
