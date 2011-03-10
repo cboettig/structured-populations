@@ -33,7 +33,7 @@ for(i in 1:4){
 save(list=ls(), file="deut_data.Rdat")
 for(i in 1:4){
 	data[[i]] <- dakos_data_processing(data[[i]])
-	social_plot(plot.dakos(data[[i]]), tags=paste(tags, "glaciation", i), file="deutdata.png")
+#	social_plot(plot(data[[i]]), tags=paste(tags, "glaciation", i), file="deutdata.png")
 }
 
 for(i in 1:4){
