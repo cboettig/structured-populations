@@ -66,8 +66,10 @@ setLTC <- function(Xo, to, t1, pars, R){
 ## Will depend explicitly on t
 constOU <- function(Xo, to, t1, pars){
 	Dt <- t1 - to
-	Ex <- Xo*(1 - exp(-pars["Ro"]*Dt)) + pars["theta"] exp(-pars["Ro"]*Dt) 
-	Vx <- 2*pars["sigma"]^2 (1-exp(-2*pars["Ro"]*Dt))/pars["Ro"]
+	Ex <- Xo*(1 - exp(-pars["Ro"]*Dt)) + pars["theta"]*exp(-pars["Ro"]*Dt) 
+	Vx <- 0.5*pars["sigma"]^2 *(1-exp(-2*pars["Ro"]*Dt))/pars["Ro"]
+	if(pars['sigma'] < 0 ) Vx = Inf 
+	return(list(Ex=Ex, Vx=Vx))
 }
 
 

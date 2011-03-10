@@ -6,7 +6,7 @@ export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warnin
 export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGauss, simulateGauss, lik.gauss, pc.gauss, dc.gauss, rc.gauss, init_gauss, loglik_calc.gauss)
 
 # functions in likelihood_bifur_models.R
-export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN)
+export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN, constOU)
 # doesn't export quadratic saddlenode functions
 
 

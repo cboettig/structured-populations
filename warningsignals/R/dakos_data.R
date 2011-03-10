@@ -51,5 +51,6 @@ plot.dakos <- function(dat){
 	plot(time_window, window_autocorr(X_ts, w), xlim=c(start(X_ts), end(X_ts)), type="l", main="Autocorrelation", xlab="Time", ylab="autocorrelation")
 	abline(v=time_window[1], lty="dashed")
 	show_stats(X_ts, window_autocorr)
+
 ## Should have ability label axis in original MYrs BP units
 }
