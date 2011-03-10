@@ -42,7 +42,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 setLTC <- function(Xo, to, t1, pars, R){
 	moments <- function(t,y,p){ 
 		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
-		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
+		yd2 <- -2*R(t,pars)*y[2] + p["sigma"]^2 ##check?
 		list(c(yd1=yd1, yd2=yd2))
 	}
 	jacfn <- function(t,y,p){
