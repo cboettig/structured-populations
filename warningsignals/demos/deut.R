@@ -9,7 +9,7 @@ load("deut_data.Rdat")
 
 # Fit models
 models <- vector("list", 4)
-for(i in 1:4){
+for(i in 2:4){
 	X <- data[[i]]$X_ts
 	const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
 	pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
