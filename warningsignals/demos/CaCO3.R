@@ -1,5 +1,5 @@
 tags="warningsignals stochpop CaCO3"
-cpu <- 16
+cpu <- 2
 nboot <- 160
 require(warningsignals)
 require(socialR)

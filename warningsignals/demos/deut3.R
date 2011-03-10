@@ -7,15 +7,19 @@ nboot <- 16
 load("deut_data.Rdat")
 
 X <- data[[3]]$X_ts
-pars <- c(Ro=5.0, m= -.04, theta=mean(X), sigma=sd(X)*5*2)
+
+# consider smarter estimate for Ro
 const_pars <- c(Ro=5.0, theta=mean(X), sigma=sd(X)*5*2)
 
 ## Fit a linearized transcritical bifurcation model
 #const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))
+#pars <- c(Ro=const$pars["Ro"], m= const$pars["Ro"]*max(time(X)), theta=mean(X), sigma=const$pars["sigma"])
 #timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
 ## Fit the linearized saddle-node bifurcation model
 const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
+#smart estimates for pars
+pars <- c(Ro=const$pars["Ro"], m= const$pars["Ro"]*max(time(X)), theta=mean(X), sigma=const$pars["sigma"])
 timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
 
 print(llik_warning <- 2*(loglik(timedep)-loglik(const)))

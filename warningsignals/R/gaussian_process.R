@@ -99,5 +99,6 @@ simulate.gauss <- function(m){
 update.gauss <- function(m, X, ...) updateGauss(setmodel=m$setmodel, pars=m$pars, X=X, ...)
 loglik.gauss <- function(m) m$loglik
 getParameters.gauss <- function(m) m$pars
-
+# update the loglik (calculation rather than lookup)
+loglik_calc.gauss <- function(m) loglik.gauss(m$X, m$pars, m$setmodel)
 
