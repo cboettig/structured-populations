@@ -18,4 +18,5 @@ export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls)
 
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
-
+export(heteroOU)
+useDynLib(warningsignals)

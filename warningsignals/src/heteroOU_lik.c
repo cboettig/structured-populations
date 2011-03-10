@@ -62,7 +62,7 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 	int i;
 
 	
-	for(i=0; i< *N; i++){
+	for(i=0; i< (*N-1); i++){
 		/* Range of time to simulate*/	
 		double t = times[i], t1= times[i+1];
 		/* initial conditions: start at X[i] with variance 0 */
@@ -102,7 +102,7 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 int main(void)
 {
 	int i, N = 100;
-	double pars[4] = {0., 0., 0., 1.};
+	double pars[4] = {12., 0., 4., 8.};
 	gsl_rng * rng = gsl_rng_alloc (gsl_rng_default);
 	double * X = (double *) malloc(N * sizeof(double));
 	double * t = (double *) malloc(N * sizeof(double));
