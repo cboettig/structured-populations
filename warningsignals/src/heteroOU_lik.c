@@ -18,7 +18,7 @@
 
 /* Define the ode system */
 /* pars given as (alpha, m, theta, sigma) */
-int func(double t, const double y[], double f[], void * mypars)
+int func(double t, const double y[], double f[], void *mypars)
 {
 	double * pars = (double *) mypars;
 	double R = pars[0] + t*pars[1];
@@ -28,12 +28,31 @@ int func(double t, const double y[], double f[], void * mypars)
 }
 
 
+int
+jac (double t, const double y[], double *dfdy,
+  double dfdt[], void *mypars)
+{
+	double * pars = (double *) mypars;
+	double sqrtR = sqrt( pars[0] + t*pars[1] );
+	gsl_matrix_view dfdy_mat
+	 = gsl_matrix_view_array (dfdy, 2, 2);
+	gsl_matrix * m = &dfdy_mat.matrix;
+	gsl_matrix_set (m, 0, 0, -2*sqrtR);
+	gsl_matrix_set (m, 0, 1, 0.0);
+	gsl_matrix_set (m, 1, 0, 0.0);
+	gsl_matrix_set (m, 1, 1, -2*sqrtR);
+	dfdt[0] = 0.0;
+	dfdt[1] = 0.0;
+	return GSL_SUCCESS;
+}
+
+
 /* The goal is to avoid looping over the ode solver allocation */
 /* Could write this a function that could be passed to an optimizer, 
  * should profile that to find out if it's worth passing the ode solver 
  * allocation along or just initializing each time.  */ 
 
-void heteroOU(double * loglik, double * mypars,  double * X, double * times, int * N)
+void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 {
 
 	/* Allocate space for mean and variance */
@@ -42,17 +61,17 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 
 
 	/* Create our ODE system, we ignore the Jacobian */
-	gsl_odeiv_system sys = {func, NULL, DIM, mypars};
-	/* Define method as Embedded Runge-Kutta or RK Prince-Dormand (8,9) method */
+	gsl_odeiv_system sys = {func, jac, DIM, mypars};
+	/* Define method as Embedded Runge-Kutta Prince-Dormand (8,9) method */
 	const gsl_odeiv_step_type * T
-	 = gsl_odeiv_step_rk4;
 //	 = gsl_odeiv_step_rk8pd;
+	 = gsl_odeiv_step_bsimp;
 	/* allocate stepper for our method of correct dimension*/
 	gsl_odeiv_step * s
 	 = gsl_odeiv_step_alloc (T, DIM);
 	/* control will maintain absolute and relative error */
 	gsl_odeiv_control * c
-	 = gsl_odeiv_control_y_new (1e-6, 0.0);
+	 = gsl_odeiv_control_y_new (1e-4, 1e-6);
 	/* allocate the evolver */
 	gsl_odeiv_evolve * e
 	 = gsl_odeiv_evolve_alloc (DIM);
@@ -113,7 +132,7 @@ int main(void)
 	double loglik = 0;
 
 	heteroOU(&loglik, pars,  X, t, &N);
-	printf("loglik = %lf\n", loglik);
+	printf("loglik = %e\n", loglik);
 	free(X);
 	free(t);
 	gsl_rng_free(rng);
