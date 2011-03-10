@@ -15,13 +15,13 @@
 
 
 /* Define the ode system */
-/* pars given as (alpha, theta, sigma) */
+/* pars given as (alpha, m, theta, sigma) */
 int func(double t, const double y[], double f[], void * mypars)
 {
 	double * pars = (double *) pars;
-	double R = pars[0];
-	f[0] = R*(pars[1] - y[1]); 
-	f[1] = 2*R*y[1] + gsl_pow_2(pars[2]);
+	double R = pars[0] + t*pars[1];
+	f[0] = R*(pars[2] - y[1]); 
+	f[1] = 2*R*y[1] + gsl_pow_2(pars[3]);
 	return GSL_SUCCESS;
 }
 
@@ -31,7 +31,7 @@ int func(double t, const double y[], double f[], void * mypars)
  * should profile that to find out if it's worth passing the ode solver 
  * allocation along or just initializing each time.  */ 
 
-void heteroOU(void * mypars,  double *X, double *times, int *N)
+void heteroOU(double * loglik, double * mypars,  double * X, double * times, int * N)
 {
 
 	/* Allocate space for mean and variance */
@@ -55,17 +55,13 @@ void heteroOU(void * mypars,  double *X, double *times, int *N)
 	gsl_odeiv_evolve * e
 	 = gsl_odeiv_evolve_alloc (DIM);
 
-
-	double t, t1;
 	/* Initial step size, will be modified as needed by adaptive alogorithm */
 	double h = 1e-6;
 
 	int i;
 	for(i=0; i< *N; i++){
 		/* Range of time to simulate*/	
-		t = times[i];
-		t1= times[i+1];
-		double t = 0.0, t1 = max_time;
+		double t = times[i], t1= times[i+1];
 		/* initial conditions: start at X[i] with variance 0 */
 		double y[DIM] = { X[i], 0.0 };
 
@@ -85,10 +81,10 @@ void heteroOU(void * mypars,  double *X, double *times, int *N)
 		Vx[i] = y[1];
 	}
 
-	double loglik = 0;
+	*loglik = 0;
 	/* first point X[0] observed at t[0], then prob X[1] given by Ex[0],Vx[0] */
 	for(i=0; i < (*N-1); i++){
-		loglik += gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i])  +.5*log(0.5*M_1_PI/Vx[i])
+		*loglik += gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i])  +.5*log(0.5*M_1_PI/Vx[i]);
 	}
 
 

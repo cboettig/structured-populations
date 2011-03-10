@@ -32,6 +32,7 @@ pc.gauss  <- function(setmodel, x, x0, to, t1, pars, lower.tail = TRUE, log.p = 
 
 ### Time can be specified directly in X as ts object or as the first column of X, and data in the second column
 lik.gauss <- function(X, pars, setmodel, log=TRUE){
+	if(is(setmodel, "character"))
 ## Returns minus log likelihood
 	if(length(X) == 0){ return(0)}
 	if(is(X,"ts")){
