@@ -11,8 +11,9 @@ load("deut_data.Rdat")
 models <- vector("list", 4)
 for(i in 2:4){
 	X <- data[[i]]$X_ts
-	const_pars <- c(Ro=5.0, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
-	pars <- c(Ro=5.0, m= -.04, theta=mean(X[,2]), sigma=sd(X[,2])*5*2)
+## if X_ts is used then estimate pars as mean of timeseries, not X[,2]
+	const_pars <- c(Ro=5.0, theta=mean(X), sigma=sd(X)*5*2)
+	pars <- c(Ro=5.0, m= -.04, theta=mean(X), sigma=sd(X)*5*2)
 	const <- updateGauss(const_LTC, pars, X, control=list(maxit=1000))
 	timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
