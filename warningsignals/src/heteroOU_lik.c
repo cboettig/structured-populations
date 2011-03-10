@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_matrix.h>
@@ -18,7 +20,7 @@
 /* pars given as (alpha, m, theta, sigma) */
 int func(double t, const double y[], double f[], void * mypars)
 {
-	double * pars = (double *) pars;
+	double * pars = (double *) mypars;
 	double R = pars[0] + t*pars[1];
 	f[0] = R*(pars[2] - y[1]); 
 	f[1] = 2*R*y[1] + gsl_pow_2(pars[3]);
@@ -57,8 +59,9 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 
 	/* Initial step size, will be modified as needed by adaptive alogorithm */
 	double h = 1e-6;
-
 	int i;
+
+	
 	for(i=0; i< *N; i++){
 		/* Range of time to simulate*/	
 		double t = times[i], t1= times[i+1];
@@ -76,7 +79,6 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 			if (status != GSL_SUCCESS)
 			   break;
 		}
-	
 		Ex[i] = y[0];
 		Vx[i] = y[1];
 	}
@@ -97,4 +99,23 @@ void heteroOU(double * loglik, double * mypars,  double * X, double * times, int
 
 
 
+int main(void)
+{
+	int i, N = 100;
+	double pars[4] = {0., 0., 0., 1.};
+	gsl_rng * rng = gsl_rng_alloc (gsl_rng_default);
+	double * X = (double *) malloc(N * sizeof(double));
+	double * t = (double *) malloc(N * sizeof(double));
+	for(i=0; i<N; i++){
+		X[i] = gsl_ran_ugaussian(rng);
+		t[i] = i;
+	}
+	double loglik = 0;
 
+	heteroOU(&loglik, pars,  X, t, &N);
+	printf("loglik = %lf\n", loglik);
+	free(X);
+	free(t);
+	gsl_rng_free(rng);
+	return(0);
+}
