@@ -1,4 +1,5 @@
 require(socialR)
+gitcommit()
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
