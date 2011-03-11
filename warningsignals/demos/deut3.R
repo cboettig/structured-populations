@@ -2,7 +2,7 @@ require(socialR)
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
-nboot <- 160
+nboot <- 16
 
 load("deut_data.Rdat")
 
@@ -38,7 +38,7 @@ social_plot(plot(tau_var), file="taudist_var.png", tags=paste(tags, "tau var deu
 social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor deut3"))
 
 # plot example data
-social_plot(plot(tau_var, show_sample=TRUE), tags="warningsignals stochpop tau deut3")
+social_plot(plot_sample(const, timedep), tags="warningsignals stochpop tau deut3")
 
 ## MonteCarlo Cox's delta approach
 out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
