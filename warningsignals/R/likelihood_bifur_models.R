@@ -42,7 +42,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 setLTC <- function(Xo, to, t1, pars, R){
 	moments <- function(t,y,p){ 
 		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
-		yd2 <- -R(t,pars)*y[2] + p["sigma"]^2
+		yd2 <- -2*R(t,pars)*y[2] + p["sigma"]^2 ##check?
 		list(c(yd1=yd1, yd2=yd2))
 	}
 	jacfn <- function(t,y,p){
@@ -58,6 +58,16 @@ setLTC <- function(Xo, to, t1, pars, R){
 	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 
 ## Handle badly defined parameters by creating very low probability returns
+	if(pars['sigma'] < 0 ) Vx = Inf 
+	return(list(Ex=Ex, Vx=Vx))
+}
+
+
+constOU <- function(Xo, to, t1, pars){
+	Dt <- t1 - to
+	Ex <- pars["theta"]*(1 - exp(-pars["Ro"]*Dt)) + Xo*exp(-pars["Ro"]*Dt) 
+	Vx <- 0.5*pars["sigma"]^2 *(1-exp(-2*pars["Ro"]*Dt))/pars["Ro"]
+	if(pars['Ro'] < 0 ) Vx = Inf 
 	if(pars['sigma'] < 0 ) Vx = Inf 
 	return(list(Ex=Ex, Vx=Vx))
 }

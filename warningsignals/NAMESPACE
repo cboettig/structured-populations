@@ -3,10 +3,10 @@ export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warnin
 
 # functions in gaussian_processes.R
 # note that still needs the generics
-export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGauss, simulateGauss, lik.gauss, pc.gauss, dc.gauss, rc.gauss, init_gauss)
+export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGauss, simulateGauss, lik.gauss, pc.gauss, dc.gauss, rc.gauss, init_gauss, loglik_calc.gauss)
 
 # functions in likelihood_bifur_models.R
-export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN)
+export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN, constOU)
 # doesn't export quadratic saddlenode functions
 
 
@@ -18,4 +18,5 @@ export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls)
 
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
-
+export(heteroOU)
+useDynLib(warningsignals)

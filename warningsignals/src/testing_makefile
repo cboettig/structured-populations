@@ -1,0 +1,31 @@
+#-----------------------------------#
+#	Makefile for GNU C++ Compiler	#
+#-----------------------------------#
+CCP = g++
+CC = gcc
+C_OMP = -fopenmp 
+CFLAGS = -Wall -lgsl -lgslcblas -lm -O4 -fpic -funroll-loops -lgomp
+FILES = heteroOU_lik.c multimin.c 
+EXE = hetero.exe
+
+build:
+	$(CC) $(CFLAGS) $(C_OMP) -o hetero.exe $(FILES)
+
+
+clean:
+	rm -f *.o *.so 
+
+
+
+### run make profile, then execute program, then run gprof -a $(EXE) gmon.out
+profile:  
+	$(CC) $(CFLAGS) -g -pg -o $(EXE) $(FILES)
+#
+debug: 
+	$(CC) $(CFLAGS) -g -o $(EXE) $(FILES)
+
+#parallel: $(WARNING)
+#	$(CC) $(CFLAGS) $(C_OMP) -o $(EXE) $(WARNING) 
+#
+#
+
