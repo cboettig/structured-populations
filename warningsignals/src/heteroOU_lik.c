@@ -59,6 +59,8 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 	double * Ex = (double *) malloc(*N * sizeof(double));
 	double * Vx = (double *) malloc(*N * sizeof(double));
 
+	int i;
+	for(i=0; i< (*N-1); i++){
 
 	/* Create our ODE system, we ignore the Jacobian */
 	gsl_odeiv_system sys = {func, jac, DIM, mypars};
@@ -77,8 +79,6 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 	gsl_odeiv_evolve * e
 	 = gsl_odeiv_evolve_alloc (DIM);
 
-	int i;
-	for(i=0; i< (*N-1); i++){
 		/* Initial step size, will be modified as needed by adaptive alogorithm */
 		double h = 1e-6; //.01*(times[2]-times[1]); 
 
@@ -101,6 +101,11 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 		Ex[i] = y[0];
 		Vx[i] = y[1];
 	//printf("%.2lf %.2lf\n", Ex[i], Vx[i]);
+	
+
+	gsl_odeiv_evolve_free (e);
+	gsl_odeiv_control_free (c);
+	gsl_odeiv_step_free (s);
 	}
 
 	*loglik = - 0.5 * (*N) * log(2*M_PI)  ;
@@ -118,12 +123,8 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 //		 *loglik = GSL_NEGINF; 
 	}
 	
-
 	free (Ex);
 	free (Vx); 
-	gsl_odeiv_evolve_free (e);
-	gsl_odeiv_control_free (c);
-	gsl_odeiv_step_free (s);
 }
 
 
@@ -182,7 +183,7 @@ int main(void)
 	double * t = (double *) malloc(N * sizeof(double));
 	X[0] = pars[2];
 	t[0] = 0;
-	double Deltat = 1000;
+	double Deltat = 10;
 	for(i=0; i < (N-1); i++){
 //		X[i+1] = X[i] + pars[0]*(pars[2]-X[i]) +pars[3]*gsl_ran_ugaussian(rng);
 		X[i+1] = X[i] * exp(-pars[0]*Deltat) + pars[2] * (1 - exp(-pars[0]*Deltat)) + 
