@@ -29,7 +29,8 @@ err_rates <- function(null_dist, test_dist, p=.05){
 plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
-	plot(nd, main=paste("Kendall's Tau in ", indicator), lwd=1, col=rgb(0,0,1,1), xlim=c(-1,1))
+	ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
+	plot(nd, main=paste("Kendall's Tau in ", indicator), lwd=1, col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim)
 	polygon(nd$x, nd$y, col=rgb(0,0,1,.5), border=rgb(0,0,1,.5))
 	polygon(td$x, td$y, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5))
 

@@ -14,7 +14,7 @@ export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LS
 export(window_mean, window_var, window_skew, window_kurtosi, warning_stats, window_autocorr, window_ar.ols)
 
 #tau_dist_montecarlo.R
-export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls)
+export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls, plot_sample)
 
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
