@@ -5,7 +5,7 @@ CCP = g++
 CC = gcc
 C_OMP = -fopenmp 
 CFLAGS = -Wall -lgsl -lgslcblas -lm -O4 -fpic -funroll-loops -lgomp
-FILES = heteroOU_lik.c multimin.c 
+FILES = heteroOU_lik.c multimin.c siman.c 
 EXE = hetero.exe
 
 build:

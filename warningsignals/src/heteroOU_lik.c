@@ -183,7 +183,7 @@ int main(void)
 	double * t = (double *) malloc(N * sizeof(double));
 	X[0] = pars[2];
 	t[0] = 0;
-	double Deltat = 1000;
+	double Deltat = 1;
 	for(i=0; i < (N-1); i++){
 //		X[i+1] = X[i] + pars[0]*(pars[2]-X[i]) +pars[3]*gsl_ran_ugaussian(rng);
 		X[i+1] = X[i] * exp(-pars[0]*Deltat) + pars[2] * (1 - exp(-pars[0]*Deltat)) + 
@@ -193,7 +193,7 @@ int main(void)
 	double loglik = 0;
 
 	/*Let's start with guesses that aren't the values used to generate the data */
-/*	pars[0] = .7;
+	pars[0] = .7;
 	pars[2] = 8;
 	pars[3] = 2;
 
@@ -211,7 +211,8 @@ int main(void)
 	printf("loglik = %e\n", -loglik);
 
 	/* Minimize the -loglik. will print to terminal if PRINT is 1 in optimizers.h */
-	loglik = multimin(x, d);
+	//loglik = multimin(x, d);
+	loglik = siman(x, d, rng);
 
 	/* Pull parameter estimates back out of the vector*/
 	for(i=0;i<4;i++){

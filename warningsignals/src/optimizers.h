@@ -6,7 +6,7 @@
 /* set up parameters for this simulated annealing run */
 #define N_TRIES 200     	/* how many points do we try before stepping */
 #define ITERS_FIXED_T 200	/* how many iterations for each T? */
-#define STEP_SIZE .02 		/* max step size in random walk */
+#define STEP_SIZE .002 		/* max step size in random walk */
 #define K 1.0				/* Boltzmann constant */
 #define T_INITIAL 0.05		/* initial temperature */
 #define MU_T 1.004		    /* damping factor for temperature */
