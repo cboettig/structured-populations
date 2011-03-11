@@ -80,7 +80,7 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 	int i;
 	for(i=0; i< (*N-1); i++){
 		/* Initial step size, will be modified as needed by adaptive alogorithm */
-		double h = .1*(times[2]-times[1]); //1e-6;
+		double h = 1e-6; //.01*(times[2]-times[1]); 
 
 		/* Range of time to simulate*/	
 		double t = times[i], t1= times[i+1];
@@ -109,8 +109,15 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 		*loglik -= gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i]) + 0.5*log(Vx[i]);
 	}
 
-	/* Needs a sane way to handle negative alpha and negative sigma (?)*  
-	 * Note that returning GLS_NEGINF in these cases is NOT a SANE WAY */
+	if(mypars[0] < 0){ 
+		if(PRINT) printf("whoops tried negative alpha\n");
+//		*loglik = GSL_NEGINF; 
+	}
+	if(mypars[3] < 0){
+		if(PRINT) printf("whoops tried negative sigma\n");
+//		 *loglik = GSL_NEGINF; 
+	}
+	
 
 	free (Ex);
 	free (Vx); 
@@ -168,23 +175,26 @@ void data_free(data * d){
 
 int main(void)
 {
-	int i, N = 100;
+	int i, N = 50;
 	double pars[4] = {.7, 0., 10, 2.0};
 	gsl_rng * rng = gsl_rng_alloc (gsl_rng_default);
 	double * X = (double *) malloc(N * sizeof(double));
 	double * t = (double *) malloc(N * sizeof(double));
 	X[0] = pars[2];
-	t[0] = 0; 
+	t[0] = 0;
+	double Deltat = 1000;
 	for(i=0; i < (N-1); i++){
-		X[i+1] = X[i] + pars[0]*(pars[2]-X[i]) +pars[3]*gsl_ran_ugaussian(rng);
-		t[i+1] = t[i]+1;
+//		X[i+1] = X[i] + pars[0]*(pars[2]-X[i]) +pars[3]*gsl_ran_ugaussian(rng);
+		X[i+1] = X[i] * exp(-pars[0]*Deltat) + pars[2] * (1 - exp(-pars[0]*Deltat)) + 
+			gsl_pow_2(pars[3]) * exp(1-exp(-2*pars[0]*Deltat)) * gsl_ran_gaussian_ziggurat(rng,1) / (2*pars[0]);
+		t[i+1] = t[i] + Deltat;
 	}
 	double loglik = 0;
 
 	/*Let's start with guesses that aren't the values used to generate the data */
-	pars[0] = 4;
-	pars[2] = 4;
-	pars[3] = 6;
+/*	pars[0] = .7;
+	pars[2] = 8;
+	pars[3] = 2;
 
 
 	/* Optimizer routine needs a data structure to hold the data  */

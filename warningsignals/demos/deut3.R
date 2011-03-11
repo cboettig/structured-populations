@@ -15,8 +15,8 @@ const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
 const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))
 pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=as.numeric(const$pars["theta"]), sigma=as.numeric(const$pars["sigma"]))
 
-out <- heteroOU(X,pars)
-fit <- updateGauss("heteroOU", pars, X, control=list(maxit=1000))
+#out <- heteroOU(X,pars)
+#fit <- updateGauss("heteroOU", pars, X, control=list(maxit=1000))
 
 
 timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
