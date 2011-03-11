@@ -3,7 +3,7 @@ gitcommit()
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
-nboot <- 160
+nboot <- 320
 
 load("deut_data.Rdat")
 
