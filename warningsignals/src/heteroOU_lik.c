@@ -109,8 +109,14 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 		*loglik -= gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i]) + 0.5*log(Vx[i]);
 	}
 
-	if(mypars[0] < 0){ *loglik = GSL_NEGINF; }
-	if(mypars[3] < 0){ *loglik = GSL_NEGINF; }
+	if(mypars[0] < 0){ 
+		if(PRINT) printf("whoops tried negative alpha\n");
+		*loglik = GSL_NEGINF; 
+	}
+	if(mypars[3] < 0){
+		if(PRINT) printf("whoops tried negative sigma\n");
+		 *loglik = GSL_NEGINF; }
+	
 
 	free (Ex);
 	free (Vx); 
@@ -168,7 +174,7 @@ void data_free(data * d){
 
 int main(void)
 {
-	int i, N = 500;
+	int i, N = 100;
 	double pars[4] = {.7, 0., 10, 2.0};
 	gsl_rng * rng = gsl_rng_alloc (gsl_rng_default);
 	double * X = (double *) malloc(N * sizeof(double));
