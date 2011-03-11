@@ -2,7 +2,7 @@ require(socialR)
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 cpu <- 16
-nboot <- 160
+nboot <- 16
 
 load("deut_data.Rdat")
 
