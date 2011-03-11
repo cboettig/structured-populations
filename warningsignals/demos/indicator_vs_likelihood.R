@@ -1,7 +1,7 @@
 #indicator_vs_likelihood.R
 rm(list=ls()) ## start with clean workspace
 tags <- "warningsignals stochpop"
-nboot <- 16
+nboot <- 160
 cpu <- 16
 require(socialR)
 require(warningsignals)
@@ -13,7 +13,8 @@ const_pars <- c(Ro=5.0, theta=100, sigma=1)
 X <- simulateGauss(timedep_LTC, pars, N=500, T=100, Xo=100)
 
 # initialize and fit models (could just use updateGauss instead of generic
-const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))  
+#const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))  
+const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))  
 timedep <-updateGauss(timedep_LTC, pars, X, control=list(maxit=1000)) 
 
 # Tau approach comparison

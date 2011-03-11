@@ -38,7 +38,7 @@ save(list=ls(), file="deut3.Rdat")
 social_plot(plot(tau_var), file="taudist_var.png", tags=paste(tags, "tau var deut3"), mention="cboettig")
 social_plot(plot(tau_acor), file="taudist_acor.png", tags=paste(tags, "tau acor deut3"))
 
-# plot example data
+## plot example data
 social_plot(plot_sample(const, timedep), tags="warningsignals stochpop tau deut3")
 
 ## MonteCarlo Cox's delta approach
