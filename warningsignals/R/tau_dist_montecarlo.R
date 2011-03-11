@@ -27,9 +27,14 @@ err_rates <- function(null_dist, test_dist, p=.05){
 }
 
 plt_tau <- function(test_tau_dist, null_tau_dist, type){
-	plot(density(test_tau_dist[1,]), main=paste("Kendall's Tau in ", type), lwd=3, col="red", xlim=c(-1,1))
-	lines(density(null_tau_dist[1,]), col="blue", lwd=3)
-	legend("topright", c("test", "null"), lwd=3, col=c("red", "blue"))
+	td <- density(test_tau_dist[1,])
+	nd <- density(null_tau_dist[1,])
+	plot(nd, main=paste("Kendall's Tau in ", type), lwd=1, col=rgb(0,0,1,1), xlim=c(-1,1))
+	polygon(nd$x, nd$y, col=rgb(0,0,1,.5), border=rgb(0,0,1,.5))
+	polygon(td$x, td$y, col=rgb(0,0,1,.5), border=rgb(1,0,0,.5))
+
+	#lines(nd, col="blue", lwd=3)
+	legend("topright", c("test", "null"), pch=15, col=c("red", "blue"))
 	text(xshift(2), yshift(0), paste("fraction of test with p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])) )
 	text(xshift(2), yshift(10), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])) )
 }
@@ -121,13 +126,15 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 }
 
 plot.tau_dist_montecarlo <- function(out, show_sample=FALSE){
-	if(show_sample){ 
-		## Createis some simulated data from these estimates and show example performance
+	if(show_sample){
+## DEPRECATED, should only use to call plt_tau on an out object
+		## Creates some simulated data from these estimates and show example performance
 		warning <- simulate(out$timedep)
 		no_warning <- simulate(out$const)
 		plt_data(warning, no_warning)
 	} else {
 		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
+		lines(v=out$llik_warning_fit, type=3, lwd=3, col="darkred")
 	}
 }
 
