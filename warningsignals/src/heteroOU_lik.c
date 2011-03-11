@@ -64,7 +64,8 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 	gsl_odeiv_system sys = {func, jac, DIM, mypars};
 	/* Define method as Embedded Runge-Kutta Prince-Dormand (8,9) method */
 	const gsl_odeiv_step_type * T
-	 = gsl_odeiv_step_rk8pd;
+	 = gsl_odeiv_step_rkf45;
+//	 = gsl_odeiv_step_rk8pd;
 //	 = gsl_odeiv_step_gear2;
 //	 = gsl_odeiv_step_bsimp;
 	/* allocate stepper for our method of correct dimension*/
@@ -228,90 +229,6 @@ int main(void)
 	gsl_rng_free(rng);
 	data_free(d);
 	return(0);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void heteroOU2(double *loglik, double *mypars,  double *X, double *times, int *N)
-{
-
-	/* Allocate space for mean and variance */
-	double * Ex = (double *) malloc(*N * sizeof(double));
-	double * Vx = (double *) malloc(*N * sizeof(double));
-
-	   const gsl_odeiv_step_type * T
-		 = gsl_odeiv_step_rk4;
-
-	   gsl_odeiv_step * s
-		 = gsl_odeiv_step_alloc (T, DIM);
-
-	   gsl_odeiv_system sys = {func, jac, DIM, mypars};
-
-	int i;
-	for(i=0; i< (*N-1); i++){
-		/* Range of time to simulate*/	
-	   double t = times[i], t1= times[i+1];
-		/* initial conditions: start at X[i] with variance 0 */
-	   double y[DIM] = { X[i], 0.0 };
-	   double h = 1e-4;
-	   double y_err[2];
-	   double dydt_in[2], dydt_out[2];
-
-	   /* initialise dydt_in from system parameters */
-	   GSL_ODEIV_FN_EVAL(&sys, t, y, dydt_in);
-
-	   while (t < t1)
-		 {
-		   int status = gsl_odeiv_step_apply (s, t, h,
-											  y, y_err,
-											  dydt_in,
-											  dydt_out,
-											  &sys);
-
-		   if (status != GSL_SUCCESS)
-			   break;
-
-		   dydt_in[0] = dydt_out[0];
-		   dydt_in[1] = dydt_out[1];
-
-		   t += h;
-		 }
-		Ex[i] = y[0];
-		Vx[i] = y[1];
-	}
-
-	*loglik = 0;
-	/* first point X[0] observed at t[0], then prob X[1] given by Ex[0],Vx[0] */
-	for(i=0; i < (*N-1); i++){
-		*loglik += gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i])  +.5*log(0.5*M_1_PI/Vx[i]);
-	}
-
-
-	free (Ex);
-	free (Vx); 
-
-   gsl_odeiv_step_free (s);
 }
 
 
