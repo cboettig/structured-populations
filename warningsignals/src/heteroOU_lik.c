@@ -109,14 +109,8 @@ void heteroOU(double *loglik, double *mypars,  double *X, double *times, int *N)
 		*loglik -= gsl_pow_2(Ex[i]-X[i+1]) / (2*Vx[i]) + 0.5*log(Vx[i]);
 	}
 
-	if(mypars[0] < 0){ 
-		if(PRINT) printf("whoops tried negative alpha\n");
-		*loglik = GSL_NEGINF; 
-	}
-	if(mypars[3] < 0){
-		if(PRINT) printf("whoops tried negative sigma\n");
-		 *loglik = GSL_NEGINF; }
-	
+	/* Needs a sane way to handle negative alpha and negative sigma (?)*  
+	 * Note that returning GLS_NEGINF in these cases is NOT a SANE WAY */
 
 	free (Ex);
 	free (Vx); 
@@ -187,22 +181,31 @@ int main(void)
 	}
 	double loglik = 0;
 
+	/*Let's start with guesses that aren't the values used to generate the data */
 	pars[0] = 4;
 	pars[2] = 4;
 	pars[3] = 6;
 
+
+	/* Optimizer routine needs a data structure to hold the data  */
 	data * d = init_data(X,t,N);
+	/* Parameters being optimized must be in a vector, not an array */
 	gsl_vector *x = gsl_vector_alloc(4);
 	for(i=0;i<4;i++){
 		gsl_vector_set(x, i, pars[i]);
 	}
 
-
+	/* Test the optim function, print initial loglik*/
 	loglik = optim_func(x, d);
 	printf("loglik = %e\n", -loglik);
 
-
+	/* Minimize the -loglik. will print to terminal if PRINT is 1 in optimizers.h */
 	loglik = multimin(x, d);
+
+	/* Pull parameter estimates back out of the vector*/
+	for(i=0;i<4;i++){
+		pars[i] = gsl_vector_get(x, i);
+	}
 
 
 //	heteroOU(&loglik, pars,  X, t, &N);
