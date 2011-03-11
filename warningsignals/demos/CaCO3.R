@@ -3,6 +3,8 @@ cpu <- 2
 nboot <- 160
 require(warningsignals)
 require(socialR)
+gitcommit()
+
 
 # CaCO3 record
 caco3 <- read.table("../data/caco3.txt")
