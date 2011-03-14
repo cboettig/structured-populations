@@ -1,7 +1,7 @@
 #indicator_vs_likelihood.R
 rm(list=ls()) ## start with clean workspace
 tags <- "warningsignals stochpop"
-nboot <- 160
+nboot <- 1600
 cpu <- 16
 require(socialR)
 require(warningsignals)
