@@ -15,7 +15,8 @@ T <- max(time(X))
 N <- length(X)
 Xo <- X@.Data[1]
 sampling <- c(T=T, N=N, Xo=Xo)
-comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling), collapse=" ")
+
+comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling, "nboot:", nboot), collapse=" ")
 
 
 # initialize and fit models (could just use updateGauss instead of generic
