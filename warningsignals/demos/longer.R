@@ -30,7 +30,7 @@ social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochp
 ## As noted above, in real data we would use the MLEs, which has the point-estimate problem.  
 out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
 save(list=ls(), file="longer.Rdat")
-social_plot(plot(out), file="longer_mc.png", tag="warningsignal stochpop LTC, simulation", comment="N=50, T=100, R=5- 0/05*t")
+social_plot(plot(out), file="longer_mc.png", tags="warningsignals stochpop LTC simulation", comment="N=50, T=100, R=5- 0.015*t")
 
 
 
