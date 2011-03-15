@@ -1,5 +1,5 @@
 #indicator_vs_likelihood.R
-nboot <- 1600
+nboot <- 16
 cpu <- 16
 require(socialR)
 require(warningsignals)
