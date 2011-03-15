@@ -1,9 +1,10 @@
 #indicator_vs_likelihood.R
-rm(list=ls()) ## start with clean workspace
 nboot <- 1600
 cpu <- 16
 require(socialR)
 require(warningsignals)
+gitcommit()
+
 
 ########################### Begin actual analysis ######################## 
 pars <- c(Ro=5.0, m= -.03, theta=100, sigma=1)
