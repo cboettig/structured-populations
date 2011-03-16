@@ -17,7 +17,7 @@ export(window_mean, window_var, window_skew, window_kurtosi, warning_stats, wind
 export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls, plot_sample)
 
 ## montecarlotest.R
-export(montecalotest, loglik, getParameters, plot.pow, KL_divergence)
+export(montecarlotest, loglik, getParameters, plot.pow, KL_divergence)
 
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
