@@ -1,3 +1,7 @@
+
+
+## Dependencies: NORMT3 in analytic_V, though now depricated.  otherwise all base 
+
 ################ Model definitions and functions ###################################
 #### Consider running a profiler and moving these into C code for speed ############
 
@@ -142,6 +146,10 @@ update.OU <- function(pars, X, use_mle=FALSE,method = c("Nelder-Mead",
 	}
 	out
 }
+
+
+########### Early functions, effectively depricated #################
+
 
 ### Early Warning model -- linear change
 

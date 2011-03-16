@@ -7,14 +7,17 @@ export(getParameters.gauss, loglik.gauss, update.gauss, simulate.gauss, updateGa
 
 # functions in likelihood_bifur_models.R
 export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LSN, constOU)
-# doesn't export quadratic saddlenode functions
+## doesn't export quadratic saddlenode functions
 
 
-# indicators.R
+## indicators.R
 export(window_mean, window_var, window_skew, window_kurtosi, warning_stats, window_autocorr, window_ar.ols)
 
-#tau_dist_montecarlo.R
+## tau_dist_montecarlo.R
 export(tau_dist_montecarlo, plot.tau_dist_montecarlo, show_stats, plot_kendalls, plot_sample)
+
+## montecarlotest.R
+export(montecalotest, loglik, getParameters, plot.pow, KL_divergence)
 
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
