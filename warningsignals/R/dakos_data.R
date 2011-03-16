@@ -1,3 +1,5 @@
+## Dependencies: limma for avereps function
+
 
 dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL, bw=NULL){
 ## Description: mimics the data processing of Dakos et al 2008 PNAS.  

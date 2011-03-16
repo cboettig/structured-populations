@@ -1,6 +1,10 @@
-# set the value of the saddle node bifurcation. 
+# likelihood_bifur_models.R
+
+## Dependencies: odesolve
 require(odesolve)
-## The linearized bifurcation models below use the new gaussian_proccess library rather than rewrite rc, dc, pc, lik, sim, up, etc
+
+
+## The linearized bifurcation models below use the new gaussian_proccess library for rc, dc, pc, lik, sim, update, etc
 
 
 

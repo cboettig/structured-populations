@@ -1,6 +1,14 @@
 # indicators.R
 # simple functions to calculate statistics often used as leading indicators of a regime shift
 
+## Dependencies:
+## requires psych package for skew & kurosis calculations
+## used to require Kendall package, has been replaced with cor.test from the base package, 
+## which resolves ties for more accurate p value, but doesn't matter since we focus on tau 
+## and becayse cor.test is used by others i.e. Dakos 2008
+
+require(psych)
+
 window_var <- function(X, windowsize=length(X)/2){
 	sapply(0:(length(X)-windowsize), function(i){
 		var(X[(i+1):(i+windowsize)]) 
@@ -14,7 +22,6 @@ window_mean <- function(X, windowsize=length(X)/2){
 	})
 }
 
-require(psych)
 window_skew <- function(X, windowsize=length(X)/2){
 	sapply(0:(length(X)-windowsize), function(i){
 		skew(X[(i+1):(i+windowsize)]) 
