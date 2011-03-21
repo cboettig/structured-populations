@@ -41,8 +41,12 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
 }
 
 
-## Collective panel plots: Warning signals for the actual warning signal and the constant conditions model
+## Collective panel plots: Warning signals for the actual warning signal and the constant conditions model.  Should be modified to match plot.dakos format...
 plt_data <- function(warning, no_warning){
+## Description: plots two datasets, their variances and autocorrelations in a 3x2 frame
+## Args: 
+##			warning -- a dataset (ts or matrix)
+##			no_warning -- another dataset (ts or matrix)
 	par(mfrow=c(3,2))
 	plot(warning, main="Stability loss (LTC model)")
 	plot(no_warning, main="No stability loss (const eval)")
@@ -76,23 +80,23 @@ plt_data <- function(warning, no_warning){
 }
 
 ## Plot data for a single input set  
-plot_kendalls <- function(warning){
+plot_kendalls <- function(X){
 	par(mfrow=c(3,1))
-	plot(warning)
+	plot(X)
 #	plot(R(time(X), pars), col="red")
 
-	if(is(warning, "ts")){
-		plot(window_var(warning), type="l", main="Variance", xlab="Time")
-		show_stats(warning, window_var)
+	if(is(X, "ts")){
+		plot(window_var(X), type="l", main="Variance", xlab="Time")
+		show_stats(X, window_var)
 
-		plot(window_autocorr(warning), type="l", main="Autocorrelation", xlab="Time")
-		show_stats(warning, window_autocorr)
+		plot(window_autocorr(X), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(X, window_autocorr)
 	} else {
-		plot(window_var(warning[,2]), type="l", main="Variance", xlab="Time")
-		show_stats(warning, window_var)
+		plot(window_var(X[,2]), type="l", main="Variance", xlab="Time")
+		show_stats(X, window_var)
 
-		plot(window_autocorr(warning[,2]), type="l", main="Autocorrelation", xlab="Time")
-		show_stats(warning, window_autocorr)
+		plot(window_autocorr(X[,2]), type="l", main="Autocorrelation", xlab="Time")
+		show_stats(X, window_autocorr)
 	} 
 }
 
@@ -158,6 +162,7 @@ plot.tau_dist_montecarlo <- function(out, show_sample=FALSE){
 	}
 }
 
+## Wrapper to plot_data, simulates a sample from each model
 plot_sample <- function(const,timedep){
 		## Creates some simulated data from these estimates and show example performance
 		no_warning <- simulate(const)
