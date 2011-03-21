@@ -119,7 +119,7 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 		if(signal=="Variance"){  out <- warning_stats(Z, window_var)
 		} else if (signal=="Autocorrelation") { out <- warning_stats(Z, window_autocorr) 
 		} else if (signal =="Skew") { out <- warning_stats(Z, window_skew)
-		} else if (sginal =="Kurtosis") { out <- warning_stats(Z, window_kurtosi)
+		} else if (signal =="Kurtosis") { out <- warning_stats(Z, window_kurtosi)
 		} else { message("signal type not recognized")  }
 		out
 	})
