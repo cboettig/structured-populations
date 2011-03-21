@@ -97,11 +97,13 @@ plot_kendalls <- function(warning){
 }
 
 
-tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation"), nboot=200, cpu=2){
+tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2){
 	print( llik_warning_fit <- 2*(loglik(timedep)-loglik(const)) )
 
 	observed_acor <- warning_stats(X, window_autocorr)
 	observed_var <- warning_stats(X, window_var)
+	observed_skew <- warning_stats(X, window_skew)
+	observed_kurtosis <- warning_stats(X, window_kurtosi)
 
 	if(cpu>1 & !sfIsRunning()){ 	
 		sfInit(parallel=TRUE, cpu=cpu)
@@ -116,6 +118,8 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 		Z <- simulate(timedep)
 		if(signal=="Variance"){  out <- warning_stats(Z, window_var)
 		} else if (signal=="Autocorrelation") { out <- warning_stats(Z, window_autocorr) 
+		} else if (signal =="Skew") { out <- warning_stats(Z, window_skew)
+		} else if (sginal =="Kurtosis") { out <- warning_stats(Z, window_kurtosi)
 		} else { message("signal type not recognized")  }
 		out
 	})
@@ -123,7 +127,10 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
 		if(signal=="Variance"){  out <- warning_stats(Y, window_var)
-		} else if (signal=="Autocorrelation") { out <- warning_stats(Y, window_autocorr) 
+		} else if (signal=="Autocorrelation") { out <- warning_stats(Y, window_autocorr)
+		} else if (signal =="Skew") { out <- warning_stats(Y, window_skew)
+		} else if (sginal =="Kurtosis") { out <- warning_stats(Y, window_kurtosi)
+
 		} else { message("signal type not recognized")  }
 		out
 	})
@@ -145,6 +152,8 @@ plot.tau_dist_montecarlo <- function(out, show_sample=FALSE){
 		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
 		if(out$signal == "Variance") observed_tau <- out$observed_var
 		if(out$signal == "Autocorrelation") observed_tau <- out$observed_acor
+		if(out$signal == "Skew") observed_tau <- out$observed_skew
+		if(out$signal == "Kurtosis") observed_tau <- out$observed_kurtosis
 		abline(v=observed_tau[1], lty=2, lwd=3, col="darkred")
 	}
 }

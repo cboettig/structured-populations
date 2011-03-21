@@ -1,5 +1,5 @@
 #indicator_vs_likelihood.R
-nboot <- 160
+nboot <- 16
 cpu <- 16
 require(socialR)
 require(warningsignals)
@@ -7,7 +7,7 @@ gitcommit()
 
 
 ########################### Begin actual analysis ######################## 
-pars <- c(Ro=5.0, m= -.05, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.04, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
 X <- simulateGauss(timedep_LTC, pars, N=50, T=100, Xo=100)
@@ -28,9 +28,13 @@ timedep <-updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 # Tau approach comparison
 tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
 tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
+tau_skew <- tau_dist_montecarlo(X, const, timedep, signal="Skew", nboot=nboot, cpu=cpu)
+tau_kurtosis <- tau_dist_montecarlo(X, const, timedep, signal="Kurtosis", nboot=nboot, cpu=cpu)
 
 social_plot(plot(tau_var), file="taudist_var.png", tags="warningsignals stochpop tau var", comment=comment)
 social_plot(plot(tau_acor), file="taudist_acor.png", tags="warningsignals stochpop tau acor", comment=comment)
+social_plot(plot(tau_skew), file="taudist_var.png", tags="warningsignals stochpop tau skew", comment=comment)
+social_plot(plot(tau_kurtosis), file="taudist_acor.png", tags="warningsignals stochpop tau kurtosis", comment=comment)
 
 
 ## MONTECARLO Non-parametric bootstrap using the exact values.  
