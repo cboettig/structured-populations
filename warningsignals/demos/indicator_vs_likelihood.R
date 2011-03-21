@@ -1,5 +1,5 @@
 #indicator_vs_likelihood.R
-nboot <- 160
+nboot <- 800
 cpu <- 16
 require(socialR)
 require(warningsignals)
@@ -7,7 +7,7 @@ gitcommit()
 
 
 ########################### Begin actual analysis ######################## 
-pars <- c(Ro=5.0, m= -.05, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
 X <- simulateGauss(timedep_LSN, pars, N=50, T=100, Xo=100)
