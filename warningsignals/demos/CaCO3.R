@@ -10,6 +10,7 @@ pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), sigma=as.numeric(
 timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
 
 ## Fit the linearized saddle-node bifurcation model
+
 #const <- updateGauss(const_LSN, const_pars, X, control=list(maxit=1000))
 #pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
 #timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
