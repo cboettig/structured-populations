@@ -83,7 +83,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=0, ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=-4, ypos=2, ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -104,7 +104,9 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	time_window <- time(X)[windowsize:length(X)]
 	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, lwd=2, ...)
 	abline(v=time_window[1], lty="dashed")
+
 	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
 		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
@@ -113,6 +115,12 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 }
 	
+
+compute_tau <- function(X, indicator, windowsize){
+Y <- compute_indicator(X, indicator, windowsize)
+	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+	c(out$estimate, out$p.value)
+}
 
 ## a quick labling function
 xshift <- function(xsteps){
@@ -151,4 +159,27 @@ warning_stats <- function(X, indicator){
 }
 
 
+
+
+## Plot all the leading indicators in a single frame plot
+all_indicators <- function(X){
+## mgp is margin of title, axis label, axis line.  3,1,0 is default
+	par(cex.lab=1.7, lwd=2, mgp=c(2,.4,0) )
+
+#	par(mfrow=c(5,1))
+## postitions of the plots 1, 2, 3, 4, 5 in a matrix layout
+	mat <-	rbind(c(1),c(2), c(3), c(4), c(5) )
+	layout(mat, height = c(1.4,1,1,1,1.45))
+
+## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
+	par( mar=c(0,6,4,2) ) ## top margin
+	plot(X, type="o", xaxt="n", ylab="data")
+	par( mar=c(0,6,0,2) ) ## no top or bottom margin
+	plot_indicator(X, "Variance", xaxt="n")
+	plot_indicator(X, "Autocor", xaxt="n")
+	plot_indicator(X, "Skew", xaxt="n")
+	# plot_indicator(X, "CV")
+	par( mar=c(5,6,0,2) ) ## restore bottom margin
+	plot_indicator(X, "Kurtosis")
+}
 
