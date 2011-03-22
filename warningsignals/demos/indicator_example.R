@@ -1,7 +1,6 @@
 # indicator_example.R
 # Run with a selected set of data from indicator_vs_likelihood.R simulation
-load("5550742684.Rdat")
-
+load("5550815238.Rdat")
 
 nboot <- 80
 cpu <- 16
