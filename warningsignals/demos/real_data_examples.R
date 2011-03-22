@@ -1,6 +1,9 @@
 source("load_CaCO3.R")
 social_plot(all_indicators(X), tags=tags, file="CaCO3.png")
 
+
+
+
 source("load_deut.R")
 ## Glaciation I, processed
 social_plot(all_indicators(data[[1]]$X_ts), tags=tags, file="DeutI.png")
