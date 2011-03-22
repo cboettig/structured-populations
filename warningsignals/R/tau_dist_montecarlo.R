@@ -12,11 +12,13 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
 	ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
-	plot(nd, main=paste("Kendall's Tau in ", indicator), lwd=1, col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim)
-#	polygon(nd$x, nd$y, col=rgb(0,0,1,.5), border=rgb(0,0,1,.5))
-#	polygon(td$x, td$y, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5))
-	polygon(nd$x, nd$y, col=rgb(0,0,1,.5), col='blue', density=16, lwd=1, border=NA)
-	polygon(td$x, td$y, col=rgb(1,0,0,.5),col='red', density=16, lwd=1, border=NA)
+	plot(nd, main=paste("Kendall's Tau in ", indicator), type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim)
+	polygon(nd$x, nd$y, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
+	polygon(td$x, td$y, col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
+#	polygon(nd$x, nd$y, col='blue', density=8, lwd=2, border=NA)
+#	polygon(td$x, td$y, col='pink', density=8, lwd=2, border=NA, angle=-45)
+#	lines(nd, lwd=2) #, col="lightblue")
+#	lines(td, lwd=2) #, col="pink")
 
 
 
