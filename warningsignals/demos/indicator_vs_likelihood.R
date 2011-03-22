@@ -9,15 +9,18 @@ gitcommit()
 ########################### Begin actual analysis ######################## 
 pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
+
+
 ## Some initial data: Simulate some sample data under slow linear change 
-X <- simulateGauss(timedep_LTC, pars, N=100, T=200, Xo=100)
+## Mileage may vary, this may come out looking like a clear case, it may not
+X <- simulateGauss(timedep_LTC, pars, N=100, T=10, Xo=100)
 
 T <- max(time(X))
 N <- length(X)
 Xo <- X@.Data[1]
 sampling <- c(T=T, N=N, Xo=Xo)
 
-comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling, "nboot:", nboot), collapse=" ")
+comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling, "nboot:", nboot, " Transcritical"), collapse=" ")
 
 
 # initialize and fit models (could just use updateGauss instead of generic
