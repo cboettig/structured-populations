@@ -12,9 +12,7 @@ const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
 X <- simulateGauss(timedep_LSN, pars, N=500, T=99, Xo=100)
 
-
 ## traditional stats on this
-
 all_indicators(X)
 
 
