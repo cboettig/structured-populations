@@ -2,7 +2,7 @@
 # Run with a selected set of data from indicator_vs_likelihood.R simulation
 load("5550815238.Rdat")
 
-nboot <- 800
+nboot <- 2000
 cpu <- 16
 require(socialR)
 require(warningsignals)
