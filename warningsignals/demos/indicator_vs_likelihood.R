@@ -10,7 +10,7 @@ gitcommit()
 pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
-X <- simulateGauss(timedep_LSN, pars, N=50, T=100, Xo=100)
+X <- simulateGauss(timedep_LSN, pars, N=100, T=100, Xo=100)
 
 T <- max(time(X))
 N <- length(X)
