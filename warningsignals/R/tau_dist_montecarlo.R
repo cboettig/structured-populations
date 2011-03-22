@@ -25,6 +25,8 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
 tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2){
 	print( llik_warning_fit <- 2*(loglik(timedep)-loglik(const)) )
 
+
+# should pass out a generic "observed"
 	observed_acor <- warning_stats(X, window_autocorr)
 	observed_var <- warning_stats(X, window_var)
 	observed_skew <- warning_stats(X, window_skew)
@@ -58,21 +60,46 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 		} else { message("signal type not recognized")  }
 		out
 	})
+## should pass out a generic "observed"
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
 		signal=signal, X=X, llik_warning_fit=llik_warning_fit,
-		const=const, timedep=timedep, observed_var = observed_var, observed_acor = observed_acor)
+		const=const, timedep=timedep, observed_var = observed_var, observed_acor = observed_acor, observed_skew=observed_skew, observed_kurtosis=observed_kurtosis)
 	class(out) <- "tau_dist_montecarlo"
 	out
 }
 
 plot.tau_dist_montecarlo <- function(out){
 		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
-		if(out$signal == "Variance") observed_tau <- out$observed_var
-		if(out$signal == "Autocorrelation") observed_tau <- out$observed_acor
-		if(out$signal == "Skew") observed_tau <- out$observed_skew
-		if(out$signal == "Kurtosis") observed_tau <- out$observed_kurtosis
+		if(out$signal == "Variance"){
+			observed_tau <- out$observed_var
+		} else if(out$signal == "Autocorrelation"){
+			observed_tau <- out$observed_acor
+		} else if(out$signal == "Skew"){
+			observed_tau <- out$observed_skew
+		} else if(out$signal == "Kurtosis"){
+			observed_tau <- out$observed_kurtosis
+		}
 		abline(v=observed_tau[1], lty=2, lwd=3, col="darkred")
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

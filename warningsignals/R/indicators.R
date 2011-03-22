@@ -83,7 +83,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=0, ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=-4, ypos=2, ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -104,7 +104,9 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	time_window <- time(X)[windowsize:length(X)]
 	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, lwd=2, ...)
 	abline(v=time_window[1], lty="dashed")
+
 	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
 		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
@@ -113,6 +115,12 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 }
 	
+
+compute_tau <- function(X, indicator, windowsize){
+Y <- compute_indicator(X, indicator, windowsize)
+	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+	c(out$estimate, out$p.value)
+}
 
 ## a quick labling function
 xshift <- function(xsteps){
