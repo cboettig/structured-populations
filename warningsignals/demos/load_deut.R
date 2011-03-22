@@ -32,14 +32,12 @@ for(i in 1:4){
 	X <-avereps(X, ID=X[,1])
 	data[[i]] <- X
 }
-save(list=ls(), file="deut_data.Rdat")
-for(i in 1:4){
-	data[[i]] <- dakos_data_processing(data[[i]])
-	social_plot(plot(data[[i]]), tags=paste(tags, "glaciation", i), file="deutdata.png")
-}
 
 for(i in 1:4){
-	social_plot(plot_kendalls(data[[i]]$X_ts), tag=tags)
+	data[[i]] <- dakos_data_processing(data[[i]])
+#	social_plot(plot(data[[i]]), tags=paste(tags, "glaciation", i), file="deutdata.png")
 }
+
+#for(i in 1:4) social_plot(plot_kendalls(data[[i]]$X_ts), tag=tags)
 
 save(list=ls(), file="deut_data.Rdat")
