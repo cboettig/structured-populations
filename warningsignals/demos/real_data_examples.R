@@ -12,9 +12,8 @@ social_plot(all_indicators(data[[3]]$X_ts), tags=tags, file="DeutIII.png")
 social_plot(all_indicators(data[[4]]$X_ts), tags=tags, file="DeutIV.png")
 
 
-source("load_deut.R")
 ## Glaciation I, unprocessed
-social_plot(all_indicators(data[[1]]$raw_ts), tags=tags)
+social_plot(all_indicators(data[[1]]$raw_ts), tags=paste(tags, "deut1", "raw"), file="DeutI_raw.png")
 ## Glaciation II, unprocessed
 social_plot(all_indicators(data[[2]]$raw_ts), tags=tags)
 ## Glaciation III, unprocessed
