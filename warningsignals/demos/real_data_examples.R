@@ -15,11 +15,12 @@ social_plot(all_indicators(data[[4]]$X_ts), tags=tags, file="DeutIV.png")
 ## Glaciation I, unprocessed
 social_plot(all_indicators(data[[1]]$raw_ts), tags=paste(tags, "deut1", "raw"), file="DeutI_raw.png")
 ## Glaciation II, unprocessed
-social_plot(all_indicators(data[[2]]$raw_ts), tags=tags)
+social_plot(all_indicators(data[[2]]$raw_ts), tags=paste(tags, "deut2", "raw"), file="DeutII_raw.png")
 ## Glaciation III, unprocessed
-social_plot(all_indicators(data[[3]]$raw_ts), tags=tags)
+social_plot(all_indicators(data[[3]]$raw_ts), tags=paste(tags, "deut3", "raw"), file="DeutIII_raw.png")
 ## Glaciation IV, unprocessed
-social_plot(all_indicators(data[[4]]$raw_ts), tags=tags)
+social_plot(all_indicators(data[[4]]$raw_ts), tags=paste(tags, "deut4", "raw"), file="DeutIV_raw.png")
+
 
 
 
