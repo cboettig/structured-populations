@@ -10,7 +10,7 @@ gitcommit()
 pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 ## Some initial data: Simulate some sample data under slow linear change 
-X <- simulateGauss(timedep_LTC, pars, N=100, T=500, Xo=100)
+X <- simulateGauss(timedep_LTC, pars, N=100, T=200, Xo=100)
 
 T <- max(time(X))
 N <- length(X)
@@ -21,7 +21,6 @@ comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling,
 
 
 # initialize and fit models (could just use updateGauss instead of generic
-#const <- updateGauss(const_LTC, const_pars, X, control=list(maxit=1000))  
 const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))  
 timedep <-updateGauss(timedep_LTC, pars, X, control=list(maxit=1000)) 
 
