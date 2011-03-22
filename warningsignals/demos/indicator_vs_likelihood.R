@@ -7,21 +7,46 @@ gitcommit()
 
 
 ########################### Begin actual analysis ######################## 
-pars <- c(Ro=5.0, m= -.049, theta=100, sigma=1)
+pars <- c(Ro=5.0, m= -.05, theta=100, sigma=1)
 const_pars <- c(Ro=5.0, theta=100, sigma=1)
 
 
 ## Some initial data: Simulate some sample data under slow linear change 
-## Mileage may vary, this may come out looking like a clear case, it may not
-X <- simulateGauss(timedep_LTC, pars, N=100, T=100, Xo=100)
+X <- simulateGauss(timedep_LSN, pars, N=100, T=99, Xo=100)
 
+## traditional stats on this
+
+leading_indicators <- function(X){
+## mgp is margin of title, axis label, axis line.  3,1,0 is default
+	par(cex.lab=1.7, lwd=2, mgp=c(2,.4,0) )
+
+#	par(mfrow=c(5,1))
+## postitions of the plots 1, 2, 3, 4, 5 in a matrix layout
+	mat <-	rbind(c(1),c(2), c(3), c(4), c(5) )
+	layout(mat, height = c(1.4,1,1,1,1.45))
+
+## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
+	par( mar=c(0,6,4,2) ) ## top margin
+	plot(X, type="o", xaxt="n", ylab="data")
+	par( mar=c(0,6,0,2) ) ## no top or bottom margin
+	plot_indicator(X, "Variance", xaxt="n")
+	plot_indicator(X, "Autocor", xaxt="n")
+	plot_indicator(X, "Skew", xaxt="n")
+	par( mar=c(5,6,0,2) ) ## restore bottom margin
+	plot_indicator(X, "Kurtosis")
+}
+leading_indicators(X)
+#plot_indicator(X, "CV")
+
+
+
+## grab some info for reporting
 T <- max(time(X))
 N <- length(X)
 Xo <- X@.Data[1]
 sampling <- c(T=T, N=N, Xo=Xo)
 
 comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling, "nboot:", nboot, " Transcritical"), collapse=" ")
-
 
 # initialize and fit models (could just use updateGauss instead of generic
 const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))  

@@ -15,6 +15,14 @@ window_var <- function(X, windowsize=length(X)/2){
 	})
 }
 
+window_cv <- function(X, windowsize=length(X)/2){
+	sapply(0:(length(X)-windowsize), function(i){
+			var(X[(i+1):(i+windowsize)]) / mean(X[(i+1):(i+windowsize)]) 
+		})
+}
+
+
+
 
 window_mean <- function(X, windowsize=length(X)/2){
 	sapply(0:(length(X)-windowsize), function(i){
@@ -54,23 +62,93 @@ window_ar.ols <- function(X, windowsize=length(X)/2, demean=FALSE){
 }
 
 
+## Wrapper function to choose warning signal
+compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=round(length(X)/2)){
+	indicator = match.arg(indicator)
+	if(indicator == "Autocorrelation"){
+		out <- window_autocorr(X, windowsize)
+	} else if(indicator == "Variance"){ 
+		out <- window_var(X, windowsize)
+	} else if(indicator == "Skew"){
+		out <- window_skew(X, windowsize)
+	} else if(indicator == "Kurtosis"){
+		out <- window_kurtosi(X, windowsize)
+	} else if(indicator == "CV"){
+		out <- window_cv(X, windowsize)
+	} else { warning(paste("Indicator", indicator, "not recognized")) 
+	}
+	out
+}
+
+
+
+## Compute and plot the given indicator
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=0, ...)
+## Description
+## Args:
+##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
+##		indicator -- name of the early warning indicator to be computed
+##		windowsize -- size of the sliding window over which statistic is calculated
+##		xpos, ypos -- % position from bottom left for text to appear
+##		... -- extra arguments passed to plot
+## Returns:
+##		A plot of indicator statistic over time interval, with kendall's tau and p-val
+{	
+	if(!is.ts(X)){
+		n <- length(X[,1])
+		start <- X[1,1]
+		end <- X[1,n]
+		X <- ts(X[,2], start=start, end=end, freq=(end-start)/n)
+	}
+	Y <- compute_indicator(X, indicator, windowsize)
+	time_window <- time(X)[windowsize:length(X)]
+	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, lwd=2, ...)
+	abline(v=time_window[1], lty="dashed")
+	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+	w <- c(out$estimate, out$p.value)
+	text(xshift(xpos), yshift(ypos), 
+		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=1.5
+		)
+
+}
+	
+
+## a quick labling function
+xshift <- function(xsteps){
+	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
+	par()$xaxp[1]+xsteps*deltax
+}
+yshift <- function(ysteps){
+	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
+	par()$yaxp[1]+ysteps*deltay
+}
+show_stats <- function(X, indicator, xpos=20, ypos=0){
+		w <- warning_stats(X, indicator)
+	text(xshift(xpos), yshift(ypos), 
+		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+			list(val=round(w[1],2),pval=format.pval(w[2]))
+		 )
+	)
+}
+
+
+
+
+
+
 warning_stats <- function(X, indicator){
 	if(is(X,"ts")){
 		w <- length(X)/2
 		end <- length(X)
-#		out <- Kendall(time(X)[w:end], indicator(X))
 		out <- cor.test(time(X)[w:end], indicator(X), method="kendall")
 	} else {
 		w <- length(X[,1])/2
 		end <- length(X[,1])
-#		out <- Kendall(X[w:end,1], indicator(X[,2]))
 		out <- cor.test(X[w:end,1], indicator(X[,2]), method="kendall")
 	}
-#	p <- as.numeric(out$sl)
-#	c(as.numeric(out$tau), p)
 	c(out$estimate, out$p.value)
 }
-
 
 
 
