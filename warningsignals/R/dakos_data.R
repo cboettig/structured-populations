@@ -14,9 +14,10 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL, bw=
 ## Returns:
 ##    X_ts -- a timeseries object that has been detrended
 ##		Z  -- the detrended data as a matrix 
-##		Y -- the interpolated data
-##		X -- the original data with replicates averaged out
+##		Y -- the interpolated data matrix
+##		X -- the original data with replicates averaged out (matrix)
 ##		smooth -- the smoothed "trend" that has been removed
+##		raw_ts -- X data rendered as a timeseries object
 
 ## Also annoying that there are replicate values, luckily a quick averaging call will remove them. 
 	X <-avereps(X, ID=X[,1])
@@ -35,7 +36,11 @@ dakos_data_processing <- function(X, detrend=TRUE, interpolate=TRUE, n=NULL, bw=
 ## Transform into a timeseries
 	start<-Z$x[1]; end<-Z$x[length(Z$x)]
 	X_ts <- ts(Z$y, start=start, end=end, frequency=length(Z$y)/(end-start))
-	out <- list(X_ts=X_ts, Z=Z, Y=Y, X=X, smooth=smooth)
+## make an unprocessed timeseries
+	start<-X[1,1]; end<-X[length(X[,1]),1]
+	raw_ts <- ts(X[,2], start=start, end=end, frequency=length(X[,2])/(end-start))
+
+	out <- list(X_ts=X_ts, Z=Z, Y=Y, X=X, smooth=smooth, raw_ts= raw_ts)
 	class(out) <- "dakos"
 	out
 }

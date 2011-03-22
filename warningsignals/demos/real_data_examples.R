@@ -1,8 +1,24 @@
 
 source("load_CaCO3.R")
-all_indicators(X)
+social_plot(all_indicators(X), tags=tags)
 
 source("load_deut.R")
+## Glaciation I, processed
+social_plot(all_indicators(data[[1]]$X_ts), tags=tags)
+## Glaciation II, processed
+social_plot(all_indicators(data[[2]]$X_ts), tags=tags)
 ## Glaciation III, processed
-X <- data[[3]]$X_ts
-all_indciators(X)
+social_plot(all_indicators(data[[3]]$X_ts), tags=tags)
+## Glaciation IV, processed
+social_plot(all_indicators(data[[4]]$X_ts), tags=tags)
+
+## Glaciation I, unprocessed
+social_plot(all_indicators(data[[1]]$X), tags=tags)
+## Glaciation II, unprocessed
+social_plot(all_indicators(data[[2]]$X), tags=tags)
+## Glaciation III, unprocessed
+social_plot(all_indicators(data[[3]]$X), tags=tags)
+## Glaciation IV, unprocessed
+social_plot(all_indicators(data[[4]]$X), tags=tags)
+
+
