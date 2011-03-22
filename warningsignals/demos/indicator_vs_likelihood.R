@@ -13,7 +13,7 @@ const_pars <- c(Ro=5.0, theta=100, sigma=1)
 
 ## Some initial data: Simulate some sample data under slow linear change 
 ## Mileage may vary, this may come out looking like a clear case, it may not
-X <- simulateGauss(timedep_LTC, pars, N=100, T=10, Xo=100)
+X <- simulateGauss(timedep_LTC, pars, N=100, T=100, Xo=100)
 
 T <- max(time(X))
 N <- length(X)
