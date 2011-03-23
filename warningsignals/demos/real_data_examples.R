@@ -31,32 +31,44 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 
 
 
+
+
 ## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
 ## This set is the top plot for each dataset, 
 ## this has a top but no bottom margin
-	par( mar=c(0,6,4,2), xaxt="n") ## top margin
+
 	for(i in 1:n){
+		if(i == 1){	
+			par( mar=c(0,5,4,0), xaxt="n") ## top margin L margin
+		}else if(i == n){ 
+			par( mar=c(0,0,4,2), xaxt="n") ## top margin R margin
+		} else {
+			par( mar=c(0,0,4,0), xaxt="n") ## top margin, no L/R margin
+		}
 		plot(X[[i]], type="o", ylab="data")
 	}
 ## Starts onnext row, and goes across datasets
 	for(j in 1:m){
-		## Indicators as middle plots, have neither top nor bottom margin
-		par( mar=c(0,6,0,2), xaxt="n") ## no top or bottom margin
-
-		if(j == m){
-			par( mar=c(5,6,0,2) ) ## restore bottom margin for last plots
+		if(j == m){ 
+			bottom <- 5
+		} else { bottom <- 0
 		}
 		for(i in 1:n){
+			if(i == 1){	
+				par( mar=c(bottom,5,0,0), xaxt="n") ##  L margin
+			}else if(i == n){ 
+				par( mar=c(bottom,0,0,2), xaxt="n") ##  R margin
+			} else {
+				par( mar=c(bottom,0,0,0), xaxt="n") 
+			}
 			plot_indicator(X[[i]], indicators[j])
 		}
 	}
-
 }
 
-
-
 source("load_CaCO3.R")
-all_indicators(X)
+Y <- data.frame(X,X,X)
+all_indicators(Y)
 
 social_plot(all_indicators(X), tags=tags, file="CaCO3.png")
 
