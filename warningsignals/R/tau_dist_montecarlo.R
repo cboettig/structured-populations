@@ -57,7 +57,7 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 ## Distribution of Taus simulating from const model
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
-		compute_tau(Z, signal, windowsize)
+		compute_tau(Y, signal, windowsize)
 	})
 
 ## should pass out a generic "observed"
