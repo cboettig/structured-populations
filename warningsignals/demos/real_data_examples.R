@@ -21,48 +21,43 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 ## mgp is margin of title, axis label, axis line.  3,1,0 is default
 #	par(cex.lab=1.7, lwd=2, mgp=c(2,.4,0) )
 
+
+	## For the moment, let's use the simple plot
 	par(mfrow=c(m+1,n))
 
 ## postitions of the plots 1, 2, 3, 4, 5 in a matrix layout
 #	mat <-	rbind(c(1),c(2), c(3), c(4), c(5) )
 #	layout(mat, height = c(1.4,1,1,1,1.45))
 
+
+
 ## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
+## This set is the top plot for each dataset, 
+## this has a top but no bottom margin
 	par( mar=c(0,6,4,2), xaxt="n") ## top margin
 	for(i in 1:n){
 		plot(X[[i]], type="o", ylab="data")
 	}
-
+## Starts onnext row, and goes across datasets
 	for(j in 1:m){
-		plot_indicator(X[[i]], indicator[j])
-	}
-
-	if(m > 1){
+		## Indicators as middle plots, have neither top nor bottom margin
 		par( mar=c(0,6,0,2), xaxt="n") ## no top or bottom margin
+
+		if(j == m){
+			par( mar=c(5,6,0,2) ) ## restore bottom margin for last plots
+		}
+		for(i in 1:n){
+			plot_indicator(X[[i]], indicators[j])
+		}
 	}
 
-
-	plot_indicator(X, "Variance", xaxt="n")
-	plot_indicator(X, "Autocor", xaxt="n")
-	plot_indicator(X, "Skew", xaxt="n")
-	# plot_indicator(X, "CV")
-	par( mar=c(5,6,0,2) ) ## restore bottom margin
-	plot_indicator(X, "Kurtosis")
 }
 
 
 
-
-
-
-
-
-
-
-
-
-
 source("load_CaCO3.R")
+all_indicators(X)
+
 social_plot(all_indicators(X), tags=tags, file="CaCO3.png")
 
 source("load_deut.R")
