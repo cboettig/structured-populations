@@ -117,7 +117,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 }
 	
-compute_tau <- function(X, indicator, windowsize)
+compute_tau <- function(X, indicator, windowsize=length(X)/2)
 ## unlike warning_stats, takes indicator as character instead of a function
 ## assumes X is ts object -- should add to a check(?)
 {
