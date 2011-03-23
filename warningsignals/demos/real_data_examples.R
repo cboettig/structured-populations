@@ -18,50 +18,26 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 	}
 	m <- length(indicators)
 
+## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
 ## mgp is margin of title, axis label, axis line.  3,1,0 is default
-#	par(cex.lab=1.7, lwd=2, mgp=c(2,.4,0) )
+## For the moment, let's use the simple plot
+	par(mfrow=c(m+1,n), oma=c(4,4,4,4), mar=c(0,0,0,0))
 
-
-	## For the moment, let's use the simple plot
-	par(mfrow=c(m+1,n))
-
-## postitions of the plots 1, 2, 3, 4, 5 in a matrix layout
+## postitions of the plots 1, 2, 3, 4, 5 in a matrix layout, only needed if not 
+## all plots get the same size areas (some plots get two regions, etc)
 #	mat <-	rbind(c(1),c(2), c(3), c(4), c(5) )
 #	layout(mat, height = c(1.4,1,1,1,1.45))
 
-
-
-
-
-## mar is margins, in order bottom, left, top, right.  default is 5,4,4,2
-## This set is the top plot for each dataset, 
-## this has a top but no bottom margin
-
 	for(i in 1:n){
-		if(i == 1){	
-			par( mar=c(0,5,4,0), xaxt="n") ## top margin L margin
-		}else if(i == n){ 
-			par( mar=c(0,0,4,2), xaxt="n") ## top margin R margin
-		} else {
-			par( mar=c(0,0,4,0), xaxt="n") ## top margin, no L/R margin
-		}
 		plot(X[[i]], type="o", ylab="data")
 	}
-## Starts onnext row, and goes across datasets
+## Starts on next row, and goes across datasets
 	for(j in 1:m){
-		if(j == m){ 
-			bottom <- 5
-		} else { bottom <- 0
+		if(j == m){ xaxt <- "s"
+		} else {	xaxt <- "n"
 		}
 		for(i in 1:n){
-			if(i == 1){	
-				par( mar=c(bottom,5,0,0), xaxt="n") ##  L margin
-			}else if(i == n){ 
-				par( mar=c(bottom,0,0,2), xaxt="n") ##  R margin
-			} else {
-				par( mar=c(bottom,0,0,0), xaxt="n") 
-			}
-			plot_indicator(X[[i]], indicators[j])
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt)
 		}
 	}
 }

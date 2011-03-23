@@ -20,7 +20,7 @@ bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocor
 # Tau approach comparison
 	taus <- lapply(indicators, function(stat){ 	tau_dist_montecarlo(X, const, timedep, signal=stat, nboot=nboot, cpu=cpu) })
 	class(taus) <- "boostrap_tau"
-	
+	taus
 }
 
 
