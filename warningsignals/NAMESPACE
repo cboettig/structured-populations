@@ -19,6 +19,10 @@ export(tau_dist_montecarlo, plot.tau_dist_montecarlo, plot_kendalls, plot_sample
 ## montecarlotest.R
 export(montecarlotest, loglik, getParameters, plot.pow, KL_divergence)
 
+## bootstrap_indicators.R
+export(fit_models, bootstrap_tau, plot.bootstrap_tau) 
+
+
 ## dakos_data.R
 export(dakos_data_processing, plot.dakos)
 #export(heteroOU)
