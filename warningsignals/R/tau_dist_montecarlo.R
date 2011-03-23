@@ -71,7 +71,7 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 ## should combine with plt_tau(?)
 plot.tau_dist_montecarlo <- function(out){
 		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
-		abline(v=observed[1], lty=2, lwd=3, col="darkred")
+		abline(v=out$observed[1], lty=2, lwd=3, col="darkred")
 }
 
 

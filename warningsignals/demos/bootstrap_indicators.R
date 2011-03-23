@@ -26,8 +26,12 @@ bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocor
 
 ## This should really be able to plot the matrix of different models and different stats, with normalizing the height of the plots.
 plot.bootstrap_tau <- function(taus){
-	n <- length(taus)
-	par(mfrow=c(n,1))
-	for(i in 1:n) plot(taus[[i]])
+	if(is(taus[[1]], "tau_dist_montecarlo")){
+		n <- length(taus)
+		par(mfrow=c(n,1))
+		for(i in 1:n){
+			plot(taus[[i]])
+		}
+	}
 }
 
