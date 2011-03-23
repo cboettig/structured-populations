@@ -1,9 +1,6 @@
 source("load_CaCO3.R")
 social_plot(all_indicators(X), tags=tags, file="CaCO3.png")
 
-
-
-
 source("load_deut.R")
 ## Glaciation I, processed
 social_plot(all_indicators(data[[1]]$X_ts), tags=tags, file="DeutI.png")
@@ -26,11 +23,7 @@ social_plot(all_indicators(data[[4]]$raw_ts), tags=paste(tags, "deut4", "raw"), 
 
 
 
-
-
-
-
-##### should be able to pass raw time series as such, but no luck...
+##### should be able to pass raw time series in matrix forms, but no luck...
 ## Glaciation I, unprocessed
 social_plot(all_indicators(data[[1]]$X), tags=tags)
 ## Glaciation II, unprocessed

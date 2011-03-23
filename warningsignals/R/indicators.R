@@ -62,8 +62,10 @@ window_ar.ols <- function(X, windowsize=length(X)/2, demean=FALSE){
 }
 
 
-## Wrapper function to choose warning signal
-compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=round(length(X)/2)){
+compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=round(length(X)/2))
+## Description Wrapper function to choose warning signal
+## Assumes X is a ts object
+{
 	indicator = match.arg(indicator)
 	if(indicator == "Autocorrelation"){
 		out <- window_autocorr(X, windowsize)
@@ -115,34 +117,14 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 }
 	
-
-compute_tau <- function(X, indicator, windowsize){
-Y <- compute_indicator(X, indicator, windowsize)
+compute_tau <- function(X, indicator, windowsize)
+## unlike warning_stats, takes indicator as character instead of a function
+## assumes X is ts object -- should add to a check(?)
+{
+	Y <- compute_indicator(X, indicator, windowsize)
 	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
 	c(out$estimate, out$p.value)
 }
-
-## a quick labling function
-xshift <- function(xsteps){
-	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
-	par()$xaxp[1]+xsteps*deltax
-}
-yshift <- function(ysteps){
-	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
-	par()$yaxp[1]+ysteps*deltay
-}
-show_stats <- function(X, indicator, xpos=20, ypos=0){
-		w <- warning_stats(X, indicator)
-	text(xshift(xpos), yshift(ypos), 
-		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
-			list(val=round(w[1],2),pval=format.pval(w[2]))
-		 )
-	)
-}
-
-
-
-
 
 
 warning_stats <- function(X, indicator){
@@ -182,4 +164,23 @@ all_indicators <- function(X){
 	par( mar=c(5,6,0,2) ) ## restore bottom margin
 	plot_indicator(X, "Kurtosis")
 }
+
+## a quick labling function
+xshift <- function(xsteps){
+	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
+	par()$xaxp[1]+xsteps*deltax
+}
+yshift <- function(ysteps){
+	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
+	par()$yaxp[1]+ysteps*deltay
+}
+show_stats <- function(X, indicator, xpos=20, ypos=0){
+		w <- warning_stats(X, indicator)
+	text(xshift(xpos), yshift(ypos), 
+		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+			list(val=round(w[1],2),pval=format.pval(w[2]))
+		 )
+	)
+}
+
 

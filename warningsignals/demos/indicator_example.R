@@ -21,7 +21,7 @@ social_plot(bootstrap_indicators(m$X, m$const, m$timedep, nboot=1000), file="boo
 
 
 source("load_CaCO3.R")
-m<-fit_models(X, "LTC")
+m<-fit_models(X, "LSN")
 social_plot(bootstrap_indicators(m$X, m$const, m$timedep, nboot=1000), file="bootstrap_tau.png", height=480*4, tags=paste(tags, "CaCO3", "LTC"))
 
 

@@ -28,64 +28,50 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
 	text(xshift(5), yshift(10), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
 }
 
-tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2){
+
+tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2)
+## Compute Monte Carlo bootstrap of tau under each model
+{
+	## display the simple likelihood comparison between models
+	## be worried if this is very negative, or very large, could
+	## indicate poor convergence
 	print( llik_warning_fit <- 2*(loglik(timedep)-loglik(const)) )
 
+	signal = match.arg(signal)
+	observed <- compute_tau(X, signal) 
 
-# should pass out a generic "observed"
-	observed_acor <- warning_stats(X, window_autocorr)
-	observed_var <- warning_stats(X, window_var)
-	observed_skew <- warning_stats(X, window_skew)
-	observed_kurtosis <- warning_stats(X, window_kurtosi)
-
+	## prepare parallel environment
 	if(cpu>1 & !sfIsRunning()){ 	
 		sfInit(parallel=TRUE, cpu=cpu)
 		sfLibrary(warningsignals)
 		sfExportAll()
-	} else if(cpu<2 & !sfIsRunning()){  sfInit()
-	} else { }
+	} else if(cpu<2 & !sfIsRunning()){
+		sfInit()
+	} 
 
-
-## Look at the distribution of Taus
+## Look at the distribution of Taus when simulating from timedep
 	test_tau_dist <- sfSapply(1:nboot, function(i){
 		Z <- simulate(timedep)
-		if(signal=="Variance"){  out <- warning_stats(Z, window_var)
-		} else if (signal=="Autocorrelation") { out <- warning_stats(Z, window_autocorr) 
-		} else if (signal =="Skew") { out <- warning_stats(Z, window_skew)
-		} else if (signal =="Kurtosis") { out <- warning_stats(Z, window_kurtosi)
-		} else { message("signal type not recognized")  }
-		out
+		compute_tau(Z, signal)
 	})
+## Distribution of Taus simulating from const model
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
-		if(signal=="Variance"){  out <- warning_stats(Y, window_var)
-		} else if (signal=="Autocorrelation") { out <- warning_stats(Y, window_autocorr)
-		} else if (signal =="Skew") { out <- warning_stats(Y, window_skew)
-		} else if (signal =="Kurtosis") { out <- warning_stats(Y, window_kurtosi)
-
-		} else { message("signal type not recognized")  }
-		out
+		compute_tau(Z, signal)
 	})
+
 ## should pass out a generic "observed"
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
 		signal=signal, X=X, llik_warning_fit=llik_warning_fit,
-		const=const, timedep=timedep, observed_var = observed_var, observed_acor = observed_acor, observed_skew=observed_skew, observed_kurtosis=observed_kurtosis)
+		const=const, timedep=timedep, observed = observed)
 	class(out) <- "tau_dist_montecarlo"
 	out
 }
 
+## should combine with plt_tau(?)
 plot.tau_dist_montecarlo <- function(out){
 		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
-		if(out$signal == "Variance"){
-			observed_tau <- out$observed_var
-		} else if(out$signal == "Autocorrelation"){
-			observed_tau <- out$observed_acor
-		} else if(out$signal == "Skew"){
-			observed_tau <- out$observed_skew
-		} else if(out$signal == "Kurtosis"){
-			observed_tau <- out$observed_kurtosis
-		}
-		abline(v=observed_tau[1], lty=2, lwd=3, col="darkred")
+		abline(v=observed[1], lty=2, lwd=3, col="darkred")
 }
 
 

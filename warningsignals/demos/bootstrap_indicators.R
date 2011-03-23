@@ -14,19 +14,16 @@ fit_models <- function(X, method=c("LTC", "LSN")){
 }
 
 
-bootstrap_indicators <- function(X, const, timedep, nboot=160, cpu=16){
+bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=160, cpu=16){
 # Tau approach comparison
-	tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
-	tau_acor <- tau_dist_montecarlo(X, const, timedep, signal="Autocorrelation", nboot=nboot, cpu=cpu)
-	tau_skew <- tau_dist_montecarlo(X, const, timedep, signal="Skew", nboot=nboot, cpu=cpu)
-	tau_kurtosis <- tau_dist_montecarlo(X, const, timedep, signal="Kurtosis", nboot=nboot, cpu=cpu)
-
-	par(mfrow=c(4,1))
-	plot(tau_var)
-	plot(tau_acor)
-	plot(tau_skew)
-	plot(tau_kurtosis)
+	taus <- lapply(indicators, function(stat){ 	tau_dist_montecarlo(X, const, timedep, signal=stat, nboot=nboot, cpu=cpu) })
+	class(taus) <- "boostrap_tau"
+	
 }
 
-
+plot.bootstrap_tau <- function(taus){
+	n <- length(taus)
+	par(mfrow=c(n,1))
+	for(i in 1:n) plot(taus[[i]])
+}
 
