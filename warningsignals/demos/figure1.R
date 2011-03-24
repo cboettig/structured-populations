@@ -11,7 +11,7 @@ load("5555038554.Rdat")
 ## FIGURE 1
 social_plot(
 	all_indicators(list(deteriorating=deteriorating, constant=constant, deuterium=deut3), indicators = c("Variance", "Autocorrelation") ),
-	tags="warningsignals stochpop"
+	tags="warningsignals stochpop", height=3*240, width=3*480
 	)
 
 
