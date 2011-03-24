@@ -24,8 +24,8 @@ deut3_m <- fit_models(deut3, "LSN")
 
 
 ## montecarlo likelihood
-cpu <- 16
-nboot <- 160
+cpu <- 8
+nboot <- 2000
 
 deterior_mc <- 
 		montecarlotest(deterior_m$const, deterior_m$timedep, 
