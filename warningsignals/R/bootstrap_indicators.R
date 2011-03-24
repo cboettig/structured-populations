@@ -32,7 +32,7 @@ plot.bootstrap_tau <- function(taus){
 ## for each dataset and row for each indicator
 	if(is(taus[[1]], "tau_dist_montecarlo")){
 	## treat single dataset as data.frame notation as well
-		taus <- data.frame(taus)
+		taus <- list(taus)
 	}
 	## dimensions
 	n <- length(taus) ## number of datasets
