@@ -28,7 +28,7 @@ save(list=ls(), file="figure2.Rdat")
 
 social_plot(
 	plot.bootstrap_tau(list(CaCO3_taus, deut3_taus)),
-	tags = "warningsingals stochpop"
+	tags = "warningsingals stochpop", height=480*2, width=480*2
 	)
 
 
