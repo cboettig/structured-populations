@@ -1,15 +1,9 @@
+## FIGURE 2
 source("load_CaCO3.R")
 CaCO3 <- X
 source("load_deut.R")
 deut3 <- data[[3]]$X_ts
 
-## FIGURE 1
-social_plot(
-	all_indicators( data.frame(CaCO3, deut3) ),
-	tags="warningsignals stochpop"
-	)
-
-## FIGURE 2
 CaCO3_m <- fit_models(CaCO3, "LSN")
 CaCO3_taus <- bootstrap_tau(CaCO3_m$X, CaCO3_m$const, CaCO3_m$timedep)
 deut3_m <- fit_models(deut3, "LSN")
@@ -21,8 +15,5 @@ social_plot(
 	plot.bootstrap_tau(data.frame(CaCO3_taus, deut3_taus)),
 	tags = "warningsingals stochpop"
 	)
-
-## Figure 3
-
 
 

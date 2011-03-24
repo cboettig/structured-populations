@@ -11,7 +11,7 @@ export(setLSN, setLTC, R, const_R, timedep_LTC, timedep_LSN, const_LTC, const_LS
 
 
 ## indicators.R
-export(window_mean, window_var, window_skew, window_kurtosi, warning_stats, window_autocorr, window_ar.ols, show_stats, compute_indicator, plot_indicator, compute_tau)
+export(window_mean, window_var, window_skew, window_kurtosi, warning_stats, window_autocorr, window_ar.ols, show_stats, compute_indicator, plot_indicator, compute_tau, all_indicators)
 
 ## tau_dist_montecarlo.R
 export(tau_dist_montecarlo, plot.tau_dist_montecarlo, plot_kendalls, plot_sample)
