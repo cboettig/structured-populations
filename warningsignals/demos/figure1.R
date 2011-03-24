@@ -9,7 +9,4 @@ social_plot(
 	tags="warningsignals stochpop"
 	)
 
-## Figure 3
-
-
 
