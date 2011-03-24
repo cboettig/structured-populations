@@ -48,7 +48,7 @@ plot.bootstrap_tau <- function(taus){
 			if(j == m){ xaxt <- "s"
 			} else { xaxt <- "n" }
 
-			plot(taus[[i]][[j]], xaxt = xaxt, cex.lab=1.5)
+			plot(taus[[i]][[j]], xaxt = xaxt, cex.axis=1.5)
 
 			if(j==1) mtext(data_names[i], NORTH<-3, cex=1.3, line=2) ## data labels on top row
 			if(i==1) mtext(taus[[i]][[j]]$signal, WEST<-2, line=4) ## statistic name on first column
