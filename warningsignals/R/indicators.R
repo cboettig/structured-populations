@@ -21,9 +21,6 @@ window_cv <- function(X, windowsize=length(X)/2){
 		})
 }
 
-
-
-
 window_mean <- function(X, windowsize=length(X)/2){
 	sapply(0:(length(X)-windowsize), function(i){
 		mean(X[(i+1):(i+windowsize)]) 
@@ -127,6 +124,59 @@ compute_tau <- function(X, indicator, windowsize=length(X)/2)
 }
 
 
+
+
+all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"))
+## Calc and plot all the leading indicators in a single frame plot
+##		using a simple loop over the plot_indicator fn
+## Args 
+##		X -- can be a data.frame of n ts objects or a single ts object
+##		indicators -- a list of indicators m to calculate
+## Returns:
+##      Plot m+1 x n matrix of plots, showing data across the first row
+##		 and various indicators below.  Columns for different datasets
+{
+	if(is(X, "data.frame")){
+		n <- length(X) # number of datasets
+	} else if (is(X, "ts")){
+		n <- 1 # number of datasets
+		X <- data.frame(X) 
+	} else { 
+		warning("class of X not recognized")
+	}
+	m <- length(indicators) # number of indicators
+
+## mar is inner margins, in order bottom, left, top, right. 
+## oma is outer margins, default to 0 
+	par(mfrow=c(m+1,n), oma=c(4,4,4,4), mar=c(0,0,0,0))
+	for(i in 1:n){
+		plot(X[[i]], type="o", ylab="data")
+	}
+## Starts on next row, and goes across datasets
+	for(j in 1:m){
+		if(j == m){ xaxt <- "s"
+		} else {	xaxt <- "n"
+		}
+		for(i in 1:n){
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt)
+		}
+	}
+}
+
+
+
+## a quick labling function
+xshift <- function(xsteps){
+	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
+	par()$xaxp[1]+xsteps*deltax
+}
+yshift <- function(ysteps){
+	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
+	par()$yaxp[1]+ysteps*deltay
+}
+
+################ DEPRICATED?? ##############
+
 warning_stats <- function(X, indicator){
 	if(is(X,"ts")){
 		w <- length(X)/2
@@ -140,19 +190,6 @@ warning_stats <- function(X, indicator){
 	c(out$estimate, out$p.value)
 }
 
-
-
-
-
-## a quick labling function
-xshift <- function(xsteps){
-	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
-	par()$xaxp[1]+xsteps*deltax
-}
-yshift <- function(ysteps){
-	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
-	par()$yaxp[1]+ysteps*deltay
-}
 show_stats <- function(X, indicator, xpos=20, ypos=0){
 		w <- warning_stats(X, indicator)
 	text(xshift(xpos), yshift(ypos), 
