@@ -23,7 +23,7 @@ deut3_taus <- bootstrap_tau(deut3_m$X, deut3_m$const, deut3_m$timedep, indicator
 save(list=ls(), file="figure2.Rdat")
 
 social_plot(
-	plot.bootstrap_tau(data.frame(CaCO3_taus, deut3_taus)),
+	plot.bootstrap_tau(list(CaCO3_taus, deut3_taus)),
 	tags = "warningsingals stochpop"
 	)
 
