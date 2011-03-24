@@ -130,17 +130,17 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 ## Calc and plot all the leading indicators in a single frame plot
 ##		using a simple loop over the plot_indicator fn
 ## Args 
-##		X -- can be a data.frame of n ts objects or a single ts object
+##		X -- can be a list of n ts objects or a single ts object
 ##		indicators -- a list of indicators m to calculate
 ## Returns:
 ##      Plot m+1 x n matrix of plots, showing data across the first row
 ##		 and various indicators below.  Columns for different datasets
 {
-	if(is(X, "data.frame")){
+	if(is(X, "list")){
 		n <- length(X) # number of datasets
 	} else if (is(X, "ts")){
 		n <- 1 # number of datasets
-		X <- data.frame(X) 
+		X <- list(X) 
 	} else { 
 		warning("class of X not recognized")
 	}

@@ -5,7 +5,7 @@ deut3 <- data[[3]]$X_ts
 
 ## FIGURE 1
 social_plot(
-	all_indicators( data.frame(CaCO3, deut3) ),
+	all_indicators( list(CaCO3, deut3), indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis") ),
 	tags="warningsignals stochpop"
 	)
 
