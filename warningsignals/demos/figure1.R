@@ -1,4 +1,7 @@
 require(warningsignals)
+require(socialR)
+gitcommit()
+
 source("load_CaCO3.R")
 CaCO3 <- X
 source("load_deut.R")

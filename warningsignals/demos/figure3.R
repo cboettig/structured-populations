@@ -1,3 +1,10 @@
+## FIGURE 3
+
+## load libraries
+require(warningsignals)
+require(socialR)
+gitcommit()
+
 ## load datafiles
 source("load_CaCO3.R")
 CaCO3 <- X

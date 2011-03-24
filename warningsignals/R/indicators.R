@@ -138,6 +138,7 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 {
 	if(is(X, "list")){
 		n <- length(X) # number of datasets
+		data_names <- names(X) 
 	} else if (is(X, "ts")){
 		n <- 1 # number of datasets
 		X <- list(X) 
@@ -148,9 +149,11 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 
 ## mar is inner margins, in order bottom, left, top, right. 
 ## oma is outer margins, default to 0 
-	par(mfrow=c(m+1,n), oma=c(4,4,4,4), mar=c(0,0,0,0))
+	par(mfrow=c(m+1,n), oma=c(8,8,8,4), mar=c(0,0,0,0))
 	for(i in 1:n){
-		plot(X[[i]], type="o", ylab="data")
+		plot(X[[i]], type="o", ylab="data", xaxt="n")
+		mtext(data_names[i],  NORTH<-3, cex=1.3, line=2) ## data names on each col
+		if(i==1) mtext("data", WEST<-2, line=4)  ## "data" y-axis label
 	}
 ## Starts on next row, and goes across datasets
 	for(j in 1:m){
@@ -158,14 +161,16 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		} else {	xaxt <- "n"
 		}
 		for(i in 1:n){
-			plot_indicator(X[[i]], indicators[j], xaxt=xaxt)
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt) 
+			if(i==1) mtext(indicators[j], WEST<-2, line=4) ## stat name on each row
+			if(j==m) mtext("time", SOUTH<-1, line=4) ## x-axis label
 		}
 	}
 }
 
 
 
-## a quick labling function
+## a quick labling functions, find percent distance along x and y axis, starting at origin
 xshift <- function(xsteps){
 	deltax <- (par()$xaxp[2]-par()$xaxp[1])/100
 	par()$xaxp[1]+xsteps*deltax
@@ -174,6 +179,10 @@ yshift <- function(ysteps){
 	deltay <- (par()$yaxp[2]-par()$yaxp[1])/100
 	par()$yaxp[1]+ysteps*deltay
 }
+
+
+
+
 
 ################ DEPRICATED?? ##############
 

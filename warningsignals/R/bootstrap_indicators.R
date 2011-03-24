@@ -34,18 +34,25 @@ plot.bootstrap_tau <- function(taus){
 	## treat single dataset as data.frame notation as well
 		taus <- list(taus)
 	}
+	data_names <- names(taus)
+
 	## dimensions
 	n <- length(taus) ## number of datasets
 	m <- length(taus[[1]]) ## number of indicators
 
 	## set up m x n plot-matrix, no margins on subplots, add outer margins
-	par(mfrow=c(m,n), oma=c(4,4,4,4), mar=c(0,0,0,0))
+	par(mfrow=c(m,n), oma=c(8,8,8,4), mar=c(0,0,0,0))
 
 	for(j in 1:m){
 		for(i in 1:n){
 			if(j == m){ xaxt <- "s"
 			} else { xaxt <- "n" }
+
 			plot(taus[[i]][[j]], xaxt = xaxt)
+
+			if(j==1) mtext(data_names[i], NORTH<-3, cex=1.3, line=2) ## data labels on top row
+			if(i==1) mtext(tau[[i]][[j]]$signal, WEST<-2, line=4) ## statistic name on first column
+			if(j==m) mtext("time", SOUTH<-1, line=4) ## x-axis label
 		}
 	}
 }

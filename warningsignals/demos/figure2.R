@@ -1,4 +1,8 @@
 ## FIGURE 2
+require(warningsignals)
+require(socialR)
+gitcommit()
+
 
 
 ## load datafiles
