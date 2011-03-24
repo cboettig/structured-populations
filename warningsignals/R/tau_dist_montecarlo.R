@@ -12,7 +12,7 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=F
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
 	if(is.null(ylim)) ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
-	plot(nd, type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim, ...)
+	plot(nd, type="n", main="", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim, ...)
 	polygon(nd$x, nd$y, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
 	polygon(td$x, td$y, col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
 #	polygon(nd$x, nd$y, col='blue', density=8, lwd=2, border=NA)
