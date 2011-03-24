@@ -8,11 +8,11 @@ err_rates <- function(null_dist, test_dist, p=.05){
 	c(null_err=null_err, test_err=test_err)
 }
 
-plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, ...){
+plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=FALSE, ...){
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
 	if(is.null(ylim)) ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
-	plot(nd, main=paste("Kendall's Tau in ", indicator), type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim, ...)
+	plot(nd, type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim, ...)
 	polygon(nd$x, nd$y, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
 	polygon(td$x, td$y, col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
 #	polygon(nd$x, nd$y, col='blue', density=8, lwd=2, border=NA)
@@ -23,9 +23,9 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, ...){
 
 
 	#lines(nd, col="blue", lwd=3)
-	legend("topright", c("test", "null"), pch=15, col=c("red", "blue"))
+	if(legend) legend("topright", c("test", "null"), pch=15, col=c("red", "blue"))
 	text(xshift(5), yshift(5), paste("fraction of test with p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
-	text(xshift(5), yshift(10), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
+	text(xshift(5), yshift(15), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
 }
 
 
