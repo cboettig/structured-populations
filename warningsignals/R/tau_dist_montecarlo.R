@@ -8,7 +8,7 @@ err_rates <- function(null_dist, test_dist, p=.05){
 	c(null_err=null_err, test_err=test_err)
 }
 
-plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=FALSE, ...){
+	plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=FALSE, show_p=TRUE, ...){
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
 	if(is.null(ylim)) ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
@@ -24,8 +24,10 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=F
 
 	#lines(nd, col="blue", lwd=3)
 	if(legend) legend("topright", c("test", "null"), pch=15, col=c("red", "blue"))
-	text(xshift(5), yshift(5), paste("fraction of test with p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
-	text(xshift(5), yshift(15), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
+	if(show_p){
+		text(xshift(0), yshift(5), paste("fraction of test with p <0.05 is ", sum(test_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
+		text(xshift(0), yshift(15), paste("frac of null with p <0.05 is ", sum(null_tau_dist[2,] <.05)/length(null_tau_dist[2,])), pos=4 )
+	}
 }
 
 
@@ -69,8 +71,8 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 }
 
 ## should combine with plt_tau(?)
-plot.tau_dist_montecarlo <- function(out, ...){
-		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal, ...)
+plot.tau_dist_montecarlo <- function(out, show_p=TRUE, ...){
+		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal, show_p=show_p, ...)
 		abline(v=out$observed[1], lty=2, lwd=3, col="darkred")
 }
 

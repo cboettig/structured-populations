@@ -82,7 +82,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=-4, ypos=2, ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=2, ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -109,7 +109,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
 		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
-			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=1.5
+			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=1.5*par()$cex.lab
 		)
 
 }
@@ -126,7 +126,7 @@ compute_tau <- function(X, indicator, windowsize=length(X)/2)
 
 
 
-all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"))
+all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), ...)
 ## Calc and plot all the leading indicators in a single frame plot
 ##		using a simple loop over the plot_indicator fn
 ## Args 
@@ -149,11 +149,11 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 
 ## mar is inner margins, in order bottom, left, top, right. 
 ## oma is outer margins, default to 0 
-	par(mfrow=c(m+1,n), oma=c(8,8,8,4), mar=c(0,0,0,0))
+	par(mfrow=c(m+1,n), oma=c(8,8,8,4), mar=c(0,2,0,2),...)
 	for(i in 1:n){
-		plot(X[[i]], type="o", ylab="data", xaxt="n")
-		mtext(data_names[i],  NORTH<-3, cex=1.3, line=2) ## data names on each col
-		if(i==1) mtext("data", WEST<-2, line=4)  ## "data" y-axis label
+		plot(X[[i]], type="o", ylab="data", xaxt="n", ...)
+		mtext(data_names[i],  NORTH<-3, cex=par()$cex.lab, line=2) ## data names on each col
+		if(i==1) mtext("data", WEST<-2, line=4, cex=par()$cex.lab)  ## "data" y-axis label
 	}
 ## Starts on next row, and goes across datasets
 	for(j in 1:m){
@@ -161,8 +161,8 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		} else {	xaxt <- "n"
 		}
 		for(i in 1:n){
-			plot_indicator(X[[i]], indicators[j], xaxt=xaxt) 
-			if(i==1) mtext(indicators[j], WEST<-2, line=4) ## stat name on each row
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, ...) 
+			if(i==1) mtext(indicators[j], WEST<-2, line=4, cex=par()$cex.lab) ## stat name on each row
 			if(j==m) mtext("time", SOUTH<-1, line=4) ## x-axis label
 		}
 	}
