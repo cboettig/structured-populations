@@ -8,11 +8,11 @@ err_rates <- function(null_dist, test_dist, p=.05){
 	c(null_err=null_err, test_err=test_err)
 }
 
-plt_tau <- function(test_tau_dist, null_tau_dist, indicator){
+plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, ...){
 	td <- density(test_tau_dist[1,])
 	nd <- density(null_tau_dist[1,])
-	ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
-	plot(nd, main=paste("Kendall's Tau in ", indicator), type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim)
+	if(is.null(ylim)) ylim <- c( min(nd$y, td$y), max(nd$y, td$y))
+	plot(nd, main=paste("Kendall's Tau in ", indicator), type="n", col=rgb(0,0,1,1), xlim=c(-1,1), ylim=ylim, ...)
 	polygon(nd$x, nd$y, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
 	polygon(td$x, td$y, col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
 #	polygon(nd$x, nd$y, col='blue', density=8, lwd=2, border=NA)
@@ -69,8 +69,8 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 }
 
 ## should combine with plt_tau(?)
-plot.tau_dist_montecarlo <- function(out){
-		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal)
+plot.tau_dist_montecarlo <- function(out, ...){
+		plt_tau(out$test_tau_dist, out$null_tau_dist, out$signal, ...)
 		abline(v=out$observed[1], lty=2, lwd=3, col="darkred")
 }
 
