@@ -13,7 +13,7 @@ load("5555038554.Rdat") # an LSN sim, stable and collapsing
 #simLTC <- X
 
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 2000
+nboot <- 160
 cpu <- 16
 
 
@@ -23,7 +23,7 @@ m <- lapply(1:4, function(i){
 })
 
 taus <- lapply(1:4, function(i){
-	bootstrap_tau(m[[1]]$X, m[[1]]$const, m[[1]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
+	bootstrap_tau(m[[i]]$X, m[[i]]$const, m[[i]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
 })
 
 social_plot(
