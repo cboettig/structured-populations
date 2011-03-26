@@ -12,25 +12,28 @@ nboot <- 80
 cpu <- 16
 
 
-m <- lapply(1:4, function(i){
-	X <- data[[i]]$X_ts
-	fit_models(X, "LSN")
-})
+#m <- lapply(1:3, function(i){
+#	X <- data[[i]]$X_ts
+#	fit_models(X, "LSN")
+#})
 
-save(list=ls(), file="deut_examples.Rdat")
+#save(list=ls(), file="deut_examples.Rdat")
 
-taus <- lapply(1:4, function(i){
+load("deut_examples.Rdat")
+
+
+taus <- lapply(1:3, function(i){
 	bootstrap_tau(m[[i]]$X, m[[i]]$const, m[[i]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
 })
 
 social_plot(
 	plot.bootstrap_tau(
 		list(I=taus[[1]], II=taus[[2]], III=taus[[3]], IV=taus[[4]]), 
-		cex.axis=2), tags = "warningsingals stochpop", 
-			height=480*2, width=480*4
+		cex.axis=2, ylim = c(0,2)), tags = "warningsingals stochpop", 
+			height=480*2, width=480*3
 	)
 
-mc <- lapply(1:4, function(i){
+mc <- lapply(1:3, function(i){
 	montecarlotest(m[[i]]$const, m[[i]]$timedep, nboot=nboot, cpu=cpu, GetParNames=FALSE)
 })
 
@@ -38,7 +41,7 @@ save(list=ls(), file="deut_examples.Rdat")
 
 plt <- function(){
 	par(mfrow=c(1,3),  oma=c(8,8,8,4), mar=c(0,0,0,0))
-	for(i in 1:4){
+	for(i in 1:3){
 		plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), xlim=c(0,90))
 		mtext("Probability density", WEST<-2, outer=TRUE) ## statistic name on first column
 		mtext(paste(i), NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
@@ -47,6 +50,6 @@ plt <- function(){
 }
 
 social_plot(plt(), 	tags = "warningsingals stochpop", 
-			height=480*1.5, width=480*4)
+			height=480*1.5, width=480*3)
 
 
