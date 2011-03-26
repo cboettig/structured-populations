@@ -4,13 +4,8 @@ require(socialR)
 gitcommit()
 
 ## load datafiles
-source("load_CaCO3.R")
-CaCO3 <- X
 source("load_deut.R")
 deut3 <- data[[3]]$X_ts
-load("5555038554.Rdat") # an LSN sim, stable and collapsing
-#load("5550863240.Rdat") # an LTC sim, just collapsing
-#simLTC <- X
 
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
 nboot <- 80
@@ -23,7 +18,7 @@ m <- lapply(1:4, function(i){
 })
 
 taus <- lapply(1:4, function(i){
-	bootstrap_tau(m[[1]]$X, m[[1]]$const, m[[1]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
+	bootstrap_tau(m[[i]]$X, m[[i]]$const, m[[i]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
 })
 
 social_plot(
@@ -33,7 +28,7 @@ social_plot(
 	)
 
 mc <- lapply(1:4, function(i){
-	montecarlotest(m[[1]]$const, m[[1]]$timedep, nboot=nboot, cpu=cpu, GetParNames=FALSE)
+	montecarlotest(m[[i]]$const, m[[i]]$timedep, nboot=nboot, cpu=cpu, GetParNames=FALSE)
 })
 
 save(list=ls(), file="deut_examples.Rdat")
