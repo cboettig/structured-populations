@@ -107,7 +107,7 @@ overlap <- function(pow, bw="nrd0"){
 
 ## can now specify the info criterion
 ## plotting function
-plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE, shade_power=FALSE, shade_p=FALSE, show_aic=FALSE, show_data=TRUE, shade=TRUE, shade_aic=FALSE, print_text=TRUE, show_text = c("p", "power", "reverse_p", "aic"), xlim=NULL, null_dist=TRUE, bw = "nrd0", info_criterion=c("aic", "bic", "aicc", "threshold"), ...){
+plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE, shade_power=FALSE, shade_p=FALSE, show_aic=FALSE, show_data=TRUE, shade=TRUE, shade_aic=FALSE, print_text=TRUE, show_text = c("p", "power", "reverse_p", "aic"), xlim=NULL, ylim=NULL, null_dist=TRUE, bw = "nrd0", info_criterion=c("aic", "bic", "aicc", "threshold"), ...){
 
 
 	## DOF calculation ##!! Should be made into a generic!!
@@ -131,6 +131,7 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 
 	## Calculate Axis Limits
 	if(is.null(xlim)) xlim <- c( min(pow$null_dist, pow$test_dist), max(pow$null_dist, pow$test_dist) )
+	if(is.null(ylim)) ylim <- c(min(td$y, nd$y), max(td$y,nd$y))
 
 
 	## Select the information criterion
@@ -147,27 +148,27 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 	if(type != "hist"){
 		## Plot the null distribution with appropriate shading
 		if(null_dist){ 
-			plot(nd, xlim=xlim, main=main, lwd=1, xlab=" Likelihood Ratio", col=rgb(0,0,1,1), ...) 
+			plot(nd, xlim=xlim, ylim=ylim, main=main, type="n", col=rgb(0,0,1,1), ...) 
 			if(shade_p){
 				shade_p <- which(nd$x > pow$lr)
-				polygon(c(pow$lr,nd$x[shade_p]), c(0,nd$y[shade_p]), col=rgb(0,0,1,.5), border=rgb(0,0,1,.5))
+				polygon(c(pow$lr,nd$x[shade_p]), c(0,nd$y[shade_p]), col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
 			} else if(shade){
-				polygon(nd$x, nd$y, col=rgb(0,0,1,.5), border=rgb(0,0,1,.5))
+				polygon(nd$x, nd$y, col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
 			}
 		} else { 
-			plot(0,0, xlim=xlim, ylim = c(min(td$y, nd$y), max(td$y,nd$y)), main=main, xlab=" Likelihood Ratio", ...)  ## blank plot
+			plot(0,0, xlim=xlim, ylim = ylim, main=main, xlab=" Likelihood Ratio", ...)  ## blank plot
 		}
 
 		## Plot the test distribution with appropriate shading
 		if(test_dist){
-			if(!null_dist) plot(td, xlim=xlim, main=main, lwd=1, xlab=" Likelihood Ratio", lty=0, col=rgb(1,0,0,1), ...)  ## just plot test dist 
-			else lines(td, lwd=1, col=rgb(1,0,0,1))
+			if(!null_dist) plot(td, xlim=xlim, main=main, type="n", col=rgb(1,0,0,1), ...)  ## just plot test dist 
+			else lines(td, type="n", col=rgb(1,0,0,1))
 			threshold_tail <- sort(pow$null_dist)[ round(pow$threshold*pow$nboot) ]
 			if(shade_power){
 				shade_power <- which(td$x > threshold_tail)
-				polygon(c(threshold_tail, td$x[shade_power]), c(0,td$y[shade_power]), col=rgb(1,0,0,.5), border=rgb(1,0,0,.5))
+				polygon(c(threshold_tail, td$x[shade_power]), c(0,td$y[shade_power]), col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
 			} else if(shade){
-				polygon(td$x, td$y, col=rgb(1,0,0,.5), border=rgb(1,0,0,.5))
+				polygon(td$x, td$y, col=rgb(1,0,0,.3), border=rgb(1,0,0,.5))
 			}
 		}
 		## AIC shading 
@@ -183,14 +184,17 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 
 	## Plot histograms instead of density plots
 	} else {
-	hist(pow$null_dist, xlim=xlim, lwd=3, col=rgb(0,0,1,.5), border="white", main=main, xlab=" Likelihood Ratio", ...)
+	hist(pow$null_dist, xlim=xlim, lwd=3, col=rgb(0,0,1,.5), border="white", main=main, ...)
 		if(test_dist){
-			hist(pow$test_dist, add=T, lwd=0, col=rgb(1,0,0,.5), border="white", main=main, xlab=" Likelihood Ratio", ...)
+			hist(pow$test_dist, add=T, lwd=0, col=rgb(1,0,0,.5), border="white", main=main, ...)
 		}
 	}
 
 	##  Add lines to plots 
-	if(show_data) abline(v=pow$lr, lwd=3, col="darkred", lty=2 )
+	if(show_data){ 
+		#abline(v=pow$lr, lwd=3, col="darkred", lty=2 )
+		points(pow$lr,yshift(1), cex=1.5, col="black", pch=25, fg="black", bg="black")
+	}
 	if(show_aic) abline(v=aic_line, lwd=3, col="darkgray", lty=3) 
 
 	## Calculate statistics
@@ -206,10 +210,10 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 #	if(aic_line < pow$lr){ print("AIC prefers test model")} else { print("AIC prefers null model") }	
 	print(paste("p = ",  p, ", power = ", pow$power))
 	if(print_text){
-		if(! is.na(match("p", show_text)) ) text(.85*par()$xaxp[2], .95*par()$yaxp[2], paste("p = ", p))
-		if(! is.na(match("power", show_text)) ) text(.85*par()$xaxp[2], .9*par()$yaxp[2], paste("Power = ", pow$power))
-		if(! is.na(match("aic", show_text)) ) text(.85*par()$xaxp[2], .85*par()$yaxp[2], paste("AIC wrong in ", aic_wrong*100, "% of sims"))
-		if(! is.na(match("reverse_p", show_text)) ) text(.85*par()$xaxp[2], .8*par()$yaxp[2], paste("p in reverse test ", pow$reverse_p))
+		if(! is.na(match("p", show_text)) ) text(xshift(105), yshift(95), paste("Type I = ", round(p)),pos=2)
+		if(! is.na(match("power", show_text)) ) text(xshift(105), yshift(85), paste("Type II = ", round(1-pow$power,3)), pos=2)
+		if(! is.na(match("aic", show_text)) ) text(xshift(105), yshift(75), paste("AIC wrong in ", aic_wrong*100, "% of sims"), pos=2)
+		if(! is.na(match("reverse_p", show_text)) ) text(xshift(105), yshift(65), paste("p in reverse test ", pow$reverse_p), pos=2)
 	}
 	## add legend
 	if(legend) 
