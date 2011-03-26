@@ -17,6 +17,8 @@ m <- lapply(1:4, function(i){
 	fit_models(X, "LSN")
 })
 
+save(list=ls(), file="deut_examples.Rdat")
+
 taus <- lapply(1:4, function(i){
 	bootstrap_tau(m[[i]]$X, m[[i]]$const, m[[i]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
 })

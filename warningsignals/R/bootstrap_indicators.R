@@ -5,12 +5,12 @@
 fit_models <- function(X, method=c("LTC", "LSN")){
 	const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
 ## Fit a linearized transcritical bifurcation model
-	const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))
+	const <- updateGauss(constOU, const_pars, X, control=list(maxit=2000))
 	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
 	if(method=="LTC"){
-		timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
+		timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=2000))
 	} else if(method=="LSN"){
-		timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
+		timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=2000))
 	}
 	list(X=X, const=const, timedep=timedep, pars=pars, const_pars=const_pars, method=method)
 }
