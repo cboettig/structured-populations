@@ -24,8 +24,9 @@ taus <- lapply(1:4, function(i){
 })
 
 social_plot(
-	plot.bootstrap_tau(list(I=taus[[1]], II=taus[[2]], III=taus[[3]], IV=taus[[4]]), cex.axis=2),
-			tags = "warningsingals stochpop", 
+	plot.bootstrap_tau(
+		list(I=taus[[1]], II=taus[[2]], III=taus[[3]], IV=taus[[4]]), 
+		cex.axis=2), tags = "warningsingals stochpop", 
 			height=480*2, width=480*4
 	)
 
