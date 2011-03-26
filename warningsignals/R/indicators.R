@@ -82,7 +82,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=2, ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=90, ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -109,7 +109,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
 		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
-			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=1.5*par()$cex.lab
+			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=.9*par()$cex.lab
 		)
 
 }
@@ -163,7 +163,7 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		for(i in 1:n){
 			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, ...) 
 			if(i==1) mtext(indicators[j], WEST<-2, line=4, cex=par()$cex.lab) ## stat name on each row
-			if(j==m) mtext("time", SOUTH<-1, line=4) ## x-axis label
+			if(j==m) mtext("time", SOUTH<-1, line=4, cex=par()$cex.lab) ## x-axis label
 		}
 	}
 }

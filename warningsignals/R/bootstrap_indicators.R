@@ -24,7 +24,7 @@ bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocor
 }
 
 
-plot.bootstrap_tau <- function(taus, show_p = FALSE, ...){
+plot.bootstrap_tau <- function(taus, show_p = FALSE, show_error=TRUE, ...){
 ## If elements of "taus" are of class tau_dist_montecarlo, assumes we have 
 ## bootstraps for only a single dataset, and plot a single column.   
 ## If elements are also "bootstrap_taus" then we have a data.frame 
@@ -50,11 +50,15 @@ plot.bootstrap_tau <- function(taus, show_p = FALSE, ...){
 			if(i > 1){ yaxt <- "n" 
 			} else { yaxt <- "s" }
 
-			plot(taus[[i]][[j]], show_p = show_p, xaxt = xaxt, yaxt=yaxt, ...)
+			plot(taus[[i]][[j]], show_p = show_p, show_error=show_error, xaxt = xaxt, yaxt=yaxt, ...)
 
-			if(j==1) mtext(data_names[i], NORTH<-3, cex=1.3, line=2) ## data labels on top row
-			if(i==1) mtext(taus[[i]][[j]]$signal, WEST<-2, line=4) ## statistic name on first column
-			if(j==m) mtext("Kendall's tau", SOUTH<-1, line=4) ## x-axis label
+			if(j==1) mtext(data_names[i], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
+			if(i==1){
+				mtext(taus[[i]][[j]]$signal, WEST<-2, line=4) ## statistic name on first column
+				mtext(expression(paste("Prob Density of ", tau)),
+						WEST<-2, line=2, cex=.7*par()$cex.lab) ## statistic name on first column
+			}	
+			if(j==m & i==2) mtext(expression(paste(tau)), SOUTH<-1, line=4, cex=par()$cex.lab) ## x-axis label
 		}
 	}
 }

@@ -23,7 +23,6 @@ constant_m<-fit_models(constant, "LSN")
 CaCO3_m <- fit_models(CaCO3, "LSN")
 deut3_m <- fit_models(deut3, "LSN")
 
-
 ## bootstrap each 
 constant_taus <- bootstrap_tau(constant_m$X, constant_m$const,
 							constant_m$timedep,
