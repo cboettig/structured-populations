@@ -46,8 +46,8 @@ deut3_mc <-
 
 save(list=ls(), file="figure3.Rdat")
 
-social_plot(plot(constant_mc), file="CaCO3.png", tag="warningsignals stochpop MC sim constant")
-social_plot(plot(deterior_mc), file="CaCO3.png", tag="warningsignals stochpop MC sim deterior")
+social_plot(plot(constant_mc), file="constant.png", tag="warningsignals stochpop MC sim constant")
+social_plot(plot(deterior_mc), file="deterior.png", tag="warningsignals stochpop MC sim deterior")
 #social_plot(plot(simLTC_mc), file="simLTC.png", tag="warningsignals stochpop MC simLTC")
 social_plot(plot(CaCO3_mc), file="CaCO3.png", tag="warningsignals stochpop MC CaCO3")
 social_plot(plot(deut3_mc), file="Deut3.png", tag="warningsignals stochpop MC deut3")

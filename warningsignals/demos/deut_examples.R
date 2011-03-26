@@ -13,7 +13,7 @@ load("5555038554.Rdat") # an LSN sim, stable and collapsing
 #simLTC <- X
 
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 2000
+nboot <- 80
 cpu <- 16
 
 
