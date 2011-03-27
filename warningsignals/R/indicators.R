@@ -109,7 +109,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
-		 substitute(paste(method, "coef", == val, " (p ", pval, ")"), 
+		 substitute(paste(method, "coef = ",  val, " (p ", pval, ")"), 
 			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=.9*par()$cex.lab
 		)
 
@@ -196,7 +196,7 @@ warning_stats <- function(X, indicator, method=c("pearson", "kendall", "spearman
 	} else {
 		w <- length(X[,1])/2
 		end <- length(X[,1])
-		out <- cor.test(X[w:end,1], indicator(X[,2]), method=method
+		out <- cor.test(X[w:end,1], indicator(X[,2]), method=method)
 	}
 	c(out$estimate, out$p.value)
 }
@@ -204,7 +204,7 @@ warning_stats <- function(X, indicator, method=c("pearson", "kendall", "spearman
 show_stats <- function(X, indicator, xpos=20, ypos=0){
 		w <- warning_stats(X, indicator)
 	text(xshift(xpos), yshift(ypos), 
-		 substitute(paste(method, "coef ", == val, " (p ", pval, ")"), 
+		 substitute(paste(method, "coef=", val, " (p ", pval, ")"), 
 			list(val=round(w[1],2),pval=format.pval(w[2]))
 		 )
 	)
