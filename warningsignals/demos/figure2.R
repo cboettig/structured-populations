@@ -45,7 +45,7 @@ deut3_taus <- bootstrap_tau(deut3_m$X, deut3_m$const, deut3_m$timedep,
 social_plot(
 	plot.bootstrap_tau(list(deteriorating=deterior_taus,
 			constant=constant_taus, Deut3=deut3_taus), cex.axis=2),
-			tags = "warningsingals stochpop", 
+			show_p=TRUE, tags = "warningsingals stochpop", 
 			height=480*2, width=480*3
 	)
 
