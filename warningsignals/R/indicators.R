@@ -82,7 +82,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=90, ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=90, method=c("pearson", "kendall", "spearman"), ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -93,6 +93,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 ## Returns:
 ##		A plot of indicator statistic over time interval, with kendall's tau and p-val
 {	
+	method <- match.arg(method)
 	if(!is.ts(X)){
 		n <- length(X[,1])
 		start <- X[1,1]
@@ -104,22 +105,22 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, lwd=2, ...)
 	abline(v=time_window[1], lty="dashed")
 
-	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+	out <- cor.test(time(X)[windowsize:length(X)], Y, method=method)
 
 	w <- c(out$estimate, out$p.value)
 	text(xshift(xpos), yshift(ypos), 
-		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+		 substitute(paste(method, "coef", == val, " (p ", pval, ")"), 
 			list(val=round(w[1],2),pval=format.pval(w[2]))), pos=4, cex=.9*par()$cex.lab
 		)
 
 }
 	
-compute_tau <- function(X, indicator, windowsize=length(X)/2)
+compute_tau <- function(X, indicator, windowsize=length(X)/2, method=c("pearson", "kendall", "spearman"))
 ## unlike warning_stats, takes indicator as character instead of a function
 ## assumes X is ts object -- should add to a check(?)
 {
 	Y <- compute_indicator(X, indicator, windowsize)
-	out <- cor.test(time(X)[windowsize:length(X)], Y, method="kendall")
+	out <- cor.test(time(X)[windowsize:length(X)], Y, method=method)
 	c(out$estimate, out$p.value)
 }
 
@@ -186,15 +187,16 @@ yshift <- function(ysteps){
 
 ################ DEPRICATED?? ##############
 
-warning_stats <- function(X, indicator){
+warning_stats <- function(X, indicator, method=c("pearson", "kendall", "spearman")){
+	method <- match.arg(method)
 	if(is(X,"ts")){
 		w <- length(X)/2
 		end <- length(X)
-		out <- cor.test(time(X)[w:end], indicator(X), method="kendall")
+		out <- cor.test(time(X)[w:end], indicator(X), method=method)
 	} else {
 		w <- length(X[,1])/2
 		end <- length(X[,1])
-		out <- cor.test(X[w:end,1], indicator(X[,2]), method="kendall")
+		out <- cor.test(X[w:end,1], indicator(X[,2]), method=method
 	}
 	c(out$estimate, out$p.value)
 }
@@ -202,7 +204,7 @@ warning_stats <- function(X, indicator){
 show_stats <- function(X, indicator, xpos=20, ypos=0){
 		w <- warning_stats(X, indicator)
 	text(xshift(xpos), yshift(ypos), 
-		 substitute(paste("Kendall ", tau == val, " (p ", pval, ")"), 
+		 substitute(paste(method, "coef ", == val, " (p ", pval, ")"), 
 			list(val=round(w[1],2),pval=format.pval(w[2]))
 		 )
 	)
