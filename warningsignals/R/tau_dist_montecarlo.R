@@ -29,16 +29,17 @@ plt_tau <- function(test_tau_dist, null_tau_dist, indicator, ylim=NULL, legend=F
 }
 
 
-tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2, windowsize=round(length(X)/2))
+tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=200, cpu=2, windowsize=round(length(X)/2), method=c("pearson", "kendall", "spearman"))
 ## Compute Monte Carlo bootstrap of tau under each model
 {
+
 	## display the simple likelihood comparison between models
 	## be worried if this is very negative, or very large, could
 	## indicate poor convergence
 	print( llik_warning_fit <- 2*(loglik(timedep)-loglik(const)) )
 
 	signal = match.arg(signal)
-	observed <- compute_tau(X, signal, windowsize) 
+	observed <- compute_tau(X, signal, windowsize, method=method) 
 
 	## prepare parallel environment
 	if(cpu>1 & !sfIsRunning()){ 	
@@ -52,18 +53,18 @@ tau_dist_montecarlo <- function(X, const, timedep, signal=c("Variance", "Autocor
 ## Look at the distribution of Taus when simulating from timedep
 	test_tau_dist <- sfSapply(1:nboot, function(i){
 		Z <- simulate(timedep)
-		compute_tau(Z, signal, windowsize)
+		compute_tau(Z, signal, windowsize, method=method)
 	})
 ## Distribution of Taus simulating from const model
 	null_tau_dist <- sfSapply(1:nboot, function(i){
 		Y <- simulate(const)
-		compute_tau(Y, signal, windowsize)
+		compute_tau(Y, signal, windowsize, method=method)
 	})
 
 ## should pass out a generic "observed"
 	out <- list(test_tau_dist=test_tau_dist, null_tau_dist=null_tau_dist,
 		signal=signal, X=X, llik_warning_fit=llik_warning_fit,
-		const=const, timedep=timedep, observed = observed, windowsize=windowsize)
+		const=const, timedep=timedep, observed = observed, windowsize=windowsize, method=method)
 	class(out) <- "tau_dist_montecarlo"
 	out
 }

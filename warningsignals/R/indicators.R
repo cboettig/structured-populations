@@ -127,7 +127,7 @@ compute_tau <- function(X, indicator, windowsize=length(X)/2, method=c("pearson"
 
 
 
-all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), ...)
+all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), method=c("pearson", "kendall", "spearman"), ...)
 ## Calc and plot all the leading indicators in a single frame plot
 ##		using a simple loop over the plot_indicator fn
 ## Args 
@@ -162,7 +162,7 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		} else {	xaxt <- "n"
 		}
 		for(i in 1:n){
-			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, ...) 
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, method=method, ...) 
 			if(i==1) mtext(indicators[j], WEST<-2, line=4, cex=par()$cex.lab) ## stat name on each row
 			if(j==m) mtext("time", SOUTH<-1, line=4, cex=par()$cex.lab) ## x-axis label
 		}

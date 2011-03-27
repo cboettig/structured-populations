@@ -16,9 +16,9 @@ fit_models <- function(X, method=c("LTC", "LSN")){
 }
 
 
-bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=160, cpu=16, windowsize=round(length(X)/2)){
+bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=160, cpu=16, windowsize=round(length(X)/2), method=c("pearson", "kendall", "spearman")){
 # Tau approach comparison
-	taus <- lapply(indicators, function(stat){ 	tau_dist_montecarlo(X, const, timedep, signal=stat, nboot=nboot, cpu=cpu) })
+	taus <- lapply(indicators, function(stat){ 	tau_dist_montecarlo(X, const, timedep, signal=stat, nboot=nboot, cpu=cpu, method=method) })
 	class(taus) <- "bootstrap_tau"
 	taus
 }
