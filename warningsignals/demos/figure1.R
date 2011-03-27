@@ -7,16 +7,18 @@ CaCO3 <- X
 source("load_deut.R")
 deut3 <- data[[3]]$X_ts
 load("5555038554.Rdat")
+
+source("../R/indicators.R")
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
 ## FIGURE 1
 social_plot(
 	all_indicators(	list(deteriorating=deteriorating, 
 						 constant=constant, 
 						 empirical=deut3),	
-					indicators=indicators
-					),
-					tags="warningsignals stochpop", 
-					height=length(indicators)*240, width=3*480
+					indicators=indicators, method="pearson"
+	),
+	tags="warningsignals stochpop", 
+	height=length(indicators)*240, width=3*480
 )
 
 
