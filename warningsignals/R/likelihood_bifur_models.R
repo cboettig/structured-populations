@@ -11,7 +11,7 @@ require(odesolve)
 ###############  Linearized Saddle-Node (LSN) Model ##################
 # Will depend explicitly on t
 setLSN <- function(Xo, to, t1, pars, R){
-	if(R(t,pars) < 0){
+	if(any(R(t,pars) < 0)){
 		Ex <- Xo
 		Vx <- rep(Inf,length(Xo))
 	} else {
