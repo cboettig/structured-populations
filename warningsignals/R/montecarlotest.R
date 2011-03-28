@@ -12,8 +12,9 @@ getParameters <- function(x, y, ...) UseMethod("getParameters")
 
 
 ### Threshold should really be handled by the plotting function...
-montecarlotest <- function(null, test, nboot = 100, cpu = 2, threshold = .95, GetParNames=TRUE){
-
+montecarlotest <- function(null, test, nboot = 100, cpu = 2, 
+	threshold = .95, GetParNames=TRUE, method= c("Nelder-Mead", 
+	"BFGS", "CG", "L-BFGS-B", "SANN"), ...){
 	## are we in parallel?
 	if(cpu>1 & !sfIsRunning()){ 	
 		sfInit(parallel=TRUE, cpu=cpu) 
@@ -26,16 +27,16 @@ montecarlotest <- function(null, test, nboot = 100, cpu = 2, threshold = .95, Ge
 	null_sim <- sfSapply(1:nboot, function(i){
 		data <- simulate(null)
 		if (is(data,"list")) data <- data$rep.1 # handle data that has replicates
-		null <- update(null, data)
-		test <- update(test, data)
+		null <- update(null, data, method=method, ...)
+		test <- update(test, data, method=method, ...)
 		lr <- -2*(loglik(null) - loglik(test)) 
 		list(lr, getParameters(null), getParameters(test))
 	})
 	test_sim <- sfSapply(1:nboot, function(i){
 		data <- simulate(test)
 		if (is(data,"list")) data <- data$rep.1 # handle data that has replicates
-		null <- update(null, data)
-		test <- update(test, data)
+		null <- update(null, data, method=method, ...)
+		test <- update(test, data, method=method, ...)
 		lr <- -2*(loglik(null) - loglik(test))
 		list(lr, getParameters(null), getParameters(test))
 	})

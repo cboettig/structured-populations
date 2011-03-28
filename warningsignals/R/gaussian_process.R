@@ -98,7 +98,11 @@ simulate.gauss <- function(m){
 	if(is.null(m$times)) simulateGauss(m$setmodel, pars=m$pars, N=m$N, Xo=m$X[1], T = m$T, t0=m$t0)
 	else simulateGauss(m$setmodel, pars=m$pars, N=m$N, Xo=m$X[1], T = m$T, t0=m$t0, times=m$times)
 }
-update.gauss <- function(m, X, ...) updateGauss(setmodel=m$setmodel, pars=m$pars, X=X, ...)
+update.gauss <- function(m, X, method = c("Nelder-Mead", 
+					"BFGS", "CG", "L-BFGS-B", "SANN"), ...){
+	updateGauss(setmodel=m$setmodel, 
+		pars=m$pars, X=X, method=method, ...)
+}
 loglik.gauss <- function(m) m$loglik
 getParameters.gauss <- function(m) m$pars
 # update the loglik (calculation rather than lookup)

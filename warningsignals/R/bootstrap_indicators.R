@@ -2,23 +2,43 @@
 
 ## A few wrapper functions to make it easy to bootstrap a secified set of indicator statistics
 
-fit_models <- function(X, method=c("LTC", "LSN")){
-	const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
-## Fit a linearized transcritical bifurcation model
-	const <- updateGauss(constOU, const_pars, X, control=list(maxit=2000))
-	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
-	if(method=="LTC"){
-		timedep <- updateGauss(timedep_LTC, pars, X, control=list(maxit=2000))
-	} else if(method=="LSN"){
-		timedep <- updateGauss(timedep_LSN, pars, X, control=list(maxit=2000))
+fit_models <- function(X, model=c("LTC", "LSN"), 
+					   optim_method = c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN"),
+					   ...){
+	optim_method <- match.arg(optim_method)
+	upper <- Inf
+	if(optim_method=="L-BFGS-B"){
+		upper = c(Inf, 0, Inf, Inf)
 	}
-	list(X=X, const=const, timedep=timedep, pars=pars, const_pars=const_pars, method=method)
+	const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
+# Fit a linearized transcritical bifurcation model
+	const <- updateGauss(constOU, const_pars, X, method=optim_method, 
+						 control=list(maxit=2000), ...)
+	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), 
+			  sigma=as.numeric(const$pars["sigma"]))
+
+	if(model=="LTC"){
+		timedep <- updateGauss(timedep_LTC, pars, X, method=optim_method, 
+							   control=list(maxit=2000), upper=upper, ...)
+	} else if(model=="LSN"){
+		timedep <- updateGauss(timedep_LSN, pars, X, method=optim_method, 
+							   control=list(maxit=2000), upper=upper, ...)
+	}
+	list(X=X, const=const, timedep=timedep, pars=pars, const_pars=const_pars,
+		 model=model)
 }
 
 
-bootstrap_tau <- function(X, const, timedep, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), nboot=160, cpu=16, windowsize=round(length(X)/2), method=c("pearson", "kendall", "spearman")){
+bootstrap_tau <- function(X, const, timedep, 
+						  indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"),
+						  nboot=160, cpu=16, windowsize=round(length(X)/2), 
+						  method=c("pearson", "kendall", "spearman")){
 # Tau approach comparison
-	taus <- lapply(indicators, function(stat){ 	tau_dist_montecarlo(X, const, timedep, signal=stat, nboot=nboot, cpu=cpu, method=method) })
+	taus <- lapply(indicators, 
+				   function(stat){
+						tau_dist_montecarlo(X, const, timedep, signal=stat, 
+						                    nboot=nboot, cpu=cpu, method=method) 
+						})
 	class(taus) <- "bootstrap_tau"
 	taus
 }

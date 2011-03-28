@@ -20,26 +20,30 @@ cpu <- 16
 ## fit models
 deterior_m<-fit_models(deteriorating, "LSN")
 constant_m<-fit_models(constant, "LSN")
-CaCO3_m <- fit_models(CaCO3, "LSN")
+CaCO3_m <- fit_models(CaCO3, "LSN", method="L")
 deut3_m <- fit_models(deut3, "LSN")
 
 ## bootstrap each 
 constant_taus <- bootstrap_tau(constant_m$X, constant_m$const,
 							constant_m$timedep,
 							indicators = indicators,
+							method="kendall",
 							nboot=nboot, cpu=cpu)
 
 deterior_taus <- bootstrap_tau(deterior_m$X,
 							deterior_m$const, deterior_m$timedep,
 							indicators = indicators,
+							method="kendall",
 							nboot=nboot, cpu=cpu)
 
 CaCO3_taus <- bootstrap_tau(CaCO3_m$X, CaCO3_m$const, CaCO3_m$timedep,
 							indicators = indicators,
+							method="kendall",
 							nboot=nboot, cpu=cpu)
 
 deut3_taus <- bootstrap_tau(deut3_m$X, deut3_m$const, deut3_m$timedep,
 							indicators = indicators,
+							method="kendall",
 							nboot=nboot, cpu=cpu)
 
 social_plot(

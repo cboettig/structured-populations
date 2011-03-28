@@ -15,7 +15,7 @@ social_plot(
 	all_indicators(	list(deteriorating=deteriorating, 
 						 constant=constant, 
 						 empirical=deut3),	
-					indicators=indicators, method="pearson"
+					indicators=indicators, method="kendall"
 	),
 	tags="warningsignals stochpop", 
 	height=length(indicators)*240, width=3*480
