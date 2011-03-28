@@ -13,7 +13,7 @@ require(odesolve)
 setLSN <- function(Xo, to, t1, pars, R){
 	if(any(R(to,pars) < 0)){
 		Ex <- Xo
-		Vx <- rep(Inf,length(Xo))
+		Vx <- rep(1e10,length(Xo))
 	} else {
 		moments <- function(t,y,p){ 
 			sqrtR <- sqrt(R(t,pars)) 
@@ -36,7 +36,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 		Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 	}
 	## Handle badly defined parameters by creating very low probability returns
-	if(pars['sigma'] < 0 ) Vx = Inf 
+	if(pars['sigma'] < 0 ) Vx = 1e10 
 	return(list(Ex=Ex, Vx=Vx))
 }
 
