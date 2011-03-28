@@ -11,26 +11,30 @@ require(odesolve)
 ###############  Linearized Saddle-Node (LSN) Model ##################
 # Will depend explicitly on t
 setLSN <- function(Xo, to, t1, pars, R){
-	moments <- function(t,y,p){ 
-		sqrtR <- sqrt(R(t,pars)) 
-		yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
-		yd2 <- -2*sqrtR*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
-		list(c(yd1=yd1, yd2=yd2))
-	}
-	jacfn <- function(t,y,p){
-		sqrtR <- sqrt(R(t,pars)) 
-		c(
-		-2*sqrtR, 0,
-		0, -2*sqrtR
-	)}
+	if(R < 0){
+		Ex <- Xo
+		Vx <- rep(Inf,length(Xo))
+	} else {
+		moments <- function(t,y,p){ 
+			sqrtR <- sqrt(R(t,pars)) 
+			yd1 <- 2*sqrtR*(sqrtR+pars['theta'] - y[1]) 
+			yd2 <- -2*sqrtR*y[2] + p["sigma"]^2*(sqrtR+pars['theta'])
+			list(c(yd1=yd1, yd2=yd2))
+		}
+		jacfn <- function(t,y,p){
+			sqrtR <- sqrt(R(t,pars)) 
+			c(
+			-2*sqrtR, 0,
+			0, -2*sqrtR
+		)}
 ## The apply calls needed to work with vector inputs as Xo (whole timeseries)
-	times <- matrix(c(to, t1), nrow=length(to))
-	out <- lapply(1:length(Xo), function(i){
-		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
-	})
-	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
-	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
-
+		times <- matrix(c(to, t1), nrow=length(to))
+		out <- lapply(1:length(Xo), function(i){
+			lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
+		})
+		Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+		Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+	}
 	## Handle badly defined parameters by creating very low probability returns
 	if(pars['sigma'] < 0 ) Vx = Inf 
 	return(list(Ex=Ex, Vx=Vx))
