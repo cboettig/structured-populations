@@ -20,7 +20,7 @@ cpu <- 16
 ## fit models
 deterior_m<-fit_models(deteriorating, "LSN")
 constant_m<-fit_models(constant, "LSN")
-CaCO3_m <- fit_models(CaCO3, "LSN", method="L")
+CaCO3_m <- fit_models(CaCO3, "LSN", optim_method="L")
 deut3_m <- fit_models(deut3, "LSN")
 
 ## bootstrap each 

@@ -6,8 +6,10 @@ fit_models <- function(X, model=c("LTC", "LSN"),
 					   optim_method = c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN"),
 					   ...){
 	optim_method <- match.arg(optim_method)
+	lower <- -Inf
 	upper <- Inf
 	if(optim_method=="L-BFGS-B"){
+		lower = c(0, -Inf, -Inf, 0)
 		upper = c(Inf, 0, Inf, Inf)
 	}
 	const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
@@ -19,10 +21,10 @@ fit_models <- function(X, model=c("LTC", "LSN"),
 
 	if(model=="LTC"){
 		timedep <- updateGauss(timedep_LTC, pars, X, method=optim_method, 
-							   control=list(maxit=2000), upper=upper, ...)
+							   control=list(maxit=2000), upper=upper, lower=lower, ...)
 	} else if(model=="LSN"){
 		timedep <- updateGauss(timedep_LSN, pars, X, method=optim_method, 
-							   control=list(maxit=2000), upper=upper, ...)
+							   control=list(maxit=2000), upper=upper, lower=lower, ...)
 	}
 	list(X=X, const=const, timedep=timedep, pars=pars, const_pars=const_pars,
 		 model=model)
