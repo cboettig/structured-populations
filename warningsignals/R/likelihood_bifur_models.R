@@ -42,8 +42,8 @@ setLSN <- function(Xo, to, t1, pars, R){
 		Vx <- rep(1e12, length(Xo))
 	}
 	if (any(Vx < 0)){
-		stop(paste("error in Vx,  ",Vx[Vx==0][1]))
-		Vx[Vx==0] <- 0
+		warning(paste("error in Vx,  ",Vx[Vx<0]))
+		Vx[Vx<0] <- 1e12
 	}
 	return(list(Ex=Ex, Vx=Vx))
 }
