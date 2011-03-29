@@ -33,7 +33,7 @@ load("5554848679.Rdat")
 ## Load model fits and tau bootstraps.  This file produced by deut_examples.Rdat with 2000 replicates
 load("5571632581.Rdat")
 source("../R/bootstrap_indicators.R")
-source("..R/R/tau_dist_montecarlo.R")
+source("../R/tau_dist_montecarlo.R")
 social_plot(
 	plot.bootstrap_tau(
 		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
