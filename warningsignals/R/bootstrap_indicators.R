@@ -12,7 +12,7 @@ fit_models <- function(X, model=c("LTC", "LSN"),
 		lower = c(0, -Inf, -Inf, 0)
 		upper = c(Inf, 0, Inf, Inf)
 	}
-	const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
+	const_pars <- c(Ro=as.numeric(1/max(time(X))), theta=as.numeric(mean(X)), sigma=as.numeric(sd(X)))
 # Fit a linearized transcritical bifurcation model
 	const <- updateGauss(constOU, const_pars, X, method=optim_method, 
 						 control=list(maxit=2000), ...)
