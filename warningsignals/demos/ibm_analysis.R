@@ -14,7 +14,7 @@ social_plot(
 					indicators=indicators, method="kendall"
 	),
 	tags=ibm_tags, 
-	height=length(indicators)*240, width=2*480
+	height=length(indicators)*240, width=2*480)
 
 
 
