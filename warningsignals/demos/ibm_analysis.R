@@ -1,4 +1,6 @@
 #ibm_analysis.R
+rm(list=ls())
+
 load("ibm_sims.Rdat")
 require(socialR)
 require(warningsignals)
