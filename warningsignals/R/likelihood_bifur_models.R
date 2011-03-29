@@ -38,7 +38,8 @@ setLSN <- function(Xo, to, t1, pars, R){
 	}
 	## Handle badly defined parameters by creating very low probability returns
 	if (pars['sigma'] <= 0){
-		Vx = 1e12
+		warning(paste("sigma=",pars["sigma"]))
+		Vx <- rep(1e12, length(Xo))
 	}
 	if (any(Vx < 0)){
 		warning(paste("Vx=",Vx[Vx==0]))
