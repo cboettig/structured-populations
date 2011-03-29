@@ -13,7 +13,7 @@ require(odesolve)
 setLSN <- function(Xo, to, t1, pars, R){
 	if(any(R(t1,pars) <= 0)){
 		Ex <- Xo
-		Vx <- rep(1e12,length(Xo))
+		Vx <- rep(Inf,length(Xo))
 	} else {
 		moments <- function(t,y,p){ 
 			sqrtR <- sqrt(R(t,pars)) 
@@ -43,11 +43,11 @@ setLSN <- function(Xo, to, t1, pars, R){
 ## force system into bifurcation on later parameters (for which terms become undefined)
 	if (pars['sigma'] <= 0){
 		warning(paste("sigma=",pars["sigma"]))
-		Vx <- rep(1e12, length(Xo))
+		Vx <- rep(Inf, length(Xo))
 	}
 	if (any(Vx < 0)){
-		warning(paste("error in Vx,  ",Vx[Vx<0]))
-		Vx[Vx<0] <- 1e12
+		warning(paste("discard negative Vx,  "))
+		Vx[Vx<0] <- Inf
 	}
 	return(list(Ex=Ex, Vx=Vx))
 }
