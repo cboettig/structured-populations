@@ -2,25 +2,20 @@
 require(warningsignals)
 require(socialR)
 gitcommit()
-
 ## load datafiles
 source("load_deut.R")
-deut3 <- data[[3]]$X_ts
 
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 80
+nboot <- 2000
 cpu <- 16
 
 
-#m <- lapply(1:3, function(i){
-#	X <- data[[i]]$X_ts
-#	fit_models(X, "LSN")
-#})
+m <- lapply(1:3, function(i){
+	X <- data[[i]]$X_ts
+	fit_models(X, "LSN")
+})
 
-#save(list=ls(), file="deut_examples.Rdat")
-
-load("deut_examples.Rdat")
-
+save(list=ls(), file="deut_examples.Rdat")
 
 taus <- lapply(1:3, function(i){
 	bootstrap_tau(m[[i]]$X, m[[i]]$const, m[[i]]$timedep, indicators=indicators, nboot=nboot, cpu=cpu)
