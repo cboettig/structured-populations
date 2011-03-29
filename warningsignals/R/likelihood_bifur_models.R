@@ -42,7 +42,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 		Vx <- rep(1e12, length(Xo))
 	}
 	if (any(Vx < 0)){
-		warning(paste("Vx=",Vx[Vx==0]))
+		stop(paste("Vx=",Vx[Vx==0]))
 		Vx[Vx==0] <- 0
 	}
 	return(list(Ex=Ex, Vx=Vx))
@@ -74,7 +74,7 @@ setLTC <- function(Xo, to, t1, pars, R){
 	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 
 ## Handle badly defined parameters by creating very low probability returns
-	if(pars['sigma'] < 0 ) Vx = Inf 
+	if(pars['sigma'] < 0 ) Vx = rep(Inf, length(Xo)) 
 	return(list(Ex=Ex, Vx=Vx))
 }
 
