@@ -21,7 +21,7 @@ cairo_pdf(file="figure1_appendix.pdf",height=7*length(indicators)/2, width=3*7)
 all_indicators(list(CaCO3=X, 
 				    GlaciationI=data[[1]]$X_ts, 
 				    GlaciationII=data[[2]]$X_ts ),	
-				indicators=indicators, method="kendall"
+				indicators=indicators, method="kendall",
                 cex.axis=2, cex.lab=2.3)
 dev.off()
 
@@ -30,15 +30,22 @@ dev.off()
 
 ## load output of figure2.R, for the CaCO3 data
 load("5554848679.Rdat")
-## Load model fits and tau bootstraps.  This file produced by deut_examples.Rdat
-load("5562383846.Rdat")
+## Load model fits and tau bootstraps.  This file produced by deut_examples.Rdat with 2000 replicates
+load("5571632581.Rdat")
+source("../R/bootstrap_indicators.R")
+source("..R/R/tau_dist_montecarlo.R")
 social_plot(
 	plot.bootstrap_tau(
 		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
-		cex.axis=1, ylim = c(0,2.8)), tags = "warningsingals stochpop", 
-			height=480*2, width=480*3
-	)
+		cex.axis=1, ylim = c(0,2.8)), 
+    tags = "warningsingals stochpop", 
+	height=480*2, width=480*3)
 
+cairo_pdf(file="figure2_appendix.pdf", height=7*2, width=7*3)
+	plot.bootstrap_tau(
+		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
+		cex.axis=1, ylim = c(0,2.8))
+dev.off()
 
 ## load output of figure3.R, for the CaCO3 data
 load("35555677786.Rdat")
