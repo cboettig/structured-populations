@@ -40,7 +40,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 	if (pars['sigma'] <= 0){
 		Vx = 1e8
 	}
-	if (any(Vx) < 0){
+	if (any(Vx < 0)){
 		warning(paste("Vx=",Vx))
 		Vx[Vx==0] = 0
 	}
