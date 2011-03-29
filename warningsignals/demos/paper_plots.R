@@ -18,7 +18,7 @@ all_indicators(	list(Deteriorating=deteriorating, Constant=constant, Empirical=d
 dev.off()
 
 
-## load output of figure2
+## load output of figure2.R
 load("5554848679.Rdat")
 
 ## use just indicators 1 and 2
