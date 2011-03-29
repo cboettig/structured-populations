@@ -10,7 +10,7 @@ social_plot(
 				        GlaciationI=data[[1]]$X_ts, 
 				        GlaciationII=data[[2]]$X_ts ),	
 				   indicators=indicators, method="kendall",
-                   cex.axis=2, cex.lab=2.3),
+                   cex.axis=1.5, cex.lab=1.5),
 	tags="warningsignals stochpop", 
 	height=length(indicators)*240, width=3*480
 )
