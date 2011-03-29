@@ -30,13 +30,20 @@ setLSN <- function(Xo, to, t1, pars, R){
 ## The apply calls needed to work with vector inputs as Xo (whole timeseries)
 		times <- matrix(c(to, t1), nrow=length(to))
 		out <- lapply(1:length(Xo), function(i){
-			lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
+			lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, 
+			      parms=pars, jac=jacfn) 
 		})
 		Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
 		Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 	}
 	## Handle badly defined parameters by creating very low probability returns
-	if(pars['sigma'] < 0 ) Vx = 1e8
+	if (pars['sigma'] < 0){
+		Vx = 1e8
+	}
+	if (Vx < 0){
+		warning(paste("Vx=",Vx))
+		Vx=0
+	}
 	return(list(Ex=Ex, Vx=Vx))
 }
 
