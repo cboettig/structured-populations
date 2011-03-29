@@ -34,7 +34,7 @@ load("5554848679.Rdat")
 load("5562383846.Rdat")
 social_plot(
 	plot.bootstrap_tau(
-		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]], 
+		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
 		cex.axis=1, ylim = c(0,2.8)), tags = "warningsingals stochpop", 
 			height=480*2, width=480*3
 	)
@@ -49,7 +49,7 @@ deut_labels <- c("GlaciationI", "GlaciationII")
 
 plt <- function(){
 	par(mfrow=c(1,3),  oma=c(4,4,4,4), mar=c(0,0,0,0))
-	plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
+	plot(CaCO3_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
 	mtext("CaCO3", NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
 	for(i in 1:2){
 		plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
@@ -60,6 +60,6 @@ plt <- function(){
 }
 
 social_plot(plt(), 	tags = "warningsingals stochpop", 
-			height=480, width=480*3)
+			height=480/1.5, width=480*1.5)
 
 

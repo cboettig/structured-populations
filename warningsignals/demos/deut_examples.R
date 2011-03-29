@@ -48,6 +48,6 @@ plt <- function(){
 }
 
 social_plot(plt(), 	tags = "warningsingals stochpop", 
-			height=480, width=480*3)
+			height=480/1.5, width=480*1.5)
 
 
