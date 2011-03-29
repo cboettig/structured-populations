@@ -36,7 +36,11 @@ setLSN <- function(Xo, to, t1, pars, R){
 		Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
 		Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
 	}
-	## Handle badly defined parameters by creating very low probability returns
+## Handle badly defined parameters by creating very low probability returns, needed particularly
+## for the L-BFGS-B bounded method, which can't handle Infs and does rather poorly...
+## Worth investigating a better way to handle this.  
+## Note errors can apply to some of the timeseries, possibly by estimates of m that
+## force system into bifurcation on later parameters (for which terms become undefined)
 	if (pars['sigma'] <= 0){
 		warning(paste("sigma=",pars["sigma"]))
 		Vx <- rep(1e12, length(Xo))
