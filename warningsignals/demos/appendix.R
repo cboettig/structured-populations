@@ -1,7 +1,11 @@
-
 source("load_CaCO3.R")
 CaCO3 <- X
 source("load_deut.R")
+##### WHY ARE THESE NECESSARY???
+load("5555038554.Rdat")
+source("../R/indicators.R")
+
+
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
 ## FIGURE 1
 social_plot(
