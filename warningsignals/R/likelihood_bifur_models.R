@@ -45,7 +45,7 @@ setLSN <- function(Xo, to, t1, pars, R){
 		warning(paste("sigma=",pars["sigma"]))
 		Vx <- rep(Inf, length(Xo))
 	}
-	if (any(Vx < 0)){
+	if (any(Vx < 0, na.rm=TRUE)){
 		warning(paste("discard negative Vx,  "))
 		Vx[Vx<0] <- Inf
 	}
