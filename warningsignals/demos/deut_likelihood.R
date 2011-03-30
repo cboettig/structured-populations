@@ -1,7 +1,8 @@
 load("5571632581.Rdat")
 require(warningsignals)
 require(socialR)
-
+nboot <- 8
+cpu <- 8
 
 mc <- lapply(1:3, function(i){
 	montecarlotest(m[[i]]$const, m[[i]]$timedep, nboot=nboot, cpu=cpu, GetParNames=FALSE)
