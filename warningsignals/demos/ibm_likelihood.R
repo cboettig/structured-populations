@@ -8,12 +8,12 @@ ibm_tags="warningsignals stochpop ibm"
 
 deterior_mc <- 
 		montecarlotest(deterior_m$const, deterior_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 save(list=ls(), file="ibm_likelihood.Rdat")
 constant_mc <- 
 		montecarlotest(constant_m$const, constant_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 
 save(list=ls(), file="ibm_likelihood.Rdat")
@@ -38,6 +38,6 @@ save(list=ls(), file="ibm_likelihood.Rdat")
 
 modelchoice_mc <- 
 		montecarlotest(deterior_LTC$timedep, deterior_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 social_plot(plot(modelchoice_mc), tags=ibm_tags)
 
