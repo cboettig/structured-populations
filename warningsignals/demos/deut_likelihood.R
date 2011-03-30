@@ -3,7 +3,7 @@ require(warningsignals)
 require(socialR)
 
 
-mc <- lapply(1:2, function(i){
+mc <- lapply(1:3, function(i){
 	montecarlotest(m[[i]]$const, m[[i]]$timedep, nboot=nboot, cpu=cpu, GetParNames=FALSE)
 })
 
