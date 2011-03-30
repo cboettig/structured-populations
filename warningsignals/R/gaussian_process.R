@@ -104,7 +104,7 @@ update.gauss <- function(m, X, method = c("Nelder-Mead",
 		pars=m$pars, X=X, method=method, ...)
 }
 loglik.gauss <- function(m) m$loglik
-getParameters.gauss <- function(m) m$pars
+getParameters.gauss <- function(m) c(m$pars, convergence=as.numeric(m$optim_output$convergence))
 # update the loglik (calculation rather than lookup)
 loglik_calc.gauss <- function(m) -lik.gauss(m$X, m$pars, m$setmodel)
 

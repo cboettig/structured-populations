@@ -147,9 +147,14 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 
 	## Density plots
 	if(type != "hist"){
+        if(shade_aic==FALSE){ 
+            plottype="n"
+        } else { 
+            plottype ="s"
+        }
 		## Plot the null distribution with appropriate shading
 		if(null_dist){ 
-			plot(nd, xlim=xlim, ylim=ylim, main=main, type="n", col=rgb(0,0,1,1), ...) 
+			plot(nd, xlim=xlim, ylim=ylim, main=main, type=plottype, col=rgb(0,0,1,1), ...) 
 			if(shade_p){
 				shade_p <- which(nd$x > pow$lr)
 				polygon(c(pow$lr,nd$x[shade_p]), c(0,nd$y[shade_p]), col=rgb(0,0,1,.3), border=rgb(0,0,1,.5))
@@ -162,8 +167,8 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 
 		## Plot the test distribution with appropriate shading
 		if(test_dist){
-			if(!null_dist) plot(td, xlim=xlim, main=main, type="n", col=rgb(1,0,0,1), ...)  ## just plot test dist 
-			else lines(td, type="n", col=rgb(1,0,0,1))
+			if(!null_dist) plot(td, xlim=xlim, main=main, type=plottype, col=rgb(1,0,0,1), ...)  ## just plot test dist 
+			else lines(td, type=plottype, col=rgb(1,0,0,1))
 			threshold_tail <- sort(pow$null_dist)[ round(pow$threshold*pow$nboot) ]
 			if(shade_power){
 				shade_power <- which(td$x > threshold_tail)
@@ -196,7 +201,10 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 		#abline(v=pow$lr, lwd=3, col="darkred", lty=2 )
 		points(pow$lr,yshift(1), cex=1.5, col="black", pch=25, fg="black", bg="black")
 	}
-	if(show_aic) abline(v=aic_line, lwd=3, col="darkgray", lty=3) 
+	if(show_aic){
+    #    abline(v=aic_line, lwd=3, col="darkgray", lty=3) 
+    	points(aic_line,yshift(1), cex=1.5, col="red", pch=25, fg="red", bg="red")
+}
 
 	## Calculate statistics
 	p <- pow$p
@@ -211,13 +219,32 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 #	if(aic_line < pow$lr){ print("AIC prefers test model")} else { print("AIC prefers null model") }	
 	print(paste("p = ",  p, ", power = ", pow$power))
 	if(print_text){
-		if(! is.na(match("p", show_text)) ) text(xshift(105), yshift(95), paste("Type I = ", round(p)),pos=2)
-		if(! is.na(match("power", show_text)) ) text(xshift(105), yshift(85), paste("Type II = ", round(1-pow$power,3)), pos=2)
-		if(! is.na(match("aic", show_text)) ) text(xshift(105), yshift(75), paste("AIC wrong in ", aic_wrong*100, "% of sims"), pos=2)
-		if(! is.na(match("reverse_p", show_text)) ) text(xshift(105), yshift(65), paste("p in reverse test ", pow$reverse_p), pos=2)
+		if (! is.na(match("p", show_text)) )
+            text(xshift(105), yshift(95), paste("Type I = ", round(p)),pos=2)
+		if (! is.na(match("power", show_text)) )
+            text(xshift(105), yshift(85), paste("Type II = ", round(1-pow$power,3)), pos=2)
+		if (! is.na(match("aic", show_text)) )
+            text(xshift(105), yshift(75), paste("AIC false alarm rate", aic_wrong*100, "%"), pos=2)
+		if (! is.na(match("aic", show_text)) )
+            text(xshift(105), yshift(70), paste("AIC missed detection rate", (1-aic_power)*100, "%"), pos=2)
+    	if (! is.na(match("reverse_p", show_text)) )
+            text(xshift(105), yshift(65), paste("p in reverse test ", pow$reverse_p), pos=2)
 	}
 	## add legend
-	if(legend) 
-		legend("topright", c("sim under Null", "sim under Test", "observed"), pch=c(15,15,46), lty=c(0,0,2), col=c(rgb(0,0,1,.5), rgb(1,0,0,.5), "darkred"))
+	if(legend){
+        if (shade==TRUE){
+		    legend("topright", c("sim under Null", "sim under Test", "observed"), 
+                   pch=c(15,15,25), fg=c("white", "white", "black"), col=c(rgb(0,0,1,.5), rgb(1,0,0,.5), "black"))
+        }
+        else if (shade_aic==TRUE & test_dist==TRUE){
+   		    legend("topright", c( paste("False Alarms (", aic_wrong*100, "%)", sep=""),
+                                  paste("Missed Events (", (1-aic_power)*100, "%)", sep="")), 
+                                  pch=c(15,15), col=c(rgb(1,.5,1,.5), rgb(1,1,0,.5)))
+        }
+        else if (shade_aic==TRUE & test_dist==FALSE){
+   		    legend("topright", paste("False Alarms (", aic_wrong*100, "%)", sep=""),
+                                  pch=15, col=rgb(1,.5,1,.5))
+        }
+    }
 }
 

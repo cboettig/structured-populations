@@ -1,4 +1,4 @@
-require(warningsignals)
+equire(warningsignals)
 
 PNG=TRUE
 PNG=FALSE
@@ -18,7 +18,7 @@ all_indicators(	list(Deteriorating=deteriorating, Constant=constant, Empirical=d
 dev.off()
 
 
-## load output of figure2.R
+## load output of figure2.R, 2000 reps
 load("5554848679.Rdat")
 
 ## use just indicators 1 and 2
@@ -33,8 +33,8 @@ dev.off()
 
 
 ## load output of figure 3
-load("35555677786.Rdat")
-
+#load("35555677786.Rdat")
+load("35563325713.Rdat")
 data_names <- c("Deteriorating", "Constant", "Empirical")
 
 if(PNG) {  png(file="figure3.png", width=480*1.5, height=480/1.5) 
