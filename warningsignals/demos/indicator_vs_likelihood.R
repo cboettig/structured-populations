@@ -22,7 +22,7 @@ comment <- paste(c(names(pars), ":", pars, "\\", names(sampling), ":", sampling,
 
 # initialize and fit models (could just use updateGauss instead of generic
 const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))  
-timedep <-updateGauss(const_LTC, pars, X, control=list(maxit=1000)) 
+timedep <-updateGauss(constOU, const_pars, X, control=list(maxit=1000)) 
 
 # Tau approach comparison
 #tau_var <- tau_dist_montecarlo(X, const, timedep, signal="Variance", nboot=nboot, cpu=cpu)
@@ -38,7 +38,7 @@ timedep <-updateGauss(const_LTC, pars, X, control=list(maxit=1000))
 
 ## MONTECARLO Non-parametric bootstrap using the exact values.  
 ## As noted above, in real data we would use the MLEs, which has the point-estimate problem.  
-out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot, GetParNames=FALSE)
+out <- montecarlotest(const, timedep, cpu=cpu, nboot=nboot)
 #social_plot(plot(out), file="indicator_vs_likelihood_mc.png", tag="warningsignals stochpop MC LSN", comment=comment)
 
 
