@@ -1,23 +1,30 @@
+## model_choice.R
 
-choosemodel <- function(X, nboot=160, cpu=16){
-const_pars <- c(Ro=1/max(time(X)), theta=mean(X), sigma=sd(X))
-# Fit a linearized transcritical bifurcation model
-	const <- updateGauss(constOU, const_pars, X, control=list(maxit=1000))
-	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), sigma=as.numeric(const$pars["sigma"]))
-	LTC <- updateGauss(timedep_LTC, pars, X, control=list(maxit=1000))
-	LSN <- updateGauss(timedep_LSN, pars, X, control=list(maxit=1000))
-	out <- montecarlotest(LTC, LSN, nboot=nboot, cpu=cpu)
-	plot(out)
-}
+## load libraries
+require(warningsignals)
+require(socialR)
+gitcommit()
 
+## load datafiles
 source("load_CaCO3.R")
-social_plot(choosemodel(X), file="CaCO3_modelchoice.png", tag=paste(tags, "MC", "modelchoice")) 
-
+CaCO3 <- X
 source("load_deut.R")
-social_plot(choosemodel(data[[3]]$X_ts), file="deut3_modelchoice.png", tag=paste("stochpop warningsignals deut", "MC", "modelchoice")) 
+deut3 <- data[[3]]$X_ts
 
+nboot <- 2000
+cpu <- 16
 
+## fit models
+CaCO3_LSN <- fit_models(CaCO3, "LSN")
+deut3_LSN <- fit_models(deut3, "LSN")
+CaCO3_LTC <- fit_models(CaCO3, "LTC")
+deut3_LTC <- fit_models(deut3, "LTC")
 
-load("5550314677.Rdat")
-social_plot(choosemodel(X), file="simdat_modelchoice.png", tag=paste(tags, "MC", "modelchoice")) 
+CaCO3_modelchoice <- montecarlotest(CaCO3_LTC$timedep, CaCO3_LSN$timedep, nboot=nboot, cpu=cpu)
+
+deut3_modelchoice <- montecarlotest(deut3_LTC$timedep, deut3_LSN$timedep, nboot=nboot, cpu=cpu)
+
+social_plot(plot(CaCO3_modelchoice), file="CaCO3.png", tag=paste(tags, "MC", "modelchoice CaCO3")) 
+
+social_plot(plot(deut3_modelchoice), file="deut3.png", tag=paste(tags, "MC", "modelchoice CaCO3")) 
 
