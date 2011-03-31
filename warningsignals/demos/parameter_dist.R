@@ -57,3 +57,28 @@ social_plot(plot_parameters(constant_mc), tag="sim constant warningsignals stoch
 social_plot(plot_parameters(deut3_mc), tag="sim deut3 warningsignals stochpop parameters") 
 
 
+
+
+
+load("35575554231.Rdat")
+converge_plot <- function(pow, ...){ 
+    converged <- (pow$test_par_dist[5,] == 0)
+    dens <- density(pow$test_par_dist[2,converged])
+    plot(dens, type="n", ...)
+    polygon(dens$x, dens$y, col="gray", border="darkgray")
+}
+
+plt <- function(){
+par(mfrow=c(1,2))
+    converge_plot(deterior_mc, main = "Deteriorating",
+                  xlab="estimated stablization loss rate, m")
+    converge_plot(constant_mc, main = "Constant", 
+                  xlab="estimated stablization loss rate, m")
+}
+social_plot(plt(), tags = "warningsingals stochpop", 
+			height=480, width=480*2)
+
+
+cairo_pdf(file="parameter_dist.pdf", width=7, height=7/2)
+    plt()
+dev.off()

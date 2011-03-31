@@ -82,7 +82,7 @@ compute_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Ske
 
 
 ## Compute and plot the given indicator
-plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=90, method=c("pearson", "kendall", "spearman"), ...)
+plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew", "Kurtosis", "CV"), windowsize=length(X)/2, xpos=0, ypos=90, method=c("kendall", "pearson", "spearman"), ...)
 ## Description
 ## Args:
 ##		X -- data, either ts object or matrix w/ time in col 1 and data in col 2
@@ -115,7 +115,7 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 
 }
 	
-compute_tau <- function(X, indicator, windowsize=length(X)/2, method=c("pearson", "kendall", "spearman"))
+compute_tau <- function(X, indicator, windowsize=length(X)/2, method=c("kendall", "pearson", "spearman"))
 ## unlike warning_stats, takes indicator as character instead of a function
 ## assumes X is ts object -- should add to a check(?)
 {
@@ -127,7 +127,7 @@ compute_tau <- function(X, indicator, windowsize=length(X)/2, method=c("pearson"
 
 
 
-all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), method=c("pearson", "kendall", "spearman"), ...)
+all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis"), method=c("kendall", "pearson", "spearman"), ...)
 ## Calc and plot all the leading indicators in a single frame plot
 ##		using a simple loop over the plot_indicator fn
 ## Args 
@@ -187,7 +187,7 @@ yshift <- function(ysteps){
 
 ################ DEPRICATED?? ##############
 
-warning_stats <- function(X, indicator, method=c("pearson", "kendall", "spearman")){
+warning_stats <- function(X, indicator, method=c("kendall", "pearson", "spearman")){
 	method <- match.arg(method)
 	if(is(X,"ts")){
 		w <- length(X)/2
@@ -201,7 +201,7 @@ warning_stats <- function(X, indicator, method=c("pearson", "kendall", "spearman
 	c(out$estimate, out$p.value)
 }
 
-show_stats <- function(X, indicator, xpos=20, ypos=0){
+show_stats <- function(X, indicator, xpos=20, ypos=0, method=c("kendall", "pearson", "spearman")){
 		w <- warning_stats(X, indicator)
 	text(xshift(xpos), yshift(ypos), paste(method, "coef=", round(w[1],2), "pval=", format.pval(w[2]) ) 
 #		 substitute(paste(method, "coef=", val, " (p ", pval, ")"), list(val=round(w[1],2),pval=format.pval(w[2])))
