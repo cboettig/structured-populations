@@ -12,7 +12,7 @@ source("load_deut.R")
 deut3 <- data[[3]]$X_ts
 
 nboot <- 2000
-cpu <- 16
+cpu <- 8
 
 ## fit models
 CaCO3_LSN <- fit_models(CaCO3, "LSN")
