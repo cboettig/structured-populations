@@ -1,7 +1,7 @@
 load("5571632581.Rdat")
 require(warningsignals)
 require(socialR)
-nboot <- 2000
+nboot <- 80
 cpu <- 16
 
 mc <- lapply(1:3, function(i){
@@ -23,7 +23,7 @@ plt <- function(){
 		mtext("Likelihood Ratio", SOUTH<-1, outer=TRUE, line=2) ## x-axis label
 }
 
-social_plot(plt(), 	tags = "warningsingals stochpop", 
+social_plot(plt(), 	tags = paste("warningsingals stochpop", nboot), 
 			height=480/1.5, width=480*1.5)
 
 
