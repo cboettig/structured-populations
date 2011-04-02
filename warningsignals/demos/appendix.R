@@ -41,7 +41,7 @@ social_plot(
     tags = "warningsingals stochpop", 
 	height=480*2, width=480*3)
 
-cairo_pdf(file="figure2_appendix.pdf", height=7*2, width=7*3)
+cairo_pdf(file="figure2_appendix.pdf", height=7*4/3, width=7*3/3)
 	plot.bootstrap_tau(
 		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
 		cex.axis=1, ylim = c(0,2.8))
@@ -51,6 +51,7 @@ dev.off()
 load("35555677786.Rdat")
 ## load the likelihood bootstraps, produced by deut_examples.Rdat -- should rerun with more replicates
 load("5562961240.Rdat")
+
 
 deut_labels <- c("GlaciationI", "GlaciationII")
 
@@ -66,7 +67,8 @@ plt <- function(){
 		mtext("Likelihood Ratio", SOUTH<-1, outer=TRUE, line=2) ## x-axis label
 }
 
-social_plot(plt(), 	tags = "warningsingals stochpop", 
-			height=480/1.5, width=480*1.5)
+#social_plot(plt(), 	tags = "warningsingals stochpop appendix deut CaCO3", height=480/1.5, width=480*1.5)
 
-
+cairo_pdf(file="figure3_appendix.pdf", width=7, height=3.5)
+plt()
+dev.off()
