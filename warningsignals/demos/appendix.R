@@ -47,10 +47,12 @@ cairo_pdf(file="figure2_appendix.pdf", height=7*4/3, width=7*3/3)
 		cex.axis=1, ylim = c(0,2.8))
 dev.off()
 
-## load output of figure3.R, for the CaCO3 data
+## load output of figure3.R, for the CaCO3 data, 2000 replicates
 load("35555677786.Rdat")
 ## load the likelihood bootstraps, produced by deut_examples.Rdat -- should rerun with more replicates
-load("5562961240.Rdat")
+#load("5562961240.Rdat") ## low replicates
+## 2000 replicates from deut_likelihood.R
+load("5592395409.Rdat")
 
 
 deut_labels <- c("GlaciationI", "GlaciationII")
