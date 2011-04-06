@@ -102,16 +102,37 @@ plot_indicator <- function(X, indicator=c("Autocorrelation", "Variance", "Skew",
 	}
 	Y <- compute_indicator(X, indicator, windowsize)
 	time_window <- time(X)[windowsize:length(X)]
-	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, lwd=2, ...)
+	plot(time_window, Y, xlim=c(start(X)[1], end(X)[1]), type="l", xlab="time", ylab=indicator, ...)
 	abline(v=time_window[1], lty="dashed")
 
 	out <- cor.test(time(X)[windowsize:length(X)], Y, method=method)
 
 	w <- c(out$estimate, out$p.value)
-	text(xshift(xpos), yshift(ypos), 
-		 #substitute(paste(method, "coef = ",  val, " (p ", pval, ")"), list(val=round(w[1],2),pval=format.pval(w[2]))), 
-		 paste(method, "coef=", round(w[1],2), "pval=", format.pval(w[2]) ), pos=4, cex=.9*par()$cex.lab
-		)
+    if (method=="kendall"){ 
+## newline character doesn't work
+#            text(xshift(xpos), yshift(ypos),
+#                 substitute(paste(tau == val, "\n (p== ", pval, ")"), list(val=round(w[1],2),pval=format.pval(w[2]))), 
+#            pos=4, cex=par()$cex.lab)
+            text(xshift(0), yshift(ypos),
+                 substitute(paste(tau == val), 
+                            list(val=round(w[1],2) )),
+                 pos=4, cex=par()$cex.axis)
+            text(xshift(0), yshift(ypos-20),
+                 substitute(paste("(",p == pval,")"), 
+                            list(pval=format.pval(w[2], digits=2))),
+                 pos=4, cex=par()$cex.axis)
+#            legend("topleft", substitute(tau == val, list(val=round(w[1],2) )))
+    }
+    else if (method=="pearson") {
+            text(xshift(xpos), yshift(ypos),
+                 substitute(paste(r == val, "\n (p== ", pval, ")"), list(val=round(w[1],2),pval=format.pval(w[2]))), 
+            pos=4, cex=par()$cex.lab)
+    }
+    else if (method=="spearman") {
+            text(xshift(xpos), yshift(ypos),
+                 substitute(paste(rho == val, " (p== ", pval, ")"), list(val=round(w[1],2),pval=format.pval(w[2]))), 
+            pos=4, cex=par()$cex.lab)
+    }
 
 }
 	
@@ -150,11 +171,11 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 
 ## mar is inner margins, in order bottom, left, top, right. 
 ## oma is outer margins, default to 0 
-	par(mfrow=c(m+1,n), oma=c(8,8,8,4), mar=c(0,2,0,2),...)
+	par(mfrow=c(m+1,n), oma=c(3,3,2,.2), mar=c(0,1,0,1), ...)
 	for(i in 1:n){
-		plot(X[[i]], type="o", ylab="data", xaxt="n", ...)
-		mtext(data_names[i],  NORTH<-3, cex=par()$cex.lab, line=2) ## data names on each col
-		if(i==1) mtext("data", WEST<-2, line=4, cex=par()$cex.lab)  ## "data" y-axis label
+		plot(X[[i]], type="l", ylab="data", xaxt="n", ...)
+		mtext(data_names[i],  NORTH<-3, cex=par()$cex.lab, line=1) ## data names on each col
+		if(i==1) mtext("data", WEST<-2, line=3, cex=par()$cex.lab, las=0)  ## "data" y-axis label
 	}
 ## Starts on next row, and goes across datasets
 	for(j in 1:m){
@@ -162,9 +183,9 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		} else {	xaxt <- "n"
 		}
 		for(i in 1:n){
-			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, method=method, ...) 
-			if(i==1) mtext(indicators[j], WEST<-2, line=4, cex=par()$cex.lab) ## stat name on each row
-			if(j==m) mtext("time", SOUTH<-1, line=4, cex=par()$cex.lab) ## x-axis label
+			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, method=method, xpos=-15, ...) 
+			if(i==1) mtext(indicators[j], WEST<-2, line=3, cex=.8*par()$cex.lab, las=0) ## stat name on each row
+			if(j==m) mtext("time", SOUTH<-1, line=2, cex=.8*par()$cex.lab) ## x-axis label
 		}
 	}
 }

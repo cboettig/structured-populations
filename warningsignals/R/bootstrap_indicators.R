@@ -63,7 +63,7 @@ plot.bootstrap_tau <- function(taus, show_p = FALSE, show_error=TRUE, ...){
 	m <- length(taus[[1]]) ## number of indicators
 
 	## set up m x n plot-matrix, no margins on subplots, add outer margins
-	par(mfrow=c(m,n), oma=c(8,8,8,4), mar=c(0,0,0,0))
+	par(mfrow=c(m,n), oma=c(3,4,3,2), mar=c(0,0,0,0), ...)
 
 	for(j in 1:m){
 		for(i in 1:n){
@@ -72,15 +72,16 @@ plot.bootstrap_tau <- function(taus, show_p = FALSE, show_error=TRUE, ...){
 			if(i > 1){ yaxt <- "n" 
 			} else { yaxt <- "s" }
 
-			plot(taus[[i]][[j]], show_p = show_p, show_error=show_error, xaxt = xaxt, yaxt=yaxt, ...)
-
-			if(j==1) mtext(data_names[i], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
+			plot(taus[[i]][[j]], show_p = show_p, show_error=show_error, 
+                 xaxt = xaxt, yaxt=yaxt, ...)
+			if(j==1) mtext(data_names[i], NORTH<-3, 
+                           cex=par()$cex.lab, line=1) ## data labels on top
 			if(i==1){
-				mtext(taus[[i]][[j]]$signal, WEST<-2, line=4) ## statistic name on first column
+				mtext(taus[[i]][[j]]$signal, WEST<-2, line=3, cex=par()$cex.lab) ## statistic name on first column
 				mtext(expression(paste("Prob Density of ", tau)),
-						WEST<-2, line=2, cex=.7*par()$cex.lab) ## statistic name on first column
+						WEST<-2, line=2, cex=.6*par()$cex.lab) ## statistic name 
 			}	
-			if(j==m & i==2) mtext(expression(paste(tau)), SOUTH<-1, line=4, cex=par()$cex.lab) ## x-axis label
+			if(j==m & i==2) mtext(expression(paste(tau)), SOUTH<-1, line=3, cex=par()$cex.lab) ## x-axis label
 		}
 	}
 }
