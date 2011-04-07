@@ -20,7 +20,7 @@ fit_models <- function(X, model=c("LTC", "LSN"), integrateOU=FALSE,
 								 control=list(maxit=2000), ...)
 		} 
 		else if (model=="LTC"){
-			const <- updateGauss(const_LSN, const_pars, X, method=optim_method, 
+			const <- updateGauss(const_LTC, const_pars, X, method=optim_method, 
 								 control=list(maxit=2000), ...)
 		}
 	} 
