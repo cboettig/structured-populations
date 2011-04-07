@@ -20,7 +20,7 @@ social_plot(
 
 
 ## fit models
-deterior_m<-fit_models(ibm_critical, "LSN", integrate_OU=TRUE)
+deterior_m<-fit_models(ibm_critical, "LSN", integrateOU=TRUE)
 constant_m<-fit_models(ibm_stable, "LSN")
 deterior_taus <- bootstrap_tau(deterior_m$X,
 							   deterior_m$const, deterior_m$timedep,
