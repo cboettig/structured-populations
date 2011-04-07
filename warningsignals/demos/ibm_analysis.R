@@ -4,9 +4,10 @@ load("ibm_sims.Rdat")
 require(socialR)
 require(warningsignals)
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 2
-cpu <-2 
+nboot <- 16
+cpu <-16 
 ibm_tags="warningsignals stochpop ibm" 
+data_names <- c("Deteriorating", "Constant")
 
 social_plot(
 	all_indicators(	list(deteriorating=ibm_critical, 
@@ -19,7 +20,7 @@ social_plot(
 
 
 ## fit models
-deterior_m<-fit_models(ibm_critical, "LSN")
+deterior_m<-fit_models(ibm_critical, "LSN", integrate_OU=TRUE)
 constant_m<-fit_models(ibm_stable, "LSN")
 deterior_taus <- bootstrap_tau(deterior_m$X,
 							   deterior_m$const, deterior_m$timedep,
@@ -40,15 +41,18 @@ social_plot(
 
 deterior_mc <- 
 		montecarlotest(deterior_m$const, deterior_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
+
+
+social_plot(plot(deterior_mc), tags=ibm_tags)
 
 constant_mc <- 
 		montecarlotest(constant_m$const, constant_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 
 
-plt <- function()
+plt <- function(){
 	par(mfrow=c(1,2),  oma=c(6,6,6,4), mar=c(0,0,0,0))
 	plot(deterior_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
 	mtext(data_names[1], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
@@ -58,7 +62,7 @@ plt <- function()
 	mtext(data_names[2], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
 	mtext("Likelihood Ratio", SOUTH<-1, line=4) ## x-axis label
 	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
-
+}
 social_plot(plt(), tags=ibm_tags)
 
 

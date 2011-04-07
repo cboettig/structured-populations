@@ -2,27 +2,40 @@
 
 ## A few wrapper functions to make it easy to bootstrap a secified set of indicator statistics
 
-fit_models <- function(X, model=c("LTC", "LSN"), 
+fit_models <- function(X, model=c("LTC", "LSN"), integrateOU=FALSE,  
 					   optim_method = c("Nelder-Mead", "BFGS", "CG", "L-BFGS-B", "SANN"),
 					   ...){
 	optim_method <- match.arg(optim_method)
 	lower <- -Inf
 	upper <- Inf
-	if(optim_method=="L-BFGS-B"){
+	if( optim_method=="L-BFGS-B"){
 		lower = c(0, -Inf, -Inf, 0)
 		upper = c(Inf, 0, Inf, Inf)
 	}
 	const_pars <- c(Ro=as.numeric(1/max(time(X))), theta=as.numeric(mean(X)), sigma=as.numeric(sd(X)))
 # Fit a linearized transcritical bifurcation model
+	if (integrateOU){
+		if (model=="LSN"){
+			const <- updateGauss(const_LSN, const_pars, X, method=optim_method, 
+								 control=list(maxit=2000), ...)
+		} 
+		else if (model=="LTC"){
+			const <- updateGauss(const_LSN, const_pars, X, method=optim_method, 
+								 control=list(maxit=2000), ...)
+		}
+	} 
+	else {	
 	const <- updateGauss(constOU, const_pars, X, method=optim_method, 
 						 control=list(maxit=2000), ...)
+	}
 	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), 
 			  sigma=as.numeric(const$pars["sigma"]))
 
-	if(model=="LTC"){
+	if (model=="LTC"){
 		timedep <- updateGauss(timedep_LTC, pars, X, method=optim_method, 
 							   control=list(maxit=2000), upper=upper, lower=lower, ...)
-	} else if(model=="LSN"){
+	} 
+	else if (model=="LSN"){
 		timedep <- updateGauss(timedep_LSN, pars, X, method=optim_method, 
 							   control=list(maxit=2000), upper=upper, lower=lower, ...)
 	}
