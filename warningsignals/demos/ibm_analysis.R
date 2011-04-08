@@ -63,7 +63,7 @@ plt <- function(){
 	mtext("Likelihood Ratio", SOUTH<-1, line=4) ## x-axis label
 	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
 }
-social_plot(plt(), tags=ibm_tags)
+social_plot(plt(), tags=ibm_tags, width=2*480)
 
 
 
