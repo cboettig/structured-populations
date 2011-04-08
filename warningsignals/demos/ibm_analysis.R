@@ -4,7 +4,7 @@ load("ibm_sims.Rdat")
 require(socialR)
 require(warningsignals)
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 16
+nboot <- 32
 cpu <-16 
 ibm_tags="warningsignals stochpop ibm" 
 data_names <- c("Deteriorating", "Constant")

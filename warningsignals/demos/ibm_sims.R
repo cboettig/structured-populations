@@ -1,6 +1,6 @@
 # Simulate a dataset from the full individual, nonlinear model
-T<- 40*25
-n_pts <- 201
+T<- 1000
+n_pts <- 20
 require(stochPop)
 pars = c(Xo = 730, e = 0.5, a = 100, K = 1000, h = 200, 
     i = 0, Da = .09, Dt = 0, p = 2)
@@ -19,5 +19,5 @@ ibm_stable  <- ts(sn$x1,start=sn$time[1], deltat=sn$time[2]-sn$time[1])
 plot(ibm_critical, cex.lab=2, cex.axis=2, lwd=1, xlab="time", ylab="pop")
 lines(ibm_stable)
 
-save(list=c(ibm_critical, ibm_stable), file="ibm_sims.Rdat")
+save(list=c("ibm_critical", "ibm_stable"), file="ibm_sims.Rdat")
 
