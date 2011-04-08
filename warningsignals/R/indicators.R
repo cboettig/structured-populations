@@ -173,9 +173,9 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 ## oma is outer margins, default to 0 
 	par(mfrow=c(m+1,n), oma=c(3,3,2,.2), mar=c(0,1,0,1), ...)
 	for(i in 1:n){
-		plot(X[[i]], type="l", ylab="data", xaxt="n", ...)
+		plot(X[[i]], type="l", ylab="Data", xaxt="n", ...)
 		mtext(data_names[i],  NORTH<-3, cex=par()$cex.lab, line=1) ## data names on each col
-		if(i==1) mtext("data", WEST<-2, line=3, cex=par()$cex.lab, las=0)  ## "data" y-axis label
+		if(i==1) mtext("Data", WEST<-2, line=3, cex=par()$cex.lab, las=0)  ## "data" y-axis label
 	}
 ## Starts on next row, and goes across datasets
 	for(j in 1:m){

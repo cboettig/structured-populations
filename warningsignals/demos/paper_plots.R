@@ -1,8 +1,5 @@
 require(warningsignals)
 
-PNG=TRUE
-PNG=FALSE
-
 JPEG=TRUE
 
 #load output of figure1.R
