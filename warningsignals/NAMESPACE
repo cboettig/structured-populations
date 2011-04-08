@@ -27,4 +27,7 @@ export(fit_models, bootstrap_tau, plot.bootstrap_tau)
 export(dakos_data_processing, plot.dakos)
 #export(heteroOU)
 
-#useDynLib(warningsignals)
+
+export(saddle_node_ibm)
+
+useDynLib(warningsignals)

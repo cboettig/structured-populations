@@ -1,0 +1,5 @@
+#PKG_CPPFLAGS=-Wall -fopenmp
+#PKG_LIBS=-lm -lgsl -lgslcblas -O4 -funroll-loops -lgomp 
+
+PKG_CPPFLAGS=-Wall
+PKG_LIBS=-lm -lgsl -lgslcblas -O4 -funroll-loops 
