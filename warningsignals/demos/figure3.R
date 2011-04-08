@@ -24,24 +24,24 @@ deut3_m <- fit_models(deut3, "LSN")
 
 
 ## montecarlo likelihood
-cpu <- 8
-nboot <- 2000
+cpu <- 16
+nboot <- 80
 
 deterior_mc <- 
 		montecarlotest(deterior_m$const, deterior_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 constant_mc <- 
 		montecarlotest(constant_m$const, constant_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 CaCO3_mc <- 
 		montecarlotest(CaCO3_m$const, CaCO3_m$timedep,
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 deut3_mc <- 
 		montecarlotest(deut3_m$const, deut3_m$timedep, 
-		cpu=cpu, nboot=nboot, GetParNames=FALSE)
+		cpu=cpu, nboot=nboot)
 
 
 save(list=ls(), file="figure3.Rdat")

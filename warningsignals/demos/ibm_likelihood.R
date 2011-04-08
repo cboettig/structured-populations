@@ -1,3 +1,4 @@
+# ibm_likelihood.R
 load("5572028881.Rdat")
 require(socialR)
 require(warningsignals)
@@ -18,7 +19,8 @@ constant_mc <-
 
 save(list=ls(), file="ibm_likelihood.Rdat")
 
-plt <- function()
+data_names <- c("Deteriorating", "Constant")
+plt <- function(){
 	par(mfrow=c(1,2),  oma=c(6,6,6,4), mar=c(0,0,0,0))
 	plot(deterior_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
 	mtext(data_names[1], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
@@ -27,8 +29,7 @@ plt <- function()
 	plot(constant_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="")
 	mtext(data_names[2], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
 	mtext("Likelihood Ratio", SOUTH<-1, line=4) ## x-axis label
-	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
-
+}
 social_plot(plt(), tags=ibm_tags)
 
 
