@@ -15,9 +15,13 @@ pars = c(Xo = 730, e = 0.5, a = 100, K = 1000, h = 200,
 sn <- saddle_node_ibm(pars, times=seq(0,T, length=n_pts))
 ibm_stable  <- ts(sn$x1,start=sn$time[1], deltat=sn$time[2]-sn$time[1])
 
-
+plt <- function(){
 plot(ibm_critical, cex.lab=2, cex.axis=2, lwd=1, xlab="time", ylab="pop")
 lines(ibm_stable)
+}
+
+require(socialR)
+social_plot(plt(), tags="ibm stochpop warningsignals")
 
 save(list=c("ibm_critical", "ibm_stable"), file="ibm_sims.Rdat")
 
