@@ -13,7 +13,7 @@ source("../R/indicators.R")
 indicators <- c("Variance", "Autocorrelation")
 
 
-if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4, width=183, units="mm", quality=100, res=150)
+if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure1.pdf",height=length(indicators)*7/2, width=3*7) }
 all_indicators(	list(Deteriorating=deteriorating, Constant=constant, GlaciationI=data[[1]]$X_ts, GlaciationII=data[[2]]$X_ts, GlaciationIII=data[[3]]$X_ts),	
 					indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5)
