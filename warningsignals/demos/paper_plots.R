@@ -7,10 +7,10 @@ load("5554763401.Rdat")
 source("../R/indicators.R")
 
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-#indicators <- c("Variance", "Autocorrelation")
+indicators <- c("Variance", "Autocorrelation")
 
 
-if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*89/4, width=89, units="mm", quality=100, res=150)
+if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure1.pdf",height=length(indicators)*7/2, width=3*7) }
 all_indicators(	list(Deteriorating=deteriorating, Constant=constant, Empirical=deut3),	
 					indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5)
@@ -24,7 +24,7 @@ load("5554848679.Rdat")
 #deterior_taus <- deterior_taus[1:2]; constant_taus <-  constant_taus[1:2]; deut3_taus <- deut3_taus[1:2]
 
 
-if(JPEG) { jpeg(file="Boettiger_fig2.jpg", height=length(indicators)*89/3, width=89, units="mm", quality=100, res=150)
+if(JPEG) { jpeg(file="Boettiger_fig2.jpg", height=length(indicators)*183/3, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure2.pdf", width=3*7/3, height=7*length(constant_taus)/3) }
 plot.bootstrap_tau(list(Deteriorating=deterior_taus, Constant=constant_taus, Empirical=deut3_taus), 
 					cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8))
@@ -36,7 +36,7 @@ dev.off()
 load("35563325713.Rdat")
 data_names <- c("Deteriorating", "Constant", "Empirical")
 
-if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=89/2, width=89, units="mm", quality=100, res=150)
+if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=183/2, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure3.pdf", width=7*3/3, height=3.5) }
 
 	par(mfrow=c(1,3),  oma=c(3,3,3,1), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
