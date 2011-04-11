@@ -61,7 +61,7 @@ if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm",
 #	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
 	for (i in 1:3){
 		plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,600))
-   		mtext(deut_labels[i], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
+   		mtext(deut_labels[i], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
         if (i==1)
             mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
 }
