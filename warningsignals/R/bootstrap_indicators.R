@@ -76,7 +76,7 @@ plot.bootstrap_tau <- function(taus, show_p = FALSE, show_error=TRUE, ...){
 	m <- length(taus[[1]]) ## number of indicators
 
 	## set up m x n plot-matrix, no margins on subplots, add outer margins
-	par(mfrow=c(m,n), oma=c(3,3,2,.2), mar=c(0,0,0,0), ...)
+	par(mfrow=c(m,n), oma=c(3,4,2,.2), mar=c(0,0,0,0), ...)
 
 	for(j in 1:m){
 		for(i in 1:n){
