@@ -6,6 +6,7 @@ JPEG=TRUE
 load("5554763401.Rdat")
 source("load_deut.R")
 source("../R/indicators.R")
+source("../R/boostrap_indicators.R")
 
 #indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
 indicators <- c("Variance", "Autocorrelation")
