@@ -25,7 +25,7 @@ load("5562383846.Rdat")  #kendall, 2000
 
 ## use just indicators 1 and 2: as in deterior_taus[1:2] (var and autocorr)
 
-if(JPEG) { jpeg(file="Boettiger_fig2.jpg", height=(2*37, width=183, units="mm", quality=100, res=150)
+if (JPEG){ jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure2.pdf", width=3*7/3, height=7*length(constant_taus)/3) }
 plot.bootstrap_tau(list(Deteriorating=deterior_taus[1:2], Constant=constant_taus[1:2], GlaciationI=taus[[1]][1:2], GlaciationII=taus[[2]][1:2], GlaciationIII=taus[[3]][1:2]), 
 					cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8))
