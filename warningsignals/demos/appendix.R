@@ -31,7 +31,9 @@ dev.off()
 ## load output of figure2.R, for the CaCO3 data
 load("5554848679.Rdat")
 ## Load model fits and tau bootstraps.  This file produced by deut_examples.Rdat with 2000 replicates
-load("5571632581.Rdat")
+#load("5571632581.Rdat") # pearson, 2000
+load("5562383846.Rdat")  #kendall, 2000
+
 source("../R/bootstrap_indicators.R")
 source("../R/tau_dist_montecarlo.R")
 social_plot(
