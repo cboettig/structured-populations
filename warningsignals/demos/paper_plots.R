@@ -27,31 +27,44 @@ load("5562383846.Rdat")  #kendall, 2000
 
 if (JPEG){ jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure2.pdf", width=3*7/3, height=7*length(constant_taus)/3) }
-plot.bootstrap_tau(list(Deteriorating=deterior_taus[1:2], Constant=constant_taus[1:2], GlaciationI=taus[[1]][1:2], GlaciationII=taus[[2]][1:2], GlaciationIII=taus[[3]][1:2]), 
-					cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8))
+plot.bootstrap_tau(list(Deteriorating=deterior_taus[1:2], 
+                   Constant=constant_taus[1:2], GlaciationI=taus[[1]][1:2], 
+                   GlaciationII=taus[[2]][1:2], GlaciationIII=taus[[3]][1:2]), 
+				   cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxs="i")
 dev.off()
 
 
 ## load output of figure 3
-#load("35555677786.Rdat")
 load("35563325713.Rdat")
+## 2000 replicates from deut_likelihood.R
+load("5592395409.Rdat")
+
+
 data_names <- c("Deteriorating", "Constant", "Empirical")
 
-if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=37*length(indicators), width=183, units="mm", quality=100, res=150)
+deut_labels <- c("GlaciationI", "GlaciationII", "GlaciationIII")
+
+if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure3.pdf", width=7*3/3, height=3.5) }
 
-	par(mfrow=c(1,3),  oma=c(3,3,3,1), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
-	plot(deterior_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), xlim=c(0,90))
+	par(mfrow=c(1,5),  oma=c(3,3,3,1), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
+	plot(deterior_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), xlim=c(0,40), yaxs="i")
 	mtext(data_names[1], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
 	mtext("Probability density", WEST<-2, line=2, cex=par()$cex.lab) ## statistic name on first column
 
-	plot(constant_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,90))
+	plot(constant_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,40), yaxs="i")
 	mtext(data_names[2], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
-	mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
+#	mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
 
-	plot(deut3_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,90)  )
-	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
-
+#	plot(deut3_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,90)  )
+#	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
+	for (i in 1:3){
+		plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,600), yaxs="i")
+   		mtext(deut_labels[i], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
+        if (i==1)
+            mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
+}
+	
 dev.off()
 
 
