@@ -15,7 +15,7 @@ if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5),
 } else { cairo_pdf(file="figure1.pdf",height=length(indicators)*7/2, width=3*7) }
 all_indicators(	list(Deteriorating=deteriorating, Constant=constant, 
                 GlaciationI=data[[1]]$X_ts, GlaciationII=data[[2]]$X_ts, GlaciationIII=data[[3]]$X_ts),	
-				indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i", lab=c(5,5,7))
+				indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i")
 dev.off()
 
 
