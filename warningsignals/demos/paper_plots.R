@@ -31,7 +31,7 @@ if (JPEG){ jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", q
 plot.bootstrap_tau(list(Deteriorating=deterior_taus[1:2], 
                    Constant=constant_taus[1:2], GlaciationI=taus[[1]][1:2], 
                    GlaciationII=taus[[2]][1:2], GlaciationIII=taus[[3]][1:2]), 
-				   cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 2.6, 3), xaxp=c(-1,1,5))
+				   cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
 
 
