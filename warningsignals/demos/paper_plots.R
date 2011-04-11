@@ -49,7 +49,7 @@ deut_labels <- c("GlaciationI", "GlaciationII", "GlaciationIII")
 if(JPEG) { jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm", quality=100, res=150)
 } else { cairo_pdf(file="figure3.pdf", width=7*3/3, height=3.5) }
 
-	par(mfrow=c(1,5),  oma=c(3,3,3,1), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
+	par(mfrow=c(1,5),  oma=c(3,3,2,.2), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
 	plot(deterior_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), xlim=c(0,40))
 	mtext(data_names[1], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
 	mtext("Probability density", WEST<-2, line=2, cex=par()$cex.lab) ## statistic name on first column
