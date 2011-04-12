@@ -48,7 +48,7 @@ load("35563325713.Rdat")
 load("5592395409.Rdat")
 
 
-data_names <- c( "Constant", "Deteriorating", "Glaciation", Algae)
+data_names <- c( "Constant", "Deteriorating", "Glaciation", "Algae")
 
 deut_labels <- c("GlaciationI", "GlaciationII", "GlaciationIII")
 
