@@ -36,8 +36,8 @@ load("5562383846.Rdat")  #kendall, 2000
 jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
 plot.bootstrap_tau(list(Constant=constant_taus[1:2],
                    Deteriorating=deterior_taus[1:2], 
-                   Glaciation=taus[[3]][1:2]), 
-                   Algae=drake$taus[["H6"]][1:2],
+                   Glaciation=taus[[3]][1:2], 
+                   Algae=drake$taus[["H6"]][1:2]),
 				   cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
 
