@@ -3,6 +3,7 @@ require(warningsignals)
 
 #load output of figure1.R
 load("5554763401.Rdat")  ## Simulated data from LSN with and without an impending collapse.  
+deterior <- deteriorating  ## Watch out for name collisions with all these data sets
 source("load_deut.R")    ## Deuterium data runs
 ## should load the CaCO3 data and assign it to a name if you want it
 
@@ -17,8 +18,8 @@ source("../R/bootstrap_indicators.R")
 indicators <- c("Variance", "Autocorrelation")
 
 
-jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
-all_indicators(	list(Constant=constant, Deteriorating=deteriorating, 
+#jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
+all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
 				indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i")
 dev.off()
