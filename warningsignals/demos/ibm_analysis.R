@@ -20,7 +20,8 @@ social_plot(
 
 
 ## fit models
-deterior_m<-fit_models(ibm_critical, "LSN", integrateOU=TRUE)
+#deterior_m<-fit_models(ibm_critical, "LSN", integrateOU=TRUE)
+deterior_m<-fit_models(ibm_critical, "LSN")
 constant_m<-fit_models(ibm_stable, "LSN")
 deterior_taus <- bootstrap_tau(deterior_m$X,
 							   deterior_m$const, deterior_m$timedep,
@@ -43,12 +44,15 @@ deterior_mc <-
 		montecarlotest(deterior_m$const, deterior_m$timedep, 
 		cpu=cpu, nboot=nboot)
 
-
+## Plot just the deteriorating 
 social_plot(plot(deterior_mc), tags=ibm_tags)
 
 constant_mc <- 
 		montecarlotest(constant_m$const, constant_m$timedep, 
 		cpu=cpu, nboot=nboot)
+
+## Plot just the constant
+social_plot(plot(deterior_mc), tags=ibm_tags)
 
 
 
