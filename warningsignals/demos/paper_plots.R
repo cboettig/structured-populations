@@ -63,10 +63,10 @@ jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm", quality=10
 
     mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
 
-	plot(mc[[3]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=xlim)
+	plot(mc[[3]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,90))
    	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
 
-   	plot(drake$mc[["H6"]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=xlim)
+   	plot(drake$mc[["H6"]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,40))
    	mtext(data_names[4], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
 
    	
