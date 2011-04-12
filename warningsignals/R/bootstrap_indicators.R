@@ -28,14 +28,21 @@ fit_models <- function(X, model=c("LTC", "LSN"), integrateOU=FALSE,
 	const <- updateGauss(constOU, const_pars, X, method=optim_method, 
 						 control=list(maxit=2000), ...)
 	}
-	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), 
-			  sigma=as.numeric(const$pars["sigma"]))
 
 	if (model=="LTC"){
+    	pars <- c(Ro=as.numeric(const$pars["Ro"]), m=0, theta=mean(X), 
+    			  sigma=as.numeric(const$pars["sigma"]))
 		timedep <- updateGauss(timedep_LTC, pars, X, method=optim_method, 
 							   control=list(maxit=2000), upper=upper, lower=lower, ...)
 	} 
 	else if (model=="LSN"){
+
+        # guess LSN parameters from OU parameterization
+        guess_Ro <- as.numeric(const$pars['Ro']^2)
+        guess_theta <- as.numeric(const$pars['theta']+const$pars['Ro'] )
+        guess_sigma<- as.numeric(const$pars['sigma']/sqrt(2*const$pars['Ro']+const$pars['theta']))
+    	pars <- c(Ro=guess_Ro, m=0, theta=guess_theta, sigma=guess_sigma)
+
 		timedep <- updateGauss(timedep_LSN, pars, X, method=optim_method, 
 							   control=list(maxit=2000), upper=upper, lower=lower, ...)
 	}
