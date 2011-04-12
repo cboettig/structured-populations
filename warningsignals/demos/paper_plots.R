@@ -1,7 +1,5 @@
 require(warningsignals)
-gitcommit()
 
-JPEG=TRUE
 
 #load output of figure1.R
 load("5554763401.Rdat")  ## Simulated data from LSN with and without an impending collapse.  
@@ -19,8 +17,7 @@ source("../R/bootstrap_indicators.R")
 indicators <- c("Variance", "Autocorrelation")
 
 
-if(JPEG){ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
-} else { cairo_pdf(file="figure1.pdf",height=length(indicators)*7/2, width=3*7) }
+jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deteriorating, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
 				indicators=indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i")
@@ -35,8 +32,7 @@ load("5554848679.Rdat")
 load("5562383846.Rdat")  #kendall, 2000
 
 ## use just indicators 1 and 2: as in deterior_taus[1:2] (var and autocorr)
-if (JPEG){ jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
-} else { cairo_pdf(file="figure2.pdf", width=3*7/3, height=7*length(constant_taus)/3) }
+jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
 plot.bootstrap_tau(list(Constant=constant_taus[1:2],
                    Deteriorating=deterior_taus[1:2], 
                    Glaciation=taus[[3]][1:2]), 
