@@ -160,13 +160,13 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 {
 	if(is(X, "list")){
 		n <- length(X) # number of datasets
-		data_names <- names(X) 
 	} else if (is(X, "ts")){
 		n <- 1 # number of datasets
 		X <- list(X) 
 	} else { 
 		warning("class of X not recognized")
 	}
+    data_names <- names(X)
 	m <- length(indicators) # number of indicators
 
 ## mar is inner margins, in order bottom, left, top, right. 
