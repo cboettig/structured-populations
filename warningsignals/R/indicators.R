@@ -185,7 +185,7 @@ all_indicators <- function(X, indicators = c("Variance", "Autocorrelation", "Ske
 		for(i in 1:n){
 			plot_indicator(X[[i]], indicators[j], xaxt=xaxt, method=method, xpos=-15, ...) 
 			if(i==1) mtext(indicators[j], WEST<-2, line=3, cex=par()$cex.lab, las=0) ## stat name on each row
-			if(j==m) mtext("time", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
+			if(j==m & i==2) mtext("Time", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
 		}
 	}
 }
