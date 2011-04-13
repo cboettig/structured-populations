@@ -13,6 +13,7 @@ drake <- out
 
 source("../R/indicators.R")
 source("../R/bootstrap_indicators.R")
+source("../R/montecarlotest.R")
 
 indicators <- c("Variance", "Autocorrelation")
 jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
