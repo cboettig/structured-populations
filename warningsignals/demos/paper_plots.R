@@ -23,7 +23,7 @@ dev.off()
 
 ### APPENDIX 
 appendix_indicators <- c("Skew")
-jpeg(file="Boettiger_fig1_appendix.jpg", height=length(appendix_indicators)*183/4*(1/5), width=183, units="mm", quality=100, res=150)
+jpeg(file="Boettiger_fig1_appendix.jpg", height=37*1.5, width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
 				indicators=appendix_indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i")
