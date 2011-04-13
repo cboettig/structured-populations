@@ -221,7 +221,7 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 	if(print_text){
 		if (! is.na(match("p", show_text)) )
             text(xshift(105), yshift(85), paste("Type I = ", round(p,3), 
-            "\n Type II = ", round(1-pow$power,3)),pos=2, cex=par()$cex.lab)
+            "\n Type II = ", round(1-pow$power,3)),pos=2, cex=par()$cex.lab/.8)
 #		if (! is.na(match("power", show_text)) )
  #           text(xshift(105), yshift(85), paste("Type II = ", round(1-pow$power,3)), pos=2)
 		if (! is.na(match("aic", show_text)) )
