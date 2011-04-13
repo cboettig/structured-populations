@@ -22,7 +22,7 @@ all_indicators(	list(Constant=constant, Deteriorating=deterior,
 dev.off()
 
 ### APPENDIX 
-appendix_indicators <- c("Skew", "Kurtosis")
+appendix_indicators <- c("Skew", "CV")
 jpeg(file="Boettiger_fig1_appendix.jpg", height=length(appendix_indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
