@@ -22,8 +22,8 @@ all_indicators(	list(Constant=constant, Deteriorating=deterior,
 dev.off()
 
 ### APPENDIX 
-appendix_indicators <- c("Skew", "CV")
-jpeg(file="Boettiger_fig1_appendix.jpg", height=length(appendix_indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
+appendix_indicators <- c("Skew")
+jpeg(file="Boettiger_fig1_appendix.jpg", height=length(appendix_indicators)*183/4*(1/5), width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
 				indicators=appendix_indicators, cex.axis=.5, cex.lab=.6, lwd=.5, yaxs="i")
@@ -47,12 +47,12 @@ plot.bootstrap_tau(list(Constant=constant_taus[1:2],
 dev.off()
 
 ########## APPENDIX PLOT
-## use just indicators 3 and 4: skew & Kurtosis
-jpeg(file="Boettiger_fig2_appendix.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
-plot.bootstrap_tau(list(Constant=constant_taus[3:4],
-                   Deteriorating=deterior_taus[3:4], 
-                   Glaciation=taus[[3]][3:4], 
-                   Algae=drake$taus[["H6"]][3:4]),
+## use just indicators 3: skew & Kurtosis
+jpeg(file="Boettiger_fig2_appendix.jpg", height=37, width=183, units="mm", quality=100, res=150)
+plot.bootstrap_tau(list(Constant=constant_taus[3],
+                   Deteriorating=deterior_taus[3], 
+                   Glaciation=taus[[3]][3], 
+                   Algae=drake$taus[["H6"]][3]),
 				   cex.axis=.6, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
 
