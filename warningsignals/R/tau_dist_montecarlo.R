@@ -83,10 +83,10 @@ plot.tau_dist_montecarlo <- function(out, show_p=TRUE, show_error=FALSE, thresho
 		threshold_tail <- sort(null_dist)[ round(threshold*nboot) ]
 		power <- sum(test_dist > threshold_tail)/nboot
 		p <- 1-sum(null_dist < out$observed[1])/nboot
-		text(xshift(0), yshift(95), paste("Type I:", round(p,3)), pos=4,
+		text(xshift(0), yshift(95), paste("Type I:", round(p,3), "\n Type II:", round(1-power,3)), pos=4,
              cex=par()$cex.lab)
-		text(xshift(0), yshift(85), paste("Type II:", round(1-power,3)),
-             pos=4, cex=par()$cex.lab )
+#		text(xshift(0), yshift(85), paste("Type II:", round(1-power,3)),
+ #            pos=4, cex=par()$cex.lab )
 	}
 }
 
