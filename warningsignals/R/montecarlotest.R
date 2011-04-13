@@ -237,12 +237,12 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
                    pch=c(15,15,25), fg=c("white", "white", "black"), col=c(rgb(0,0,1,.5), rgb(1,0,0,.5), "black"))
         }
         else if (shade_aic==TRUE & test_dist==TRUE){
-   		    legend("topright", c( paste("False Alarms (", aic_wrong*100, "%)", sep=""),
-                                  paste("Missed Events (", (1-aic_power)*100, "%)", sep="")), 
+   		    legend("topright", c( paste("False Alarms (", round(aic_wrong*100,3), "%)", sep=""),
+                                  paste("Missed Events (", round((1-aic_power)*100,3), "%)", sep="")), 
                                   pch=c(15,15), col=c(rgb(1,.5,0,.5), rgb(1,1,0,.5)))
         }
         else if (shade_aic==TRUE & test_dist==FALSE){
-   		    legend("topright", paste("False Alarms (", aic_wrong*100, "%)", sep=""),
+   		    legend("topright", paste("False Alarms (", round(aic_wrong*100,3), "%)", sep=""),
                                   pch=15, col=rgb(1,.5,0,.5))
         }
     }
