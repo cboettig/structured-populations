@@ -220,7 +220,7 @@ plot.pow <- function(pow, main="", legend=FALSE, type="density", test_dist=TRUE,
 	print(paste("p = ",  p, ", power = ", pow$power))
 	if(print_text){
 		if (! is.na(match("p", show_text)) )
-            text(xshift(105), yshift(95), paste("Type I = ", format.pval(p)),pos=2)
+            text(xshift(105), yshift(95), paste("Type I = ", round(p,3)),pos=2)
 		if (! is.na(match("power", show_text)) )
             text(xshift(105), yshift(85), paste("Type II = ", round(1-pow$power,3)), pos=2)
 		if (! is.na(match("aic", show_text)) )
