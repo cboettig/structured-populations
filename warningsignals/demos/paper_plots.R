@@ -12,6 +12,7 @@ load("reanalyze.Rdat")
 drake <- out
 
 source("../R/indicators.R")
+source("../R/tau_dist_montecarlo.R")
 source("../R/bootstrap_indicators.R")
 source("../R/montecarlotest.R")
 
