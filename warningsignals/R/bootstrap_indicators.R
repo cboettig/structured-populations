@@ -99,7 +99,7 @@ plot.bootstrap_tau <- function(taus, show_p = FALSE, show_error=TRUE, ...){
 			if(i==1){
 				mtext(taus[[i]][[j]]$signal, WEST<-2, line=3, cex=par()$cex.lab) ## statistic name on first column
 				mtext(expression(paste("Prob Density of ", tau)),
-						WEST<-2, line=2, cex=.6*par()$cex.lab) ## statistic name 
+						WEST<-2, line=2, cex=.8*par()$cex.lab) ## statistic name 
 			}	
 			if(j==m & i==2) mtext(expression(paste("Correlation coefficient, ", tau)), SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
 		}

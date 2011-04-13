@@ -16,7 +16,7 @@ source("../R/tau_dist_montecarlo.R")
 source("../R/bootstrap_indicators.R")
 source("../R/montecarlotest.R")
 
-indicators <- c("Variance", "Autocorrelation")
+indicators <- c("Var", "Autocor")
 jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
