@@ -4,7 +4,7 @@ load("ibm_sims.Rdat")
 require(socialR)
 require(warningsignals)
 indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-nboot <- 32
+nboot <- 2000
 cpu <-16 
 ibm_tags="warningsignals stochpop ibm" 
 data_names <- c("Deteriorating", "Constant")
@@ -52,7 +52,7 @@ constant_mc <-
 		cpu=cpu, nboot=nboot)
 
 ## Plot just the constant
-social_plot(plot(deterior_mc), tags=ibm_tags)
+social_plot(plot(constant_mc), tags=ibm_tags)
 
 
 
