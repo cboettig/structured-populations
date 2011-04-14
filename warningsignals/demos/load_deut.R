@@ -1,6 +1,3 @@
-require(socialR)
-gitcommit()
-
 require(warningsignals)
 tags<-"warningsignals stochpop climatedata deut"
 # data from: 

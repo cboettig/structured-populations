@@ -1,6 +1,4 @@
 require(warningsignals)
-require(socialR)
-gitcommit()
 tags="warningsignals stochpop CaCO3"
 
 # CaCO3 record
@@ -19,4 +17,4 @@ dat <- dakos_data_processing(X)
 #social_plot(plot.dakos(dat), file="plot_dakos.png", tag=tags)
 
 X <- dat$X_ts
-
+save(list="X", file="CaCO3.Rdat")
