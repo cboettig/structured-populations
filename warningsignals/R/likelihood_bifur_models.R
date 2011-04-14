@@ -60,6 +60,31 @@ setLSN <- function(Xo, to, t1, pars, R){
 
 ## Will depend explicitly on t
 setLTC <- function(Xo, to, t1, pars, R){
+	moments <- function(t,y,p){
+        r <- R(t,pars)
+		yd1 <- r*(r -  y[1]/pars['theta']) 
+		yd2 <- -2*r*y[2] + (1+r)*p["sigma"]^2 
+		list(c(yd1=yd1, yd2=yd2))
+	}
+	jacfn <- function(t,y,p){
+		c(
+		-R(t,pars), 0,
+		0, -R(t,pars)
+	)}
+	times <- matrix(c(to, t1), nrow=length(to))
+	out <- lapply(1:length(Xo), function(i){
+		lsoda(y=c(xhat=Xo[i], sigma2=0), times=times[i,], func=moments, parms=pars, jac=jacfn) 
+	})
+	Ex <- sapply(1:length(Xo), function(i) out[[i]][2,2]) # times are in rows, cols are time, par1, par2
+	Vx <- sapply(1:length(Xo), function(i) out[[i]][2,3])
+
+## Handle badly defined parameters by creating very low probability returns
+	if(pars['sigma'] < 0 ) Vx <- rep(Inf, length(Xo)) 
+	return(list(Ex=Ex, Vx=Vx))
+}
+
+## Just an OU model where alpha depends on time
+setOU_timedep <- function(Xo, to, t1, pars, R){
 	moments <- function(t,y,p){ 
 		yd1 <- R(t,pars)*(pars['theta'] - y[1]) 
 		yd2 <- -2*R(t,pars)*y[2] + p["sigma"]^2 ##check?
@@ -81,6 +106,7 @@ setLTC <- function(Xo, to, t1, pars, R){
 	if(pars['sigma'] < 0 ) Vx <- rep(Inf, length(Xo)) 
 	return(list(Ex=Ex, Vx=Vx))
 }
+
 
 
 constOU <- function(Xo, to, t1, pars){
