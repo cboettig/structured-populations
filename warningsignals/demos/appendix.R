@@ -1,78 +1,79 @@
+require(warningsignals)
+#load output of figure1.R
+load("5554763401.Rdat")  ## Simulated data from LSN with and without an impending collapse.  
+deterior <- deteriorating  ## Watch out for name collisions with all these data sets
+source("load_deut.R")    ## Deuterium data runs
+## should load the CaCO3 data and assign it to a name if you want it
 source("load_CaCO3.R")
 CaCO3 <- X
-source("load_deut.R")
-##### WHY ARE THESE NECESSARY???
-load("5555038554.Rdat")
-source("../R/indicators.R")
-
-
-indicators <- c("Variance", "Autocorrelation", "Skew", "Kurtosis")
-## FIGURE 1
-social_plot(
-	all_indicators(list(CaCO3=X, 
-				        GlaciationI=data[[1]]$X_ts, 
-				        GlaciationII=data[[2]]$X_ts ),	
-				   indicators=indicators, method="kendall"),
-	tags="warningsignals stochpop", 
-	height=length(indicators)*240, width=3*480
-)
-
-cairo_pdf(file="figure1_appendix.pdf",height=7*length(indicators)/2, width=3*7)
-all_indicators(list(CaCO3=X, 
-				    GlaciationI=data[[1]]$X_ts, 
-				    GlaciationII=data[[2]]$X_ts ),	
-				indicators=indicators, method="kendall",
-                cex.axis=2, cex.lab=2.3)
-dev.off()
-
-
-
-
-## load output of figure2.R, for the CaCO3 data
-load("5554848679.Rdat")
+## load output of figure2.R, 2000 reps
+# contains the simulated data from LSN (deterior and constant), deut3 and CaCO3 data
+load("5554848679.Rdat") 
 ## Load model fits and tau bootstraps.  This file produced by deut_examples.Rdat with 2000 replicates
-#load("5571632581.Rdat") # pearson, 2000
+## Contains deuterium data from Glaciation I, II, III using Kendall's test
 load("5562383846.Rdat")  #kendall, 2000
 
-source("../R/bootstrap_indicators.R")
-source("../R/tau_dist_montecarlo.R")
-social_plot(
-	plot.bootstrap_tau(
-		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
-		cex.axis=1, ylim = c(0,2.8)), 
-    tags = "warningsingals stochpop", 
-	height=480*2, width=480*3)
-
-cairo_pdf(file="figure2_appendix.pdf", height=7*4/3, width=7*3/3)
-	plot.bootstrap_tau(
-		list(CaCO3=CaCO3_taus, GlaciationI=taus[[1]], GlaciationII=taus[[2]]), 
-		cex.axis=1, ylim = c(0,2.8))
-dev.off()
-
-## load output of figure3.R, for the CaCO3 data, 2000 replicates
-load("35555677786.Rdat")
-## load the likelihood bootstraps, produced by deut_examples.Rdat -- should rerun with more replicates
-#load("5562961240.Rdat") ## low replicates
-## 2000 replicates from deut_likelihood.R
+## load output of Figure 3: deterior (LSN sim), constant (OU sim), deut3, CaCO3 data
+load("35563325713.Rdat")
+## 2000 replicates from deut_likelihood.R, data on: GlaciationI, II, III
 load("5592395409.Rdat")
 
-
-deut_labels <- c("GlaciationI", "GlaciationII")
-
-plt <- function(){
-	par(mfrow=c(1,3),  oma=c(4,4,4,4), mar=c(0,0,0,0))
-	plot(CaCO3_mc,show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
-	mtext("CaCO3", NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
-	for(i in 1:2){
-		plot(mc[[i]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4))
-   		mtext(deut_labels[i], NORTH<-3, cex=par()$cex.lab, line=2) ## data labels on top row
- }
-		mtext("Probability density", WEST<-2, outer=TRUE, line=2) ## statistic name on first column
-		mtext("Likelihood Ratio", SOUTH<-1, outer=TRUE, line=2) ## x-axis label
-}
-
-#social_plot(plt(), 	tags = "warningsingals stochpop appendix deut CaCO3", height=480/1.5, width=480*1.5)
-
-cairo_pdf(file="figure3_appendix.pdf", width=7, height=3.5)
-plt()
+appendix_indicators <- c("Skew")
+jpeg(file="skew1.jpg", height=37*1.5, width=183, units="mm", quality=100, res=150)
+all_indicators(	list(Constant=constant, Deteriorating=deterior, 
+                Glaciation=data[[3]]$X_ts, Daphnia=drake$data[["H6"]]),	
+				indicators=appendix_indicators, cex.axis=.8, cex.lab=.8, lwd=.5)
 dev.off()
+jpeg(file="skew2.jpg", height=37, width=183, units="mm", quality=100, res=150)
+plot.bootstrap_tau(list(Constant=constant_taus[3],
+                   Deteriorating=deterior_taus[3], 
+                   Glaciation=taus[[3]][3], 
+                   Daphnia=drake$taus[["H6"]][3]),
+				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
+dev.off()
+
+
+
+
+jpeg(file="appendix_fig1.jpg", height=37*3, width=183, units="mm", quality=100, res=150)
+all_indicators(	list(CaCO3=CaCO3, GlaciationI=data[[1]]$X_ts, 
+                GlaciationII=data[[2]]$X_ts),	
+				indicators= c("Var", "Autocor", "Skew"), cex.axis=.8, cex.lab=.8, lwd=.5)
+dev.off()
+
+
+jpeg(file="appendix_fig2.jpg", height=2*37, width=183, units="mm", quality=100, res=150)
+plot.bootstrap_tau(list(CaCO3=CaCO3_taus[1:3],
+                   GlaciationI=taus[[1]][1:3], 
+                   GlaciationII=taus[[3]][1:3]),
+				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
+dev.off()
+
+
+
+data_names <- c("CaCO3", "GlaciationI", "GlaciationII")
+jpeg(file="appendix_fig3.jpg", height=37*1.2, width=183, units="mm", quality=100, res=150)
+	par(mfrow=c(1,length(data_names)),  oma=c(3,3,2,.2), mar=c(0,0,0,0), cex.lab=.8, cex.axis=.8)
+	plot(CaCO3_mc,show_text = c("p","power"), xlab="", main="",  cex.lab=1, ylim=c(0,.4), xlim=c(0,40))
+	mtext(data_names[1], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
+	mtext("Probability density", WEST<-2, line=2, cex=par()$cex.lab) ## statistic name on first column
+
+    plot(mc[[1]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,40))
+	mtext(data_names[2], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
+
+    mtext("Likelihood Ratio", SOUTH<-1, line=2, cex=par()$cex.lab) ## x-axis label
+
+	plot(mc[[2]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,90))
+   	mtext(data_names[3], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
+   	
+dev.off()
+
+require(socialR)
+social_report(file="appendix_fig1.jpg", tags="figure1 stochpop warningsignals publish", public=0)
+social_report(file="appendix_fig2.jpg", tags="figure2 stochpop warningsignals publish", public=0)
+social_report(file="appendix_fig3.jpg", tags="figure3 stochpop warningsignals publish", public=0)
+social_report(file="skew1.jpg", tags="figure1 appendix stochpop warningsignals publish", public=0)
+social_report(file="skew2.jpg", tags="figure2 appendix stochpop warningsignals publish", public=0)
+
+
+

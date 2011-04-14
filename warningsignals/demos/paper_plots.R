@@ -6,6 +6,8 @@ load("5554763401.Rdat")  ## Simulated data from LSN with and without an impendin
 deterior <- deteriorating  ## Watch out for name collisions with all these data sets
 source("load_deut.R")    ## Deuterium data runs
 ## should load the CaCO3 data and assign it to a name if you want it
+source("load_CaCO3.R")
+CaCO3 <- X
 
 ## Drake Data example, for all figure types
 load("reanalyze.Rdat")
@@ -21,14 +23,6 @@ jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
                 Glaciation=data[[3]]$X_ts, Daphnia=drake$data[["H6"]]),	
 				indicators=indicators, cex.axis=.8, cex.lab=.8, lwd=.5)
-dev.off()
-
-### APPENDIX 
-appendix_indicators <- c("Skew")
-jpeg(file="Boettiger_fig1_appendix.jpg", height=37*1.5, width=183, units="mm", quality=100, res=150)
-all_indicators(	list(Constant=constant, Deteriorating=deterior, 
-                Glaciation=data[[3]]$X_ts, Daphnia=drake$data[["H6"]]),	
-				indicators=appendix_indicators, cex.axis=.8, cex.lab=.8, lwd=.5)
 dev.off()
 
 
@@ -47,17 +41,6 @@ plot.bootstrap_tau(list(Constant=constant_taus[1:2],
                    Daphnia=drake$taus[["H6"]][1:2]),
 				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
-
-########## APPENDIX PLOT
-## use just indicators 3: skew & Kurtosis
-jpeg(file="Boettiger_fig2_appendix.jpg", height=37, width=183, units="mm", quality=100, res=150)
-plot.bootstrap_tau(list(Constant=constant_taus[3],
-                   Deteriorating=deterior_taus[3], 
-                   Glaciation=taus[[3]][3], 
-                   Daphnia=drake$taus[["H6"]][3]),
-				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
-dev.off()
-
 
 ## load output of Figure 3: deterior (LSN sim), constant (OU sim), deut3, CaCO3 data
 load("35563325713.Rdat")
@@ -84,16 +67,12 @@ jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm", quality=10
 
    	plot(drake$mc[["H6"]],show_text = c("p","power"), xlab="", main="", cex.lab=1, ylim=c(0,.4), yaxt="n", ylab="", xlim=c(0,40))
    	mtext(data_names[4], NORTH<-3, cex=par()$cex.lab, line=1) ## data labels on top row
-
    	
 dev.off()
-
 
 #require(socialR)
 #social_report(file="Boettiger_fig1.jpg", tags="figure1 stochpop warningsignals publish", public=0)
 #social_report(file="Boettiger_fig2.jpg", tags="figure2 stochpop warningsignals publish", public=0)
 #social_report(file="Boettiger_fig3.jpg", tags="figure3 stochpop warningsignals publish", public=0)
-#social_report(file="Boettiger_fig1_appendix.jpg", tags="figure1 appendix stochpop warningsignals publish", public=0)
-#social_report(file="Boettiger_fig2_appendix.jpg", tags="figure2 appendix stochpop warningsignals publish", public=0)
 
 
