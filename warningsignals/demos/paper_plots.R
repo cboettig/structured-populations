@@ -19,7 +19,7 @@ source("../R/montecarlotest.R")
 indicators <- c("Var", "Autocor")
 jpeg(file="Boettiger_fig1.jpg", height=length(indicators)*183/4*(3/5), width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
-                Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
+                Glaciation=data[[3]]$X_ts, Daphnia=drake$data[["H6"]]),	
 				indicators=indicators, cex.axis=.8, cex.lab=.8, lwd=.5)
 dev.off()
 
@@ -27,7 +27,7 @@ dev.off()
 appendix_indicators <- c("Skew")
 jpeg(file="Boettiger_fig1_appendix.jpg", height=37*1.5, width=183, units="mm", quality=100, res=150)
 all_indicators(	list(Constant=constant, Deteriorating=deterior, 
-                Glaciation=data[[3]]$X_ts, Algae=drake$data[["H6"]]),	
+                Glaciation=data[[3]]$X_ts, Daphnia=drake$data[["H6"]]),	
 				indicators=appendix_indicators, cex.axis=.8, cex.lab=.8, lwd=.5)
 dev.off()
 
@@ -44,7 +44,7 @@ jpeg(file="Boettiger_fig2.jpg", height=2*37, width=183, units="mm", quality=100,
 plot.bootstrap_tau(list(Constant=constant_taus[1:2],
                    Deteriorating=deterior_taus[1:2], 
                    Glaciation=taus[[3]][1:2], 
-                   Algae=drake$taus[["H6"]][1:2]),
+                   Daphnia=drake$taus[["H6"]][1:2]),
 				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
 
@@ -54,7 +54,7 @@ jpeg(file="Boettiger_fig2_appendix.jpg", height=37, width=183, units="mm", quali
 plot.bootstrap_tau(list(Constant=constant_taus[3],
                    Deteriorating=deterior_taus[3], 
                    Glaciation=taus[[3]][3], 
-                   Algae=drake$taus[["H6"]][3]),
+                   Daphnia=drake$taus[["H6"]][3]),
 				   cex.axis=.8, cex.lab=.8, show_p=FALSE, ylim=c(0,2.8), yaxp = c(0, 3, 3), xaxp=c(-1,1,5))
 dev.off()
 
@@ -65,7 +65,7 @@ load("35563325713.Rdat")
 load("5592395409.Rdat")
 
 
-data_names <- c( "Constant", "Deteriorating", "Glaciation", "Algae")
+data_names <- c( "Constant", "Deteriorating", "Glaciation", "Daphnia")
 
 
 jpeg(file="Boettiger_fig3.jpg", height=37*1.2, width=183, units="mm", quality=100, res=150)
