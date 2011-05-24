@@ -52,7 +52,7 @@ fit_models <- function(X, model=c("LTC", "LSN"), integrateOU=FALSE,
 
 
 bootstrap_tau <- function(X, const, timedep, 
-						  indicators = c("Variance", "Autocorrelation", "Skew", "Kurtosis", "CV"),
+						  indicators = c("Variance", "Autocorrelation", "Skew", "CV"),
 						  nboot=160, cpu=16, windowsize=round(length(X)/2), 
 						  method=c("pearson", "kendall", "spearman")){
 # Tau approach comparison
