@@ -62,7 +62,7 @@ system(env,5)
 dev.off()
 
 require(socialR)
-gitopts <- c(user = "cboettig", repository = "structured_populations", dir = "demo", raw = FALSE, diff = FALSE)
+gitopts <- c(user = "cboettig", repository = "structured-populations", dir = "demo", raw = FALSE, diff = FALSE)
 upload("mu.png", script="cascades.R", gitaddr=gitcommit("cascades.R", gitopts, msg="autocommit on figure upload"))
 upload("K.png", script="cascades.R", gitaddr=gitcommit("cascades.R", gitopts, msg="autocommit on figure upload"))
 
