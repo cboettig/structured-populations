@@ -1,3 +1,5 @@
+## Load the data and then run the analysis to create figure 1b
+
 ## FIGURE 2
 require(warningsignals)
 require(socialR)

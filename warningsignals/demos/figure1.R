@@ -1,3 +1,4 @@
+# Load the data from scripts and run the analysis for Fig1a
 require(warningsignals)
 require(socialR)
 gitcommit()

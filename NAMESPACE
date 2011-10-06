@@ -18,4 +18,11 @@ export(	warning_signals, plot.warning_signals,
 export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot, power_test, power_pair)
 
 useDynLib(stochPop)
+import(snowfall)
+import(NORMT3)
+import(sde)
+import(Kendall)
+import(odesolve)
+
+
 

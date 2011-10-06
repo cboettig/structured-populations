@@ -1,11 +1,11 @@
-Package: stochPop
-Title: Likelihood Analysis for Models of Stochastic Population Dynamics 
+Package: popdyn
+Title: A few Population Dynamics Models in Ecology & Evolution 
+Description: Likelihood Analysis for Models of Stochastic Population Dynamics 
 Version: 0.0-2
 Date: 2010-05-04
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
-Description:
-Depends: snowfall, NORMT3, sde, Kendall, odesolve 
+Imports: snowfall, NORMT3, sde, Kendall, odesolve 
 URL: http://two.ucdavis.edu/~cboettig/software.html
 License: GPL (>= 3)
 

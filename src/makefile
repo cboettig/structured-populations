@@ -5,15 +5,18 @@ CCP = g++
 CC = gcc
 C_OMP = -fopenmp 
 CFLAGS = -Wall -lgsl -lgslcblas -lm -O4 -fpic -funroll-loops -lgomp
+
+FILES = metapop.c beetles.c crowley.c gillespie.c gillespie_recording.h gamma_beetles.c main.c
 TRIBOL = tribolium.cpp kde.cpp 
 WARNING = warning_signals.c odeintegrators.c gillespie.c correlation.c saddle_node.c record.c pars.c main.c 
 CROWLEY = crowley.c gillespie.c main.c
 BEETLES = beetles.c gillespie.c main.c
 META = metapop.c gillespie.c gillespie_recording.c main.c  
 SADDLENODE = saddle_node_direct.c gillespie.c gillespie_recording.c main.c
+BARRO = barroIsland.c gillespie.c
 
-FILES = metapop.c beetles.c crowley.c gillespie.c gillespie_recording.h gamma_beetles.c main.c
-
+barroIsland:
+	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(BARRO)
 
 build:
 	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(FILES)

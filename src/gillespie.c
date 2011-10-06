@@ -42,12 +42,12 @@
  * larger than a uniform random variable (on 0,1). 
  *
  * @param rate_fn 
- *			An array of function pointers for calculating the 
+ *			Custom type. An array of function pointers for calculating the 
  *			rates at which each possible event can occur.  Order is irrelevant but 
  *			must match the order used in outcomes array. Rate functions must 
  *			take a single argument, void pointer promoted to necessary type
  * @param outcome 
- *			An array of fn ptrs for creating the outcome of each event. 
+ *			Custom type. An array of fn ptrs for creating the outcome of each event
  *			Order must match rate_fn array and take the same argument.
  * @param n_event_types 
  *			Number of different types of events
@@ -60,11 +60,17 @@
  *			Length of time to simulate each replicate
  * @param ensembles 
  *			Number of replicates to simulate
+ * @param reset_fn Custom type. A function to restore the system to 
+ *        to its initial conditions.  FIXME Why? parallel? pointer?
+ * @param fixed_interval_function. Custom type function pointer of
+ *        what should be done every fixed interval, such as recording data.
  *
- * @return void.  Usually system status is printed out by the fixed_interval_tasks fn.
- * */
+ * @return void.  Usually system status is printed out by the 
+ *      fixed_interval_tasks fn.
+ **/
 void 
-gillespie(	const event_fn * rate_fn,
+gillespie(
+      const event_fn * rate_fn,
 			const event_fn * outcome,
 			const size_t n_event_types,
 			void * inits,	

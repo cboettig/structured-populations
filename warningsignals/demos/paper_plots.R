@@ -1,3 +1,6 @@
+## load the results of the analysis and execute the plotting scripts to generate 
+## the figures used in the manuscript
+
 require(warningsignals)
 
 
