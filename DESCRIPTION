@@ -7,5 +7,5 @@ Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
 Imports: snowfall, NORMT3, sde, Kendall, odesolve 
 URL: http://two.ucdavis.edu/~cboettig/software.html
-License: GPL (>= 3)
+License: CC0
 
