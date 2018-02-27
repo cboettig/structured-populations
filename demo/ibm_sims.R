@@ -1,5 +1,5 @@
 # Simulate a dataset from the full individual, nonlinear model
-require(stochPop)
+require(popdyn)
 T<- 1000
 n_pts <- 40
 pars = c(Xo = 730, e = 0.5, a = 100, K = 1000, h = 200, 

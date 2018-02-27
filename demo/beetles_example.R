@@ -1,4 +1,4 @@
-require(stochPop)
+library(popdyn)
 source("../R/onestep_beetles.R")
 source("../R/plots.R")
 

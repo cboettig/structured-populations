@@ -1,6 +1,5 @@
 export(ensemble, beetle_sim, likelihood)
-export(	warning_signals, plot.warning_signals,
-		numeric_V, analytic_V, warning_model, OU.lik, warning.lik, setOU,
+export(warning_signals, plot.warning_signals,
 		linnoise, linear_noise_approx,
 		beetles_ibm, crowley_ibm, metapop_ibm, gamma_beetles_ibm, saddle_node_ibm,
 		crowley_example,
@@ -15,14 +14,13 @@ export(	warning_signals, plot.warning_signals,
 		collapse_gamma_classes)
 
 
-export( update.OU, update.warning, update.changePt, simulate.OU, simulate.warning, simulate.changePt, bootstrap, plot_bootstrap, bootstrapLR, LRplot, power_test, power_pair)
 
-useDynLib(stochPop)
+useDynLib(popdyn)
 import(snowfall)
 import(NORMT3)
 import(sde)
 import(Kendall)
-import(odesolve)
+import(deSolve)
 
 
 

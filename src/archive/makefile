@@ -13,13 +13,11 @@ CROWLEY = crowley.c gillespie.c main.c
 BEETLES = beetles.c gillespie.c main.c
 META = metapop.c gillespie.c gillespie_recording.c main.c  
 SADDLENODE = saddle_node_direct.c gillespie.c gillespie_recording.c main.c
-BARRO = barroIsland.c gillespie.c
 
-barroIsland:
-	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(BARRO)
 
-build:
-	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(FILES)
+
+#build:
+#	$(CC) $(CFLAGS) $(C_OMP) -o ibm.exe $(FILES)
 
 saddlenode:
 	$(CC) $(CFLAGS) $(C_OMP) -o saddlenode.exe $(SADDLENODE)
@@ -36,8 +34,8 @@ beetles:
 tribol:
 	$(CCP) $(CFLAGS) $(C_OMP) -o tribol.exe $(TRIBOL)
 
-meta: 
-	$(CC) $(CFLAGS) $(C_OMP) -o meta.exe $(META)
+#meta: 
+#	$(CC) $(CFLAGS) $(C_OMP) -o meta.exe $(META)
 
 clean:
 	rm -f *.o 

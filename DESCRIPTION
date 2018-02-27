@@ -1,11 +1,11 @@
 Package: popdyn
 Title: A few Population Dynamics Models in Ecology & Evolution 
-Description: Likelihood Analysis for Models of Stochastic Population Dynamics 
+Description: Gillespie simulation utilities and the linear noise approximation
 Version: 0.0-2
 Date: 2010-05-04
 Author: Carl Boettiger <cboettig@gmail.com>
 Maintainer: Carl Boettiger <cboettig@gmail.com>
-Imports: snowfall, NORMT3, sde, Kendall, odesolve 
+Imports: snowfall, NORMT3, sde, Kendall, deSolve
 URL: http://two.ucdavis.edu/~cboettig/software.html
 License: CC0
 

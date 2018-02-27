@@ -1,6 +1,4 @@
 
-require(odesolve)
-
 # Transition=function(){0}
 linnoise <- function(t,y,p, birth, death, Jacobian, Transition){
 # General form for arbitrary dimensions
