@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <gsl/gsl_math.h>
 typedef struct {
 	double t_step;

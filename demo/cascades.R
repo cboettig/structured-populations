@@ -2,7 +2,7 @@
 # dN/dt = f(N,P)
 # dP/dt = g(N,P)
 
-require(odesolve)
+require(deSolve)
 
 parms <- c(r=1, K=500, alpha=0.01, beta=0.25, mu=0.2, sigma=.001)
 

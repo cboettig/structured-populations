@@ -2,7 +2,7 @@
 reps <- 200
 cpu <- 2
 
-require(stochPop)
+require(popdyn)
 ou = list(alpha=30, theta=300, sigma=30, T=10, N=100, X0=300)
 wa = list(alpha_0=30, theta=300, sigma=30, beta=0, T=10, N=100, X0=300)
 cpt = list(alpha_1=50, alpha_2=5, theta=300, sigma=30, t_shift=5, T=10, N=100, X0=300)

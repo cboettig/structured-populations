@@ -16,7 +16,7 @@ int main(void){
 //	crow(); //crowley.c
 //	meta(); //metapop.c
 //	ga(); //gamma_beetles
-	sn();
+//	sn();
 	return 0;
 }
 
